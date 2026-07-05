@@ -1,31 +1,19 @@
 #include <stdlib.h>
 
-#include <GLFW/glfw3.h>
+#include "window/window.h"
 
 int main( void ) {
-	GLFWwindow* window;
+	struct window win;
 
-	if ( !glfwInit() )
+	if ( !window_init( &win ) )
 		return EXIT_FAILURE;
 
-	window = glfwCreateWindow( 640, 480, "Hello World", NULL, NULL );
-
-	if ( !window ) {
-		glfwTerminate();
-		return EXIT_FAILURE;
-	}
-
-	glfwMakeContextCurrent( window );
-
-	while ( !glfwWindowShouldClose( window ) ) {
+	while ( !window_should_close( &win ) ) {
 		glClear( GL_COLOR_BUFFER_BIT );
-
-		glfwSwapBuffers( window );
-
-		glfwPollEvents();
+		window_swap_and_poll( &win );
 	}
 
-	glfwTerminate();
+	window_destroy( &win );
 
 	return EXIT_SUCCESS;
 }
