@@ -3,6 +3,3 @@ build/
 
 # Ignore Makefile
 Makefile
-
-# Ignore .gitignore
-.gitignore
