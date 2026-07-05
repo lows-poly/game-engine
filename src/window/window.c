@@ -15,7 +15,7 @@ static void framebuffer_size_callback( GLFWwindow *handle, int width, int height
 
 	w->width = width;
 	w->height = height;
-	w->resized = 1;
+	w->resized = true;
 
 	glViewport( 0, 0, width, height );
 }
@@ -42,7 +42,7 @@ int window_init( struct window *w ) {
 
 	w->width = WINDOW_WIDTH;
 	w->height = WINDOW_HEIGHT;
-	w->resized = 0;
+	w->resized = false;
 
 	glfwSetWindowUserPointer( w->handle, w );
 	glfwSetFramebufferSizeCallback( w->handle, framebuffer_size_callback );
@@ -65,7 +65,7 @@ int window_should_close( struct window *w ) {
 }
 
 void window_swap_and_poll( struct window *w ) {
-	w->resized = 0;
+	w->resized = false;
 	glfwSwapBuffers( w->handle );
 	glfwPollEvents();
 }

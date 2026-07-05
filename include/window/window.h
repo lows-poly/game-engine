@@ -8,6 +8,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <stdbool.h>
 #include <glad.h>
 #include <GLFW/glfw3.h>
 
@@ -15,7 +16,7 @@ struct window {
 	GLFWwindow *handle;
 	int width;
 	int height;
-	int resized;
+	bool resized;
 };
 
 int window_init( struct window *w );
