@@ -1,6 +1,6 @@
 # GAME ENGINE
 
-A small 2D game engine written in C. This project is intended for learning C and
+A small game engine written in C. This project is intended for learning C and
 graphics programming.
 
 - Window & Input: GLFW
