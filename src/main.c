@@ -28,7 +28,7 @@ int main( void ) {
 	while ( !window_should_close( &window ) ) {
 		window_poll_events( &window );
 
-		renderer_clear_colour( VINTAGE_GOLD );
+		renderer_clear_colour( BLACK );
 		renderer_clear( GL_COLOR_BUFFER_BIT );
 
 		timer_tick( &tm );
