@@ -11,6 +11,12 @@ typedef struct vec3 {
 	float z;
 } vec3;
 
+static inline void vec3_zero( vec3 *a ) {
+	a->x = 0.0f;
+	a->y = 0.0f;
+	a->z = 0.0f;
+}
+
 static inline vec3 vec3_add( vec3 a, vec3 b ) {
 	vec3 r;
 
