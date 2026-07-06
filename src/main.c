@@ -9,16 +9,21 @@
 #include "primitives/colour.h"
 #include "primitives/colourf.h"
 
+#define WINDOW_TITLE		"ENGINE"
+#define WINDOW_WIDTH		800
+#define WINDOW_HEIGHT		600
+#define TARGET_FRAMERATE	1.0 / 60.0
+
 int main( void ) {
 	struct window_state window;
 	struct input_state input;
 	struct timer tm;
 
-	if ( !window_init( &window, 740, 480, "ENGINE") )
+	if ( !window_init( &window, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
 		return EXIT_FAILURE;
 
 	input_init( &input, window.handle );
-	timer_init( &tm, 1.0 / 60.0 );
+	timer_init( &tm, TARGET_FRAMERATE );
 
 	while ( !window_should_close( &window ) ) {
 		window_poll_events( &window );
