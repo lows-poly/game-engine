@@ -10,6 +10,11 @@ typedef struct vec2 {
 	float y;
 } vec2;
 
+static inline void vec2_zero( vec2 *a ) {
+	a->x = 0.0f;
+	a->y = 0.0f;
+}
+
 static inline vec2 vec2_add( vec2 a, vec2 b ) {
 	vec2 r;
 
