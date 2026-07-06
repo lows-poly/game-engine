@@ -1,9 +1,10 @@
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "window/window.h"
 #include "input/input.h"
 #include "timer/timer.h"
+
+#include "renderer/renderer.h"
 
 #include "primitives/colour.h"
 #include "primitives/colourf.h"
@@ -13,9 +14,7 @@ int main( void ) {
 	struct input_state input;
 	struct timer tm;
 
-	colourf vt_gold = colour_to_float( VINTAGE_GOLD );
-
-	if ( !window_init( &window, 740, 480, "ENGINE" ) )
+	if ( !window_init( &window, 740, 480, "ENGINE") )
 		return EXIT_FAILURE;
 
 	input_init( &input, window.handle );
@@ -24,8 +23,8 @@ int main( void ) {
 	while ( !window_should_close( &window ) ) {
 		window_poll_events( &window );
 
-		glClearColor( vt_gold.r, vt_gold.g, vt_gold.b, 1.0f );
-		glClear( GL_COLOR_BUFFER_BIT );
+		renderer_clear_colour( VINTAGE_GOLD );
+		renderer_clear( GL_COLOR_BUFFER_BIT );
 
 		timer_tick( &tm );
 		
