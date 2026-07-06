@@ -9,7 +9,7 @@
 #define WINDOW_H
 
 #include <stdbool.h>
-#include <glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 struct window_state {
@@ -19,7 +19,7 @@ struct window_state {
 	bool resized;
 };
 
-int window_init( struct window_state *w );
+int window_init( struct window_state *w, int width, int height, const char *title );
 int window_should_close( struct window_state *w );
 void window_set_should_close( struct window_state *w, bool value );
 void window_poll_events( struct window_state *w );

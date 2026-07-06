@@ -1,13 +1,13 @@
 #include <stdlib.h>
 
 #include "window/window.h"
-#include "input.h"
+#include "input/input.h"
 
 int main( void ) {
 	struct window_state window;
 	struct input_state input;
 
-	if ( !window_init( &window ) )
+	if ( !window_init( &window, 740, 480, "ENGINE" ) )
 		return EXIT_FAILURE;
 
 	input_init( &input, window.handle );

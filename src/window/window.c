@@ -7,8 +7,7 @@
 
 #include <stdio.h>
 
-#include "window/window.h"
-#include "window/wconfig.h"
+#include "window.h"
 
 static void framebuffer_size_callback( GLFWwindow *handle, int width, int height ) {
 	struct window_state *w = glfwGetWindowUserPointer( handle );
@@ -20,9 +19,9 @@ static void framebuffer_size_callback( GLFWwindow *handle, int width, int height
 	glViewport( 0, 0, width, height );
 }
 
-int window_init( struct window_state *w ) {
+int window_init( struct window_state *w, int width, int height, const char *title ) {
 	if ( !glfwInit() ) {
-		fprintf(stderr, "FAILED TO INIT GLFW\n");
+		fprintf( stderr, "FAILED TO INIT GLFW\n" );
 		return 0;
 	}
 
@@ -31,17 +30,16 @@ int window_init( struct window_state *w ) {
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 	glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE ); // macos
 
-	w->handle = glfwCreateWindow( WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE,
-	                              NULL, NULL );
+	w->handle = glfwCreateWindow( width, height, title, NULL, NULL );
 
 	if ( !w->handle ) {
-		fprintf(stderr, "FAILED TO CREATE WINDOW\n");
+		fprintf( stderr, "FAILED TO CREATE WINDOW\n" );
 		glfwTerminate();
 		return 0;
 	}
 
-	w->width = WINDOW_WIDTH;
-	w->height = WINDOW_HEIGHT;
+	w->width = width;
+	w->height = height;
 	w->resized = false;
 
 	glfwSetWindowUserPointer( w->handle, w );
@@ -50,7 +48,7 @@ int window_init( struct window_state *w ) {
 	glfwMakeContextCurrent( w->handle );
 
 	if ( !gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress ) ) {
-		fprintf(stderr, "FAILED TO LOAD GL FUNCTIONS\n");
+		fprintf( stderr, "FAILED TO LOAD GL FUNCTIONS\n" );
 		return 0;
 	}
 
