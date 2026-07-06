@@ -7,3 +7,14 @@ graphics programming.
 - Graphics API: OpenGL (Core Profile via glad)
 
 *Work in progress*
+
+<div align="center">
+
+## PREVIEW
+
+</div>
+
+<div align="center">
+    <img src="assets/mac_preview.png" width="400" height="400"/>
+    <img src="assets/linux_preview.png" width="400" height="400"/>
+</div>
