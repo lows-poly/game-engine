@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #include "window/window.h"
-#include "config.h"
+#include "window/wconfig.h"
 
 static void framebuffer_size_callback( GLFWwindow *handle, int width, int height ) {
 	struct window_state *w = glfwGetWindowUserPointer( handle );
