@@ -23,7 +23,7 @@ int main( void ) {
 		input_update( &input );
 	}
 
-	input_destroy( &input, &window );
+	input_destroy( &input, window.handle );
 	window_destroy( &window );
 
 	return EXIT_SUCCESS;
