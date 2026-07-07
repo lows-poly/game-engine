@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Generic dynamic array on heap.
+ */
+
 #define darray(T) struct { \
 	T *data; \
 	size_t count; \
@@ -12,19 +16,16 @@
 }
 
 #define darray_alloc( arr ) \
-	( { \
-		int _err = 0; \
-		\
+	do { \
 		(arr) = malloc( sizeof( *(arr) ) ); \
 		if ( !(arr) ) { \
-			_err = -ENOMEM; \
-		} else { \
-			(arr)->data = NULL; \
-			(arr)->count = 0; \
-			(arr)->capacity = 0; \
+			fprintf( stderr, "darray_alloc: OUT OF MEMORY\n" ); \
+			abort(); \
 		} \
-		_err; \
-	} )
+		(arr)->data = NULL; \
+		(arr)->count = 0; \
+		(arr)->capacity = 0; \
+	} while (0)
 
 #define darray_free( arr ) \
 	do { \
@@ -36,9 +37,7 @@
 	} while (0)
 
 #define darray_reserve( arr, n ) \
-	( { \
-		int _err = 0; \
-		\
+	do { \
 		if ( (arr)->capacity < (size_t)(n) ) { \
 			size_t new_cap_; \
 			void *new_data_; \
@@ -55,62 +54,37 @@
 			                      new_cap_ * sizeof( *(arr)->data ) ); \
 			\
 			if ( !new_data_ ) { \
-				_err = -ENOMEM; \
-			} else { \
-				(arr)->data = new_data_; \
-				(arr)->capacity = new_cap_; \
+				fprintf( stderr, "darray_reserve: OUT OF MEMORY\n" ); \
+				abort(); \
 			} \
+			\
+			(arr)->data = new_data_; \
+			(arr)->capacity = new_cap_; \
 		} \
-		_err; \
-	} )
+	} while (0)
 
 #define darray_push( arr, src ) \
-	( { \
-		int _err = darray_reserve( (arr), (arr)->count + 1 ); \
-		\
-		if ( !_err ) \
-			(arr)->data[(arr)->count++] = (src); \
-		_err; \
-	} )
+	do { \
+		darray_reserve( (arr), (arr)->count + 1 ); \
+		(arr)->data[(arr)->count++] = (src); \
+	} while (0)
 
 #define darray_pop( arr, out ) \
-	( { \
-		int _err = 0; \
-		\
-		if ( (arr)->count == 0 ) { \
-			_err = -ENOENT; \
-		} else { \
-			(arr)->count--; \
-			*(out) = (arr)->data[(arr)->count]; \
-		} \
-		_err; \
-	} )
+	( (arr)->count == 0 ? \
+		-ENOENT : \
+		( (arr)->count--, *(out) = (arr)->data[(arr)->count], 0 ) )
 
 #define darray_remove( arr, index ) \
-	( { \
-		int _err = 0; \
-		\
-		if ( (size_t)(index) >= (arr)->count ) { \
-			_err = -ERANGE; \
-		} else { \
-			memmove( &(arr)->data[index], &(arr)->data[(index) + 1], \
-			         ( (arr)->count - (index) - 1 ) * sizeof( *(arr)->data ) ); \
-			(arr)->count--; \
-		} \
-		_err; \
-	} )
+	( (size_t)(index) >= (arr)->count ? \
+		-ERANGE : \
+		( memmove( &(arr)->data[index], &(arr)->data[(index) + 1], \
+		           ( (arr)->count - (index) - 1 ) * sizeof( *(arr)->data ) ), \
+		  (arr)->count--, 0 ) )
 
 #define darray_get( arr, index, out ) \
-	( { \
-		int _err = 0; \
-		\
-		if ( (size_t)(index) >= (arr)->count ) { \
-			_err = -ERANGE; \
-		} else { \
-			*(out) = (arr)->data[index]; \
-		} \
-		_err; \
-	} )
+	( (size_t)(index) >= (arr)->count ? \
+		-ERANGE : \
+		( *(out) = (arr)->data[index], 0 ) )
 
 #define darray_clear( arr ) \
 	( (arr)->count = 0 )
