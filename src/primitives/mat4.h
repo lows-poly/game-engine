@@ -9,13 +9,15 @@ typedef struct mat4 {
 	float m[16]
 } mat4;
 
-static inline void mat4_zero( mat4 *r ) {
+static inline void mat4_zero( mat4 *r )
+{
 	for ( int i = 0; i < 16; i++ ) {
 		r->m[i] = 0.0f;
 	}
 }
 
-static inline mat4 mat4_create( void ) {
+static inline mat4 mat4_create( void )
+{
 	mat4 r;
 
 	for ( int i = 0; i < 16; i++ )
@@ -24,7 +26,8 @@ static inline mat4 mat4_create( void ) {
 	return r;
 }
 
-static inline mat4 mat4_identity( void ) {
+static inline mat4 mat4_identity( void )
+{
 	mat4 r = mat4_create();
 
 	r.m[0] = 1.0f;
@@ -35,7 +38,8 @@ static inline mat4 mat4_identity( void ) {
 	return r;
 }
 
-static inline mat4 mat4_multiply( mat4 a, mat4 b ) {
+static inline mat4 mat4_multiply( mat4 a, mat4 b )
+{
 	mat4 r;
 
 	for ( int col = 0; col < 4; col++ ) {
@@ -52,7 +56,8 @@ static inline mat4 mat4_multiply( mat4 a, mat4 b ) {
 	return r;
 }
 
-static inline mat4 mat4_translate( vec3 t ) {
+static inline mat4 mat4_translate( vec3 t )
+{
 	mat4 r = mat4_identity();
 
 	r.m[12] = t.x;
@@ -62,7 +67,8 @@ static inline mat4 mat4_translate( vec3 t ) {
 	return r;
 }
 
-static inline mat4 mat4_scale( vec3 s ) {
+static inline mat4 mat4_scale( vec3 s )
+{
 	mat4 r = mat4_identity();
 
 	r.m[0] = s.x;
@@ -73,7 +79,8 @@ static inline mat4 mat4_scale( vec3 s ) {
 }
 
 static inline mat4 mat4_perspective( float fov_y, float aspect, float near,
-                                     float far ) {
+                                     float far )
+{
 	mat4 r = mat4_create();
 	float f = 1.0f / tanf(fov_y * 0.5f) ;
 	
@@ -86,7 +93,8 @@ static inline mat4 mat4_perspective( float fov_y, float aspect, float near,
 	return r;
 }
 
-static inline mat4 mat4_look_at( vec3 eye, vec3 center, vec3 up ) {
+static inline mat4 mat4_look_at( vec3 eye, vec3 center, vec3 up )
+{
 	mat4 r;
 	vec3 f = vec3_normalise( vec3_sub( center, eye ) );
 	vec3 s = vec3_normalise( vec3_cross( f, up ) );

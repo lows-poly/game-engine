@@ -11,13 +11,15 @@ typedef struct vec3 {
 	float z;
 } vec3;
 
-static inline void vec3_zero( vec3 *a ) {
+static inline void vec3_zero( vec3 *a )
+{
 	a->x = 0.0f;
 	a->y = 0.0f;
 	a->z = 0.0f;
 }
 
-static inline vec3 vec3_add( vec3 a, vec3 b ) {
+static inline vec3 vec3_add( vec3 a, vec3 b )
+{
 	vec3 r;
 
 	r.x = a.x + b.x;
@@ -27,7 +29,8 @@ static inline vec3 vec3_add( vec3 a, vec3 b ) {
 	return r;
 }
 
-static inline vec3 vec3_sub( vec3 a, vec3 b ) {
+static inline vec3 vec3_sub( vec3 a, vec3 b )
+{
 	vec3 r;
 
 	r.x = a.x - b.x;
@@ -37,7 +40,8 @@ static inline vec3 vec3_sub( vec3 a, vec3 b ) {
 	return r;
 }
 
-static inline vec3 vec3_scale( vec3 a, float scale ) {
+static inline vec3 vec3_scale( vec3 a, float scale )
+{
 	vec3 r;
 
 	r.x = a.x * scale;
@@ -47,19 +51,23 @@ static inline vec3 vec3_scale( vec3 a, float scale ) {
 	return r;
 }
 
-static inline float vec3_dot( vec3 a, vec3 b ) {
+static inline float vec3_dot( vec3 a, vec3 b )
+{
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
 
-static inline float vec3_length_sq( vec3 a ) {
+static inline float vec3_length_sq( vec3 a )
+{
 	return vec3_dot( a, a );
 }
 
-static inline float vec3_length( vec3 a ) {
+static inline float vec3_length( vec3 a )
+{
 	return sqrtf( vec3_length_sq( a ) );
 }
 
-static inline vec3 vec3_normalise( vec3 a ) {
+static inline vec3 vec3_normalise( vec3 a )
+{
 	float len = vec3_length( a );
 
 	if ( len < VEC_EPSILON )
@@ -68,7 +76,8 @@ static inline vec3 vec3_normalise( vec3 a ) {
 	return vec3_scale( a, 1.0f / len );
 }
 
-static inline vec3 vec3_cross( vec3 a, vec3 b ) {
+static inline vec3 vec3_cross( vec3 a, vec3 b )
+{
 	vec3 r;
 
 	r.x = (a.y * b.z) - (a.z * b.y);

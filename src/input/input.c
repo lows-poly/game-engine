@@ -3,7 +3,8 @@
 #include "input.h"
 
 static void key_callback( GLFWwindow *window, int key, int scancode, int action,
-                          int mods ) {
+                          int mods )
+{
 	struct input_state *input;
 
 	(void) scancode;
@@ -24,7 +25,8 @@ static void key_callback( GLFWwindow *window, int key, int scancode, int action,
 }
 
 static void mouse_button_callback( GLFWwindow *window, int button, int action,
-                                   int mods ) {
+                                   int mods )
+{
 	struct input_state *input;
 
 	(void) mods;
@@ -42,7 +44,8 @@ static void mouse_button_callback( GLFWwindow *window, int button, int action,
 		input->mouse_curr[button] = false;
 }
 
-static void cursor_pos_callback( GLFWwindow *window, double xpos, double ypos ) {
+static void cursor_pos_callback( GLFWwindow *window, double xpos, double ypos )
+{
 	struct input_state *input;
 
 	input = glfwGetWindowUserPointer( window );
@@ -58,7 +61,8 @@ static void cursor_pos_callback( GLFWwindow *window, double xpos, double ypos ) 
 }
 
 
-static void scroll_callback( GLFWwindow *window, double xoffset, double yoffset ) {
+static void scroll_callback( GLFWwindow *window, double xoffset, double yoffset )
+{
 	struct input_state *input;
 
 	input = glfwGetWindowUserPointer( window );
@@ -70,7 +74,8 @@ static void scroll_callback( GLFWwindow *window, double xoffset, double yoffset 
 	input->scroll_dy += yoffset;
 }
 
-void input_init( struct input_state *input, GLFWwindow *window ) {
+void input_init( struct input_state *input, GLFWwindow *window )
+{
 	memset( input, 0, sizeof( *input ) );
 
 	glfwSetWindowUserPointer( window, input );
@@ -86,7 +91,8 @@ void input_init( struct input_state *input, GLFWwindow *window ) {
 	glfwGetCursorPos( window, &input->mouse_x, &input->mouse_y );
 }
 
-void input_update( struct input_state *input ) {
+void input_update( struct input_state *input )
+{
 	memcpy( input->keys_prev, input->keys_curr, sizeof( input->keys_curr ) );
 	memcpy( input->mouse_prev, input->mouse_curr, sizeof( input->mouse_curr ) );
 
@@ -97,7 +103,8 @@ void input_update( struct input_state *input ) {
 	input->scroll_dy = 0.0;
 }
 
-void input_destroy( struct input_state *input, GLFWwindow *window ) {
+void input_destroy( struct input_state *input, GLFWwindow *window )
+{
 	(void) input;
 
 	glfwSetKeyCallback( window, NULL );

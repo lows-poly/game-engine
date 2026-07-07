@@ -14,7 +14,8 @@
 #define WINDOW_HEIGHT		600
 #define TARGET_FRAMERATE	1.0 / 60.0
 
-int main( void ) {
+int main( void )
+{
 	struct window_state window;
 	struct input_state input;
 	struct timer tm;

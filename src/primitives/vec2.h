@@ -10,12 +10,14 @@ typedef struct vec2 {
 	float y;
 } vec2;
 
-static inline void vec2_zero( vec2 *a ) {
+static inline void vec2_zero( vec2 *a )
+{
 	a->x = 0.0f;
 	a->y = 0.0f;
 }
 
-static inline vec2 vec2_add( vec2 a, vec2 b ) {
+static inline vec2 vec2_add( vec2 a, vec2 b )
+{
 	vec2 r;
 
 	r.x = a.x + b.x;
@@ -24,7 +26,8 @@ static inline vec2 vec2_add( vec2 a, vec2 b ) {
 	return r;
 }
 
-static inline vec2 vec2_sub( vec2 a, vec2 b ) {
+static inline vec2 vec2_sub( vec2 a, vec2 b )
+{
 	vec2 r;
 
 	r.x = a.x - b.x;
@@ -33,7 +36,8 @@ static inline vec2 vec2_sub( vec2 a, vec2 b ) {
 	return r;
 }
 
-static inline vec2 vec2_scale( vec2 a, float scale ) {
+static inline vec2 vec2_scale( vec2 a, float scale )
+{
 	vec2 r;
 
 	r.x = a.x * scale;
@@ -42,19 +46,23 @@ static inline vec2 vec2_scale( vec2 a, float scale ) {
 	return r;
 }
 
-static inline float vec2_dot( vec2 a, vec2 b ) {
+static inline float vec2_dot( vec2 a, vec2 b )
+{
 	return (a.x * b.x) + (a.y * b.y);
 }
 
-static inline float vec2_length_sq( vec2 a ) {
+static inline float vec2_length_sq( vec2 a )
+{
 	return vec2_dot( a, a );
 }
 
-static inline float vec2_length( vec2 a ) {
+static inline float vec2_length( vec2 a )
+{
 	return sqrtf( vec2_length_sq( a ) );
 }
 
-static inline vec2 vec2_normalise( vec2 a ) {
+static inline vec2 vec2_normalise( vec2 a )
+{
 	float len = vec2_length( a );
 
 	if ( len < VEC_EPSILON )

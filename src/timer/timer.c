@@ -1,7 +1,8 @@
 #include <GLFW/glfw3.h>
 #include "timer.h"
 
-void timer_init( struct timer *t, double fixed_dt ) {
+void timer_init( struct timer *t, double fixed_dt )
+{
 	t->last_time = glfwGetTime();
 	t->delta_time = 0.0;
 	t->accumulator = 0.0;
@@ -9,7 +10,8 @@ void timer_init( struct timer *t, double fixed_dt ) {
 	t->time_scale = 1.0;
 }
 
-void timer_tick( struct timer *t ) {
+void timer_tick( struct timer *t )
+{
 	double now;
 	double raw_dt;
 
@@ -24,10 +26,12 @@ void timer_tick( struct timer *t ) {
 	t->accumulator += t->delta_time;
 }
 
-int timer_should_step( struct timer *t ) {
+int timer_should_step( struct timer *t )
+{
 	return t->accumulator >= t->fixed_dt;
 }
 
-void timer_step( struct timer *t ) {
+void timer_step( struct timer *t )
+{
 	t->accumulator -= t->fixed_dt;
 }

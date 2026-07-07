@@ -10,13 +10,16 @@ typedef struct colourf {
 	float a;
 } colourf;
 
-static inline colourf colour_to_float( colour c ) {
-	return (colourf){
-		c.r / 255.0f,
-		c.g / 255.0f,
-		c.b / 255.0f,
-		c.a / 255.0f
-	};
+static inline colourf colour_to_float( colour c )
+{
+	colourf cf;
+
+	cf.r = c.r / 255.0f;
+	cf.g = c.g / 255.0f;
+	cf.b = c.b / 255.0f;
+	cf.a = c.a / 255.0f;
+
+	return cf;
 }
 
 #endif
