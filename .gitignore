@@ -3,3 +3,6 @@ build/
 
 # Ignore Makefile
 # Makefile
+
+# Ignore .project-root
+.project-root
