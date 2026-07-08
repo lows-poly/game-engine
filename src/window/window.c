@@ -69,7 +69,7 @@ int window_should_close( struct window_state *w ) {
 }
 
 void window_set_should_close( struct window_state *w, bool value ) {
-	glfwSetWindowShouldClose( w->handle, value ? GLFW_TRUE : GLFW_FALSE );
+	glfwSetWindowShouldClose( w->handle, value );
 }
 
 void window_poll_events( struct window_state *w ) {
