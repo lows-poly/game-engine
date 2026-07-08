@@ -33,7 +33,7 @@ int main( void )
 		renderer_clear( GL_COLOR_BUFFER_BIT );
 
 		timer_tick( &tm );
-		
+
 		while ( timer_should_step( &tm ) ) {
 			timer_step( &tm );
 		}
