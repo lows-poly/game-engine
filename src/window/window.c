@@ -9,8 +9,7 @@
 
 #include "window.h"
 
-static void framebuffer_size_callback( GLFWwindow *handle, int width, int height )
-{
+static void framebuffer_size_callback( GLFWwindow *handle, int width, int height ) {
 	struct window_state *w = glfwGetWindowUserPointer( handle );
 
 	w->width = width;
@@ -20,8 +19,7 @@ static void framebuffer_size_callback( GLFWwindow *handle, int width, int height
 	glViewport( 0, 0, width, height );
 }
 
-int window_init( struct window_state *w, int width, int height, const char *title )
-{
+int window_init( struct window_state *w, int width, int height, const char *title ) {
 	if ( !glfwInit() ) {
 		fprintf( stderr, "FAILED TO INIT GLFW\n" );
 		return 0;
@@ -66,29 +64,24 @@ int window_init( struct window_state *w, int width, int height, const char *titl
 	return 1;
 }
 
-int window_should_close( struct window_state *w )
-{
+int window_should_close( struct window_state *w ) {
 	return glfwWindowShouldClose( w->handle );
 }
 
-void window_set_should_close( struct window_state *w, bool value )
-{
-	glfwSetWindowShouldClose( w->handle, value );
+void window_set_should_close( struct window_state *w, bool value ) {
+	glfwSetWindowShouldClose( w->handle, value ? GLFW_TRUE : GLFW_FALSE );
 }
 
-void window_poll_events( struct window_state *w )
-{
+void window_poll_events( struct window_state *w ) {
 	w->resized = false;
 	glfwPollEvents();
 }
 
-void window_swap_buffers( struct window_state *w )
-{
+void window_swap_buffers( struct window_state *w ) {
 	glfwSwapBuffers( w->handle );
 }
 
-void window_destroy( struct window_state *w )
-{
+void window_destroy( struct window_state *w ) {
 	glfwDestroyWindow( w->handle );
 	glfwTerminate();
 }
