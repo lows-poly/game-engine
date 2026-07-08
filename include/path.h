@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#define PATH_MAX	4096
+#define PATH_MAX_LEN	4096
 
 int path_init( const char *argv0 );
 const char *path_root( void );
