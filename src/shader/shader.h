@@ -1,12 +1,15 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include <glad/glad.h>
+#include <stdbool.h>
+
 struct shader {
-	unsigned int id;
+	GLuint id;
 };
 
-int shader_create( struct shader *s, const char *vert_path, const char *frag_path );
+bool shader_create( struct shader *s, const char *vert_path, const char *frag_path );
 void shader_use( struct shader *shader_program );
 void shader_destroy( struct shader *shader_program );
 
-#endif SHADER_H
+#endif
