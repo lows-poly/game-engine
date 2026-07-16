@@ -9,7 +9,7 @@ struct shader {
 };
 
 bool shader_create( struct shader *s, const char *vert_path, const char *frag_path );
-void shader_use( GLuint id );
-void shader_destroy( struct shader *shader_program );
+void shader_use( const struct shader *s );
+void shader_destroy( struct shader *s );
 
 #endif
