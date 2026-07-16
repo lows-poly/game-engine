@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <errno.h>
 
 #include "window.h"
 
@@ -24,7 +25,7 @@ int window_init( struct window_state *w, int width, int height, const char *titl
 {
 	if ( !glfwInit() ) {
 		fprintf( stderr, "FAILED TO INIT GLFW\n" );
-		return 0;
+		return -EINVAL;
 	}
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
@@ -43,7 +44,7 @@ int window_init( struct window_state *w, int width, int height, const char *titl
 	if ( !w->handle ) {
 		fprintf( stderr, "FAILED TO CREATE WINDOW\n" );
 		glfwTerminate();
-		return 0;
+		return -EINVAL;
 	}
 
 	w->width = width;
@@ -57,13 +58,13 @@ int window_init( struct window_state *w, int width, int height, const char *titl
 
 	if ( !gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress ) ) {
 		fprintf( stderr, "FAILED TO LOAD GL FUNCTIONS\n" );
-		return 0;
+		return -EINVAL;
 	}
 
 	// V-SYNC
 	glfwSwapInterval( 1 );
 
-	return 1;
+	return 0;
 }
 
 int window_should_close( struct window_state *w )
