@@ -5,6 +5,7 @@
 
 #include "shader.h"
 #include "path.h"
+#include "file.h"
 
 static GLuint shader_compile( GLenum type, const char *src )
 {
