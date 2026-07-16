@@ -17,7 +17,7 @@ int vertex_array_create( struct vertex_array *va )
 }
 
 int vertex_array_link_attrib( struct vertex_array *va, const struct buffer *vbo,
-                              struct vertex_attrib *attrib )
+                              const struct vertex_attrib *attrib )
 {
 	if ( !va || !vbo ) {
 		printf("VERTEX_ARRAY_ERR: INVALID ARGS\n");
@@ -47,6 +47,6 @@ void vertex_array_unbind( void )
 
 void vertex_array_destroy( struct vertex_array *va )
 {
-	if ( va->vao )
+	if ( va->id )
 		glDeleteVertexArrays( 1, &va->id );
 }
