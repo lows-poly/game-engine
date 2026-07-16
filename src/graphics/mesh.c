@@ -37,7 +37,7 @@ int mesh_create( struct mesh *m, const void *vertices, size_t vertex_size,
 	
 	// EBO
 	if ( m->has_indices ) {
-		size_t index_size = index_count * sizeof( unsigned int );
+		size_t index_size = (size_t)index_count * sizeof( unsigned int );
 
 		// CREATE EBO
 		err = buffer_create( &m->ebo, GL_ELEMENT_ARRAY_BUFFER, indices,
