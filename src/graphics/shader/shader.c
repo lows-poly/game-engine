@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include <glad/glad.h>
 
@@ -40,20 +41,20 @@ static GLuint shader_compile( GLenum type, const char *src )
 	return id;
 }
 
-bool shader_create( struct shader *s, const char *vert_path, const char *frag_path )
+int shader_create( struct shader *s, const char *vert_path, const char *frag_path )
 {
 	char *vert_src = NULL;
 	char *frag_src = NULL;
 
 	if ( !file_read_text_rel( vert_path, &vert_src ) ) {
 		printf("SHADER_ERR: FAILED TO READ %s\n", vert_path);
-		return false;
+		return -EINVAL;
 	}
 
 	if ( !file_read_text_rel( frag_path, &frag_src ) ) {
 		printf("SHADER_ERR: FAILED TO READ %s\n", frag_path);
 		file_free( vert_src );
-		return false;
+		return -EINVAL;
 	}
 
 	GLuint vert = shader_compile( GL_VERTEX_SHADER, vert_src );
@@ -69,7 +70,7 @@ bool shader_create( struct shader *s, const char *vert_path, const char *frag_pa
 		if ( frag )
 			glDeleteShader( frag );
 
-		return false;
+		return -EINVAL;
 	}
 
 	// SHADER PROGRAM
@@ -87,14 +88,14 @@ bool shader_create( struct shader *s, const char *vert_path, const char *frag_pa
 		glDeleteShader( vert );
 		glDeleteShader( frag );
 		glDeleteProgram( id );
-		return false;
+		return -EINVAL;
 	}
 
 	glDeleteShader(	vert );
 	glDeleteShader( frag );
 
 	s->id = id;
-	return true;
+	return 0;
 }
 
 void shader_use( const struct shader *s )
