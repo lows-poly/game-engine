@@ -20,7 +20,9 @@ int main( void )
 	struct input_state input;
 	struct timer tm;
 
-	if ( !window_init( &window, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
+	int window_init_err = window_init( &window, WINDOW_WIDTH, WINDOW_HEIGHT,
+	                                   WINDOW_TITLE );
+	if ( window_init_err )
 		return EXIT_FAILURE;
 
 	input_init( &input, window.handle );
