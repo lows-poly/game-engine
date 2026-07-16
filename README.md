@@ -9,9 +9,7 @@ graphics programming.
 *Work in progress*
 
 <div align="center">
-
 ## PREVIEW
-
 </div>
 
 <div align="center">
@@ -20,8 +18,8 @@ graphics programming.
     <img src="assets/mac_preview.png" width="400" height="400"/>
     <img src="assets/linux_preview.png" width="400" height="400"/>
 </div>
+
 <div align="center">
-    "First Hello Triangle"
+    First Hello Triangle
     <img src="assets/triangle_preview.png" width="400" height="400"/>
-    <!-- <img src="assets/linux_preview.png" width="400" height="400"/> -->
 </div>
