@@ -5,8 +5,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "buffer.h"
-#include "vertex_array.h"
+#include "buffers/buffer.h"
+#include "buffers/vertex_array.h"
 
 struct mesh {
 	struct vertex_array vao;
