@@ -72,7 +72,7 @@ int main( int argc, char *argv[] )
 		err(EXIT_FAILURE, "FAILED TO INIT PATH");
 
 	err_ = window_init( &window, WINDOW_WIDTH, WINDOW_HEIGHT,
-	                                   WINDOW_TITLE );
+	                    WINDOW_TITLE );
 	if ( err_ )
 		err(EXIT_FAILURE, "FAILED TO INIT WINDOW");
 
@@ -80,13 +80,13 @@ int main( int argc, char *argv[] )
 	timer_init( &tm, TARGET_FRAMERATE );
 
 	err_ = shader_create( &shader, "src/graphics/shader/glsl/vert_default.glsl",
-	                     "src/graphics/shader/glsl/frag_default.glsl" );
+	                      "src/graphics/shader/glsl/frag_default.glsl" );
 	
 	if ( err_ )
 		err(EXIT_FAILURE, "FAILED TO CREATE SHADER");
 
 	err_ = mesh_create( &triangle, vertices, sizeof( vertices ), 3, attribs,
-	                   2, NULL, 0 );
+	                    2, NULL, 0 );
 	if ( err_ )
 		err(EXIT_FAILURE, "FAILED TO CREATE MESH");
 
