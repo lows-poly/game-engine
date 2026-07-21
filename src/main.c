@@ -8,7 +8,6 @@
 #include "timer/timer.h"
 
 #include "graphics/buffers/vertex_array.h"
-#include "graphics/buffers/buffer.h"
 #include "graphics/mesh.h"
 #include "graphics/shader/shader.h"
 
@@ -17,7 +16,6 @@
 #include "primitives/colour.h"
 #include "primitives/colourf.h"
 #include "primitives/vec3.h"
-#include "primitives/vec4.h"
 
 #include "path.h"
 
