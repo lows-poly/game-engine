@@ -88,11 +88,12 @@ int main( int argc, char *argv[] )
 	if ( err_ )
 		err(EXIT_FAILURE, "FAILED TO CREATE MESH");
 
+	renderer_enable_backface_culling( true, DRAW_ORDER_CCW );
+
 	while ( !window_should_close( &window ) ) {
 		window_poll_events( &window );
 
-		renderer_clear_colour( BLACK );
-		renderer_clear( GL_COLOR_BUFFER_BIT );
+		renderer_begin_frame( VINTAGE_GOLD );
 
 		timer_tick( &tm );
 
@@ -103,8 +104,7 @@ int main( int argc, char *argv[] )
 		if ( input_key_pressed( &input, KEY_ESCAPE ) )
 			window_set_should_close( &window, true );
 
-		shader_use( &shader );
-		mesh_draw( &triangle );
+		renderer_draw_mesh( &shader, &triangle );
 
 		window_swap_buffers( &window );
 		input_update( &input );
