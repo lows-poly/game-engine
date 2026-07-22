@@ -1,12 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
-
-#include <glad/glad.h>
 
 #include "shader.h"
 #include "path.h"
 #include "file.h"
+
+static void shader_cache_uniform( struct shader *s, const char *name, GLint loc )
+{
+	if ( s->u_count >= SHADER_UNIFORM_CACHE_MAX )
+		return;
+
+	snprintf( s->uniforms[s->u_count].name, SHADER_UNIFORM_NAME_MAX,
+	          "%s", name );
+
+	s->uniforms[s->u_count].loc = loc;
+	s->u_count++;
+}
+
+static GLint shader_get_uniform_loc( struct shader *s, const char *name )
+{
+	GLint loc;
+
+	for ( size_t i = 0; i < s->u_count; i++ ) {
+		struct shader_uniform *u = &s->uniforms[i];
+
+		if ( strcmp( u->name, name ) == 0 )
+			return u->loc;
+	}
+
+	loc = glGetUniformLocation( s->id, name );
+
+	shader_cache_uniform( s, name, loc );
+
+	return loc;
+}
 
 static GLuint shader_compile( GLenum type, const char *src )
 {
@@ -95,6 +124,8 @@ int shader_create( struct shader *s, const char *vert_path, const char *frag_pat
 	glDeleteShader( frag );
 
 	s->id = id;
+	s->u_count = 0;
+
 	return 0;
 }
 
@@ -103,10 +134,97 @@ void shader_use( const struct shader *s )
 	glUseProgram( s->id );
 }
 
+int shader_set_int( struct shader *s, const char *name, int value )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform1i( loc, value );
+	
+	return 0;
+}
+
+int shader_set_float( struct shader *s, const char *name, float value )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform1f( loc, value );
+	
+	return 0;
+}
+
+int shader_set_3i( struct shader *s, const char *name, const int value[3] )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform3iv( loc, 1, value );
+	
+	return 0;
+}
+
+int shader_set_ivec3( struct shader *s, const char *name, ivec3 v )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform3i( loc, v.x, v.y, v.z );
+	
+	return 0;
+}
+
+int shader_set_3f( struct shader *s, const char *name, const float value[3] )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform3fv( loc, 1, value );
+	
+	return 0;
+}
+
+int shader_set_vec3( struct shader *s, const char *name, vec3 v )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform3f( loc, v.x, v.y, v.z );
+	
+	return 0;
+}
+
 void shader_destroy( struct shader *s )
 {
 	GLuint id = s->id;
 
 	if ( id )
 		glDeleteProgram( id );
+
+	s->id = 0;
+	s->u_count = 0;
 }
