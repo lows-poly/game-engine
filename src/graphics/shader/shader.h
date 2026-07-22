@@ -31,6 +31,6 @@ int shader_set_ivec3( struct shader *s, const char *name, ivec3 v );
 int shader_set_3f( struct shader *s, const char *name, const float value[3] );
 int shader_set_vec3( struct shader *s, const char *name, vec3 v );
 
-void shader_destroy( struct shader *s );
+int shader_destroy( struct shader *s );
 
 #endif

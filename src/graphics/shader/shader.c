@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "shader.h"
 #include "path.h"
@@ -9,8 +10,22 @@
 
 static void shader_cache_uniform( struct shader *s, const char *name, GLint loc )
 {
+	size_t len;
+
+	assert( s != NULL );
+	assert( name != NULL );
+
+	if ( loc < 0 )
+		return;
+
 	if ( s->u_count >= SHADER_UNIFORM_CACHE_MAX )
 		return;
+
+	len = strlen( name );
+	if ( len >= SHADER_UNIFORM_NAME_MAX ) {
+		printf("SHADER_WARN: UNIFORM NAME TOO LONG, NOT CACHED: %s\n", name);
+		return;
+	}
 
 	snprintf( s->uniforms[s->u_count].name, SHADER_UNIFORM_NAME_MAX,
 	          "%s", name );
@@ -22,6 +37,10 @@ static void shader_cache_uniform( struct shader *s, const char *name, GLint loc 
 static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 {
 	GLint loc;
+
+	assert( s != NULL );
+	assert( name != NULL );
+	assert( s->id != 0 );
 
 	for ( size_t i = 0; i < s->u_count; i++ ) {
 		struct shader_uniform *u = &s->uniforms[i];
@@ -40,7 +59,16 @@ static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 static GLuint shader_compile( GLenum type, const char *src )
 {
 	int success;
-	GLuint id = glCreateShader( type );
+	GLuint id;
+
+	assert( src != NULL );
+
+	id = glCreateShader( type );
+
+	if ( id == 0 ) {
+		printf("SHADER_ERR: glCreateShader FAILED FOR TYPE %d\n", (int)type);
+		return;
+	}
 	
 	glShaderSource( id, 1, &src, NULL );
 	glCompileShader( id );
@@ -74,6 +102,13 @@ int shader_create( struct shader *s, const char *vert_path, const char *frag_pat
 {
 	char *vert_src = NULL;
 	char *frag_src = NULL;
+	GLuint vert, frag;
+	GLuint id;
+	int success;
+
+	assert( s != NULL );
+	assert( vert_path != NULL );
+	assert( frag_path != NULL );
 
 	if ( !file_read_text_rel( vert_path, &vert_src ) ) {
 		printf("SHADER_ERR: FAILED TO READ %s\n", vert_path);
@@ -86,8 +121,15 @@ int shader_create( struct shader *s, const char *vert_path, const char *frag_pat
 		return -EINVAL;
 	}
 
-	GLuint vert = shader_compile( GL_VERTEX_SHADER, vert_src );
-	GLuint frag = shader_compile( GL_FRAGMENT_SHADER, frag_src );
+	if ( vert_src == NULL || frag_src == NULL ) {
+		printf("SHADER_ERR: FILE READ REPORTED SUCCESS WITH NULL BUFFER\n");
+		file_free( vert_src );
+		file_free( frag_src );
+		return -EINVAL;
+	}
+
+	vert = shader_compile( GL_VERTEX_SHADER, vert_src );
+	frag = shader_compile( GL_FRAGMENT_SHADER, frag_src );
 
 	file_free( vert_src );
 	file_free( frag_src );
@@ -103,8 +145,15 @@ int shader_create( struct shader *s, const char *vert_path, const char *frag_pat
 	}
 
 	// SHADER PROGRAM
-	int success;
-	GLuint id = glCreateProgram();
+	id = glCreateProgram();
+
+	if ( id == 0 ) {
+		printf("SHADER_ERR: glCreateProgram FAILED\n");
+		glDeleteShader( vert );
+		glDeleteShader( frag );
+		return -ENOMEM;
+	}
+
 	glAttachShader( id, vert );
 	glAttachShader( id, frag );
 	glLinkProgram( id );
@@ -112,14 +161,19 @@ int shader_create( struct shader *s, const char *vert_path, const char *frag_pat
 	glGetProgramiv( id, GL_LINK_STATUS, &success );
 	if ( !success ) {
 		char info_log[512];
+
 		glGetProgramInfoLog( id, 512, NULL, info_log );
 		printf("SHADER_ERR: PROGRAM_LINKING_FAILED: %s\n", info_log);
+
 		glDeleteShader( vert );
 		glDeleteShader( frag );
 		glDeleteProgram( id );
+
 		return -EINVAL;
 	}
 
+	glDetachShader( id, vert );
+	glDetachShader( id, frag );
 	glDeleteShader(	vert );
 	glDeleteShader( frag );
 
@@ -131,6 +185,9 @@ int shader_create( struct shader *s, const char *vert_path, const char *frag_pat
 
 void shader_use( const struct shader *s )
 {
+	assert( s != NULL );
+	assert( s->id != 0 );
+
 	glUseProgram( s->id );
 }
 
@@ -220,10 +277,12 @@ int shader_set_vec3( struct shader *s, const char *name, vec3 v )
 
 void shader_destroy( struct shader *s )
 {
+	assert( s != NULL );
+	assert( s->id != 0 );
+
 	GLuint id = s->id;
 
-	if ( id )
-		glDeleteProgram( id );
+	glDeleteProgram( id );
 
 	s->id = 0;
 	s->u_count = 0;
