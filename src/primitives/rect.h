@@ -7,9 +7,9 @@
 
 typedef struct rect {
 	union {
-		struct { vec2 pos, vec2 size; };
-		float x, y, w, h;
-	}
+		struct { vec2 pos; vec2 size; };
+		struct { float x, y, w, h; };
+	};
 } rect;
 
 static inline rect rect_make( float x, float y, float w, float h )
@@ -48,8 +48,8 @@ static inline vec2 rect_centre( const rect *r )
 {
 	vec2 c;
 
-	c.x = (r->x + r->w) * 0.5f;
-	x.y = (r->y + r->h) * 0.5f;
+	c.x = r->x + (r->w * 0.5f);
+	c.y = r->y + (r->h * 0.5f);
 
 	return c;
 }
