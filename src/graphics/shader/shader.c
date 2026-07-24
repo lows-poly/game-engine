@@ -284,7 +284,7 @@ int shader_set_mat4( struct shader *s, const char *name, const mat4 mat )
 	if ( loc < 0 )
 		return -EINVAL;
 
-	glUniformMatrix4fv( loc, 1, GL_FALSE, mat->m );
+	glUniformMatrix4fv( loc, 1, GL_FALSE, (const float *)mat );
 	
 	return 0;
 }
