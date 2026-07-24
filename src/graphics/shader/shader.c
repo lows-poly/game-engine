@@ -275,6 +275,20 @@ int shader_set_vec3( struct shader *s, const char *name, vec3 v )
 	return 0;
 }
 
+int shader_set_mat4( struct shader *s, const char *name, const mat4 mat )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniformMatrix4fv( loc, 1, GL_FALSE, mat->m );
+	
+	return 0;
+}
+
 void shader_destroy( struct shader *s )
 {
 	assert( s != NULL );
