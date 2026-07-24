@@ -2,7 +2,7 @@
 #include <errno.h>
 #include "mesh.h"
 
-int mesh_create( struct mesh *m, const void *vertices, size_t vertex_size,
+int mesh_init( struct mesh *m, const void *vertices, size_t vertex_size,
                  GLsizei vertex_count, const struct vertex_attrib *attribs,
                  size_t attrib_count, const unsigned int *indices,
                  GLsizei index_count )
