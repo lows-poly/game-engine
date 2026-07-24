@@ -18,112 +18,102 @@
 
 #define MAT4_IDENTITY		((mat4)MAT4_IDENTITY_INIT)
 
-typedef struct mat4 {
-	float m[16];
-} mat4;
+typedef float mat4[4][4];
 
-static inline void mat4_zero( mat4 *r )
+static inline void mat4_set_zero( mat4 mat )
 {
-	for ( int i = 0; i < 16; i++ ) {
-		r->m[i] = 0.0f;
-	}
+	int i, j;
+
+	for ( i = 0; i < 4; i++ )
+		for ( j = 0; j < 4; j++ )
+			mat[i][j] = 0.0f;
 }
 
-static inline mat4 mat4_identity( void )
+static inline void mat4_identity( mat4 mat )
 {
-	mat4 r = MAT4_ZERO;
+	mat[0][0] = 1.0f;	mat[1][0] = 0.0f;
+	mat[0][1] = 0.0f;	mat[1][1] = 1.0f;
+	mat[0][2] = 0.0f;	mat[1][2] = 0.0f;
+	mat[0][3] = 0.0f;	mat[1][3] = 0.0f;
 
-	r.m[0] = 1.0f;
-	r.m[5] = 1.0f;
-	r.m[10] = 1.0f;
-	r.m[15] = 1.0f;
-
-	return r;
+	mat[2][0] = 0.0f;	mat[3][0] = 0.0f;
+	mat[2][1] = 0.0f;	mat[3][1] = 0.0f;
+	mat[2][2] = 1.0f;	mat[3][2] = 0.0f;
+	mat[2][3] = 0.0f;	mat[3][3] = 1.0f;
 }
 
-static inline mat4 mat4_multiply( mat4 a, mat4 b )
+static inline void mat4_mul( const mat4 a, const mat4 b, mat4 dest )
 {
-	mat4 r;
+	int col, row, k;
+	float sum;
 
-	for ( int col = 0; col < 4; col++ ) {
-		for ( int row = 0; row < 4; row++ ) {
-			float sum = 0.0f;
-
-			for ( int k = 0; k < 4; k++ )
-				sum += a.m[(k * 4) + row] * b.m[(col * 4) + k];
-
-			r.m[(col * 4) + row] = sum;
+	for ( col = 0; col < 4; col++ ) {
+		for ( row = 0; row < 4; row++ ) {
+			sum = 0.0f;
+			for ( k = 0; k < 4; k++ )
+				sum += a[k][row] * b[col][k];
+			dest[col][row] = sum;
 		}
 	}
-
-	return r;
 }
 
-static inline mat4 mat4_translate( vec3 t )
+static inline void mat4_ortho( float left, float right, float bottom, float top,
+                               float znear, float zfar, mat4 dest )
 {
-	mat4 r = MAT4_IDENTITY;
+	mat4_identity( dest );
 
-	r.m[12] = t.x;
-	r.m[13] = t.y;
-	r.m[14] = t.z;
+	dest[0][0] = 2.0f / ( right - left );
+	dest[1][1] = 2.0f / ( top - bottom );
+	dest[2][2] = -2.0f / ( zfar - znear );
 
-	return r;
+	dest[3][0] = -( right + left ) / ( right - left );
+	dest[3][1] = -( top + bottom ) / ( top - bottom );
+	dest[3][2] = -( zfar + znear ) / ( zfar - znear );
 }
 
-static inline mat4 mat4_scale( vec3 s )
+static inline void mat4_scale( mat4 mat, float scale )
 {
-	mat4 r = MAT4_IDENTITY;
+	mat[0][0] *= scale;	mat[1][0] *= scale;
+	mat[0][1] *= scale;	mat[1][1] *= scale;
+	mat[0][2] *= scale;	mat[1][2] *= scale;
+	mat[0][3] *= scale;	mat[1][3] *= scale;
 
-	r.m[0] = s.x;
-	r.m[5] = s.y;
-	r.m[10] = s.z;
-
-	return r;
+	mat[2][0] *= scale;	mat[3][0] *= scale;
+	mat[2][1] *= scale;	mat[3][1] *= scale;
+	mat[2][2] *= scale;	mat[3][2] *= scale;
+	mat[2][3] *= scale;	mat[3][3] *= scale;
 }
 
-static inline mat4 mat4_perspective( float fov_y, float aspect, float near,
-                                     float far )
+static inline void mat4_translate( mat4 mat, float x, float y, float z )
 {
-	mat4 r = MAT4_ZERO;
-	float f = 1.0f / tanf(fov_y * 0.5f) ;
-	
-	r.m[0] = f / aspect;
-	r.m[5] = f;
-	r.m[10] = (far + near) / (near - far);
-	r.m[11] = -1.0f;
-	r.m[14] = (2.0f * far * near) / (near - far);
-
-	return r;
+	mat[3][0] += mat[0][0] * x + mat[1][0] * y + mat[2][0] * z;
+	mat[3][1] += mat[0][1] * x + mat[1][1] * y + mat[2][1] * z;
+	mat[3][2] += mat[0][2] * x + mat[1][2] * y + mat[2][2] * z;
+	mat[3][3] += mat[0][3] * x + mat[1][3] * y + mat[2][3] * z;
 }
 
-static inline mat4 mat4_look_at( vec3 eye, vec3 centre, vec3 up )
+static inline void mat4_rotate_z( mat4 mat, float angle_rad )
 {
-	mat4 r;
-	vec3 f = vec3_normalise( vec3_sub( centre, eye ) );
-	vec3 s = vec3_normalise( vec3_cross( f, up ) );
-	vec3 u = vec3_cross( s, f );
- 
-	r.m[0] = s.x;
-	r.m[1] = u.x;
-	r.m[2] = -f.x;
-	r.m[3] = 0.0f;
- 
-	r.m[4] = s.y;
-	r.m[5] = u.y;
-	r.m[6] = -f.y;
-	r.m[7] = 0.0f;
- 
-	r.m[8] = s.z;
-	r.m[9] = u.z;
-	r.m[10] = -f.z;
-	r.m[11] = 0.0f;
- 
-	r.m[12] = -vec3_dot( s, eye );
-	r.m[13] = -vec3_dot( u, eye );
-	r.m[14] = vec3_dot( f, eye );
-	r.m[15] = 1.0f;
- 
-	return r;
+	float c, s, a0, a1;
+	int row;
+
+	c = cosf( angle_rad );
+	s = sinf( angle_rad );
+
+	for ( row = 0; row < 4; row++ ) {
+		a0 = mat[0][row];
+		a1 = mat[1][row];
+
+		mat[0][row] = a0 * c + a1 * s;
+		mat[1][row] = -a0 * s + a1 * c;
+	}
+}
+
+static inline void mat4_scale_3f( mat4 mat, float x, float y, float z )
+{
+	mat[0][0] *= x; mat[0][1] *= x; mat[0][2] *= x; mat[0][3] *= x;
+	mat[1][0] *= y; mat[1][1] *= y; mat[1][2] *= y; mat[1][3] *= y;
+	mat[2][0] *= z; mat[2][1] *= z; mat[2][2] *= z; mat[2][3] *= z;
 }
 
 #endif
