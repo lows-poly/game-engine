@@ -5,8 +5,10 @@
  * Callers own a `struct window` and pass it by pointer to every function here.
  */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <err.h>
 
 #include "window.h"
 
@@ -21,11 +23,10 @@ static void framebuffer_size_callback( GLFWwindow *handle, int width, int height
 	glViewport( 0, 0, width, height );
 }
 
-int window_init( struct window_state *w, int width, int height, const char *title )
+void window_init( struct window_state *w, int width, int height, const char *title )
 {
 	if ( !glfwInit() ) {
-		fprintf( stderr, "FAILED TO INIT GLFW\n" );
-		return -EINVAL;
+		errx( EXIT_FAILURE, "FAILED TO INIT GLFW\n" );
 	}
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
@@ -42,9 +43,8 @@ int window_init( struct window_state *w, int width, int height, const char *titl
 	w->handle = glfwCreateWindow( width, height, title, NULL, NULL );
 
 	if ( !w->handle ) {
-		fprintf( stderr, "FAILED TO CREATE WINDOW\n" );
 		glfwTerminate();
-		return -EINVAL;
+		errx( EXIT_FAILURE, "FAILED TO CREATE WINDOW\n" );
 	}
 
 	w->width = width;
@@ -57,14 +57,13 @@ int window_init( struct window_state *w, int width, int height, const char *titl
 	glfwMakeContextCurrent( w->handle );
 
 	if ( !gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress ) ) {
-		fprintf( stderr, "FAILED TO LOAD GL FUNCTIONS\n" );
-		return -EINVAL;
+		errx( EXIT_FAILURE, "FAILED TO LOAD GL FUNCTIONS\n" );
 	}
 
 	// V-SYNC
 	glfwSwapInterval( 1 );
 
-	return 0;
+	return 1;
 }
 
 int window_should_close( struct window_state *w )
