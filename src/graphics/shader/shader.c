@@ -98,7 +98,7 @@ static GLuint shader_compile( GLenum type, const char *src )
 	return id;
 }
 
-int shader_create( struct shader *s, const char *vert_path, const char *frag_path )
+int shader_init( struct shader *s, const char *vert_path, const char *frag_path )
 {
 	char *vert_src = NULL;
 	char *frag_src = NULL;

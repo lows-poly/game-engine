@@ -21,7 +21,7 @@ struct shader {
 	size_t u_count;
 };
 
-int shader_create( struct shader *s, const char *vert_path, const char *frag_path );
+int shader_init( struct shader *s, const char *vert_path, const char *frag_path );
 void shader_use( const struct shader *s );
 
 int shader_set_int( struct shader *s, const char *name, int value );
