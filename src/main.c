@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <err.h>
 
 #include "window/window.h"
 #include "input/input.h"
@@ -22,7 +21,7 @@
 #define WINDOW_TITLE		"ENGINE"
 #define WINDOW_WIDTH		800
 #define WINDOW_HEIGHT		600
-#define TARGET_FRAMERATE	1.0 / 60.0
+#define TARGET_FRAMERATE	60
 
 struct vertex {
 	vec3 position;
@@ -57,7 +56,6 @@ static const struct vertex_attrib attribs[] = {
 
 int main( int argc, char *argv[] )
 {
-	struct window_state window;
 	struct input_state input;
 	struct timer tm;
 
@@ -66,49 +64,46 @@ int main( int argc, char *argv[] )
 
 	int err_;
 
-	if ( path_init( argv[0] ) < 0 )
-		err( EXIT_FAILURE, "FAILED TO INIT PATH" );
+	if ( path_init( argv[0] ) < 0 ) {
+		fprintf( stderr, "FAILED TO INIT PATH" );
+		return EXIT_FAILURE;
+	}
 
-	window_init( &window, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE );
+	if ( !window_init( WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) );
+		return EXIT_FAILURE;
+
 	input_init( &input, window.handle );
-	timer_init( &tm, TARGET_FRAMERATE );
+	/* timer_init( &tm, TARGET_FRAMERATE ); */
 
 	err_ = shader_init( &shader, "src/graphics/shader/glsl/vert_default.glsl",
 	                    "src/graphics/shader/glsl/frag_default.glsl" );
 	if ( err_ )
-		err(EXIT_FAILURE, "FAILED TO CREATE SHADER");
+		fprintf( stderr, "FAILED TO CREATE SHADER" );
+		return EXIT_FAILURE;
 
 	err_ = mesh_init( &triangle, vertices, sizeof( vertices ), 3, attribs,
 	                  2, NULL, 0 );
 	if ( err_ )
-		err(EXIT_FAILURE, "FAILED TO CREATE MESH");
+		fprintf( stderr, "FAILED TO CREATE MESH" );
+		return EXIT_FAILURE;
 
 	renderer_enable_backface_culling( true, DRAW_ORDER_CCW );
 
-	while ( !window_should_close( &window ) ) {
-		window_poll_events( &window );
-
+	while ( !window_should_close() ) {
 		renderer_begin_frame( VINTAGE_GOLD );
-
-		timer_tick( &tm );
-
-		while ( timer_should_step( &tm ) ) {
-			timer_step( &tm );
-		}
 
 		if ( input_key_pressed( &input, KEY_ESCAPE ) )
 			window_set_should_close( &window, true );
 
 		renderer_draw_mesh( &shader, &triangle );
 
-		window_swap_buffers( &window );
 		input_update( &input );
 	}
 
 	mesh_destroy( &triangle );
 	shader_destroy( &shader );
 	input_destroy( &input, window.handle );
-	window_destroy( &window );
+	window_close( &window );
 
 	return EXIT_SUCCESS;
 }
