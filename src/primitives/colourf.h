@@ -10,7 +10,7 @@ typedef struct colourf {
 	float a;
 } colourf;
 
-static inline colourf colour_to_float( colour c )
+static inline colourf colourf_make( colour c )
 {
 	colourf cf;
 
