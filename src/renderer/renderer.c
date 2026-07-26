@@ -3,7 +3,7 @@
 
 void renderer_begin_frame( colour c )
 {
-	colourf cf = colour_to_float( c );
+	colourf cf = colourf_make( c );
 
 	glClearColor( cf.r, cf.g, cf.b, cf.a );
 	glClear( GL_COLOR_BUFFER_BIT );
