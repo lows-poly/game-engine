@@ -9,9 +9,8 @@ struct timer {
 	double time_scale;
 };
 
-void timer_init( struct timer *t, double fixed_dt );
+int timer_init( struct timer *t, double fixed_dt );
 void timer_tick( struct timer *t );
-int timer_should_step( struct timer *t );
 void timer_step( struct timer *t );
 
 #endif
