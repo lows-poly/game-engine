@@ -16,6 +16,7 @@
 #include "primitives/colourf.h"
 #include "primitives/vec3.h"
 
+#include "app/app.h"
 #include "path.h"
 
 #define WINDOW_TITLE		"ENGINE"
@@ -56,54 +57,38 @@ static const struct vertex_attrib attribs[] = {
 
 int main( int argc, char *argv[] )
 {
-	struct input_state input;
-	struct timer tm;
-
+	struct app app;
 	struct shader shader;
 	struct mesh triangle;
-
-	int err_;
 
 	if ( path_init( argv[0] ) < 0 ) {
 		fprintf( stderr, "FAILED TO INIT PATH" );
 		return EXIT_FAILURE;
 	}
 
-	if ( !window_init( WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) );
+	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) ) {
+		fprintf( stderr, "FAILED TO INIT APP" );
 		return EXIT_FAILURE;
+	}
 
-	input_init( &input, window.handle );
-	/* timer_init( &tm, TARGET_FRAMERATE ); */
+	shader_init( &shader, "src/graphics/shader/glsl/vert_default.glsl",
+	             "src/graphics/shader/glsl/frag_default.glsl" );
+	mesh_init( &triangle, vertices, sizeof( vertices ), 3, attribs,
+	           2, NULL, 0 );
 
-	err_ = shader_init( &shader, "src/graphics/shader/glsl/vert_default.glsl",
-	                    "src/graphics/shader/glsl/frag_default.glsl" );
-	if ( err_ )
-		fprintf( stderr, "FAILED TO CREATE SHADER" );
-		return EXIT_FAILURE;
-
-	err_ = mesh_init( &triangle, vertices, sizeof( vertices ), 3, attribs,
-	                  2, NULL, 0 );
-	if ( err_ )
-		fprintf( stderr, "FAILED TO CREATE MESH" );
-		return EXIT_FAILURE;
-
-	renderer_enable_backface_culling( true, DRAW_ORDER_CCW );
-
-	while ( !window_should_close() ) {
+	while ( app_running( &app ) ) {
 		renderer_begin_frame( VINTAGE_GOLD );
 
-		if ( input_key_pressed( &input, KEY_ESCAPE ) )
-			window_set_should_close( &window, true );
+		if ( key_pressed( &app.input, KEY_ESCAPE ) ) {
+			app_stop( &app );
+		}
 
 		renderer_draw_mesh( &shader, &triangle );
-
-		input_update( &input );
 	}
 
 	mesh_destroy( &triangle );
 	shader_destroy( &shader );
-	input_destroy( &input, window.handle );
-	window_close( &window );
+	app_shutdown( &app );
 
 	return EXIT_SUCCESS;
 }
