@@ -47,36 +47,6 @@ static void _sleep_ms( double ms )
 #endif
 }
 
-/*
- * window_limit_fps() - Limit the frame rate to the configured value
- * @w: window
- *
- * Sleeps until the target frame duration has elapsed since the previous frame.
- */
-static void window_limit_fps( struct window *w )
-{
-	double now;
-	double elapsed;
-	double remaining;
-
-	if ( w->frame_time_target <= 0.0 )
-		return;
-
-	now = glfwGetTime();
-	elapsed = now - w->last_frame_time;
-	remaining = w->frame_time_target - elapsed;
-
-	if ( remaining > 0.001 )
-		_sleep_ms( (remaining - 0.001) * 1000.0 );
-
-	do {
-		now = glfwGetTime();
-		elapsed = now - w->last_frame_time;
-	} while ( elapsed < w->frame_time_target );
-
-	w->last_frame_time = now;
-}
-
 /* 
  * framebuffer_size_callback() - Handle framebuffer resizing
  * @handle: GLFW window
@@ -132,6 +102,7 @@ int window_init( struct window *w, int width, int height, const char *title )
 		return 0;
 	}
 
+	w->input = NULL;
 	w->width = width;
 	w->height = height;
 	w->resized = 0;
@@ -210,6 +181,62 @@ int window_should_close( struct window *w )
 		return 1;
 
 	return glfwWindowShouldClose( w->handle );
+}
+
+/* 
+ * window_set_should_close() - Call glfwSetWindowShouldClose()
+ * @value: 0 = false, 1 = true
+ */
+void window_set_should_close( struct window *w, int value )
+{
+	if ( !w->handle )
+		return;
+
+	glfwSetWindowShouldClose( w->handle, value );
+}
+
+/*
+ * window_end_frame() - Swap buffers and poll events
+ * @w: window
+ */
+void window_end_frame( struct window *w )
+{
+	if ( !w->handle )
+		return;
+
+	glfwPollEvents();
+	w->resized = 0;
+	glfwSwapBuffers( w->handle );
+}
+
+/*
+ * window_limit_fps() - Limit the frame rate to the configured value
+ * @w: window
+ *
+ * Sleeps until the target frame duration has elapsed since the previous frame.
+ */
+void window_limit_fps( struct window *w )
+{
+	double now;
+	double elapsed;
+	double remaining;
+
+	if ( w->frame_time_target <= 0.0 )
+		return;
+
+	now = glfwGetTime();
+	elapsed = now - w->last_frame_time;
+	remaining = w->frame_time_target - elapsed;
+
+	if ( remaining > 0.001 )
+		_sleep_ms( (remaining - 0.001) * 1000.0 );
+
+	do {
+		now = glfwGetTime();
+		elapsed = now - w->last_frame_time;
+	} while ( elapsed < w->frame_time_target );
+
+	w->last_frame_time = now;
 }
 
 /*

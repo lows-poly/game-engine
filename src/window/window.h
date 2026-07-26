@@ -15,6 +15,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <input/input.h>
+
 /*
  * struct window - Private/internal use window state
  * @handle:            GLFW window handle
@@ -27,6 +29,7 @@
  */
 struct window {
 	GLFWwindow *handle;
+	struct input_state *input;
 	double frame_time_target;
 	double last_frame_time;
 	int width;
@@ -78,6 +81,27 @@ void window_set_target_fps( struct window *w, int fps );
  * 1 - Window should close
  */
 int window_should_close( struct window *w );
+
+/* 
+ * window_set_should_close() - Call glfwSetWindowShouldClose()
+ * @w:     window
+ * @value: 0 = false, 1 = true
+ */
+void window_set_should_close( struct window *w, int value );
+
+/*
+ * window_end_frame() - Swap buffers and poll events
+ * @w: window
+ */
+void window_end_frame( struct window *w );
+
+/*
+ * window_limit_fps() - Limit the frame rate to the configured value
+ * @w: window
+ *
+ * Sleeps until the target frame duration has elapsed since the previous frame.
+ */
+void window_limit_fps( struct window *w );
 
 /*
  * window_close() - Destroy glfw and close window
