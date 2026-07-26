@@ -17,7 +17,7 @@ static inline colourf colourf_make( colour c )
 	cf.r = c.r / 255.0f;
 	cf.g = c.g / 255.0f;
 	cf.b = c.b / 255.0f;
-	cf.a = c.a / 255.0f;
+	cf.a = 1.0f;
 
 	return cf;
 }
