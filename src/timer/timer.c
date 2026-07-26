@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include <errno.h>
+#include <assert.h>
 #include <GLFW/glfw3.h>
 
 #include "timer.h"
