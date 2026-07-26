@@ -5,90 +5,87 @@
 static void key_callback( GLFWwindow *window, int key, int scancode, int action,
                           int mods )
 {
-	struct input_state *input;
+	struct window *w;
 
 	(void) scancode;
 	(void) mods;
 
-	input = glfwGetWindowUserPointer( window );
+	w = glfwGetWindowUserPointer( window );
 
-	if ( !input )
+	if ( !w || !w->input )
 		return;
 
 	if ( key < 0 || key >= INPUT_MAX_KEYS )
 		return;
 
 	if ( action == GLFW_PRESS )
-		input->keys_curr[key] = true;
+		w->input->keys_curr[key] = true;
 	else if ( action == GLFW_RELEASE )
-		input->keys_curr[key] = false;
+		w->input->keys_curr[key] = false;
 }
 
 static void mouse_button_callback( GLFWwindow *window, int button, int action,
                                    int mods )
 {
-	struct input_state *input;
+	struct window *w;
 
 	(void) mods;
 
-	input = glfwGetWindowUserPointer( window );
-	if ( !input )
+	w = glfwGetWindowUserPointer( window );
+
+	if ( !w || !w->input )
 		return;
 
 	if ( button < 0 || button >= INPUT_MAX_MOUSE_BUTTONS )
 		return;
 
 	if ( action == GLFW_PRESS )
-		input->mouse_curr[button] = true;
+		w->input->mouse_curr[button] = true;
 	else if ( action == GLFW_RELEASE )
-		input->mouse_curr[button] = false;
+		w->input->mouse_curr[button] = false;
 }
 
 static void cursor_pos_callback( GLFWwindow *window, double xpos, double ypos )
 {
-	struct input_state *input;
+	struct window *w;
 
-	input = glfwGetWindowUserPointer( window );
+	w = glfwGetWindowUserPointer( window );
 
-	if ( !input )
+	if ( !w || !w->input )
 		return;
 
-	input->mouse_dx += xpos - input->mouse_x;
-	input->mouse_dy += ypos - input->mouse_y;
+	w->input->mouse_dx += xpos - w->input->mouse_x;
+	w->input->mouse_dy += ypos - w->input->mouse_y;
 
-	input->mouse_x = xpos;
-	input->mouse_y = ypos;
+	w->input->mouse_x = xpos;
+	w->input->mouse_y = ypos;
 }
 
 
 static void scroll_callback( GLFWwindow *window, double xoffset, double yoffset )
 {
-	struct input_state *input;
+	struct window *w;
 
-	input = glfwGetWindowUserPointer( window );
+	w = glfwGetWindowUserPointer( window );
 
-	if ( !input )
+	if ( !w || !w->input )
 		return;
 
-	input->scroll_dx += xoffset;
-	input->scroll_dy += yoffset;
+	w->input->scroll_dx += xoffset;
+	w->input->scroll_dy += yoffset;
 }
 
-void input_init( struct input_state *input, GLFWwindow *window )
+void input_init( struct input_state *input, struct window *w )
 {
 	memset( input, 0, sizeof( *input ) );
+	w->input = input;
 
-	glfwSetWindowUserPointer( window, input );
+	glfwSetKeyCallback( w->handle, key_callback );
+	glfwSetMouseButtonCallback( w->handle, mouse_button_callback );
+	glfwSetCursorPosCallback( w->handle, cursor_pos_callback );
+	glfwSetScrollCallback( w->handle, scroll_callback );
 
-	glfwSetKeyCallback( window, key_callback );
-	glfwSetMouseButtonCallback( window, mouse_button_callback );
-	glfwSetCursorPosCallback( window, cursor_pos_callback );
-	glfwSetScrollCallback( window, scroll_callback );
-	/*
-	 * prime mouse_x/mouse_y so the first cursor_pos_callback
-	 * doesn't produce a huge jump.
-	 */
-	glfwGetCursorPos( window, &input->mouse_x, &input->mouse_y );
+	glfwGetCursorPos( w->handle, &input->mouse_x, &input->mouse_y );
 }
 
 void input_update( struct input_state *input )
@@ -103,14 +100,14 @@ void input_update( struct input_state *input )
 	input->scroll_dy = 0.0;
 }
 
-void input_destroy( struct input_state *input, GLFWwindow *window )
+void input_destroy( struct input_state *input, struct window *w )
 {
 	(void) input;
 
-	glfwSetKeyCallback( window, NULL );
-	glfwSetMouseButtonCallback( window, NULL );
-	glfwSetCursorPosCallback( window, NULL );
-	glfwSetScrollCallback( window, NULL );
+	glfwSetKeyCallback( w->handle, NULL );
+	glfwSetMouseButtonCallback( w->handle, NULL );
+	glfwSetCursorPosCallback( w->handle, NULL );
+	glfwSetScrollCallback( w->handle, NULL );
 
-	glfwSetWindowUserPointer( window, NULL );
+	w->input = NULL;
 }

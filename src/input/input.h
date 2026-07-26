@@ -1,8 +1,9 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include <GLFW/glfw3.h>
 #include <stdbool.h>
+
+#include "window/window.h"
 
 #define INPUT_MAX_KEYS		  GLFW_KEY_LAST + 1
 #define INPUT_MAX_MOUSE_BUTTONS	  GLFW_MOUSE_BUTTON_LAST + 1
@@ -53,36 +54,36 @@ struct input_state {
 	double scroll_dy;
 };
 
-void input_init( struct input_state *input, GLFWwindow *window );
+void input_init( struct input_state *input, struct window *w );
 void input_update( struct input_state *input );
-void input_destroy( struct input_state *input, GLFWwindow *window );
+void input_destroy( struct input_state *input, struct window *w );
 
-static inline bool input_key_down( const struct input_state *input, int key )
+static inline bool key_down( const struct input_state *input, int key )
 {
 	return input->keys_curr[key];
 }
 
-static inline bool input_key_pressed( const struct input_state *input, int key )
+static inline bool key_pressed( const struct input_state *input, int key )
 {
 	return input->keys_curr[key] && !input->keys_prev[key];
 }
 
-static inline bool input_key_rel( const struct input_state *input, int key )
+static inline bool key_rel( const struct input_state *input, int key )
 {
 	return !input->keys_curr[key] && input->keys_prev[key];
 }
 
-static inline bool input_mouse_down( const struct input_state *input, int button )
+static inline bool mouse_down( const struct input_state *input, int button )
 {
 	return input->mouse_curr[button];
 }
 
-static inline bool input_mouse_pressed( const struct input_state *input, int button )
+static inline bool mouse_pressed( const struct input_state *input, int button )
 {
 	return input->mouse_curr[button] && !input->mouse_prev[button];
 }
 
-static inline bool input_mouse_rel( const struct input_state *input, int button )
+static inline bool mouse_rel( const struct input_state *input, int button )
 {
 	return !input->mouse_curr[button] && input->mouse_prev[button];
 }
