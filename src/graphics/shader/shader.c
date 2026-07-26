@@ -67,7 +67,7 @@ static GLuint shader_compile( GLenum type, const char *src )
 
 	if ( id == 0 ) {
 		printf("SHADER_ERR: glCreateShader FAILED FOR TYPE %d\n", (int)type);
-		return;
+		return 0;
 	}
 	
 	glShaderSource( id, 1, &src, NULL );
