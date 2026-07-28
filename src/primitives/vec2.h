@@ -3,9 +3,9 @@
 
 #include <math.h>
 
-#define VEC_EPSILON	1e-8f
-#define VEC2_ZERO_INIT	{ 0.0f, 0.0f }
-#define VEC2_ZERO	((vec2)VEC2_ZERO_INIT)
+#define VEC_EPSILON     1e-8f
+#define VEC2_ZERO_INIT  { 0.0f, 0.0f }
+#define VEC2_ZERO       ((vec2)VEC2_ZERO_INIT)
 
 typedef struct vec2 {
 	union {
@@ -13,6 +13,11 @@ typedef struct vec2 {
 		float raw[2];
 	};
 } vec2;
+
+static inline vec2 vec2_make( float x, float y )
+{
+	return (vec2){ x, y };
+}
 
 static inline vec2 vec2_add( vec2 a, vec2 b )
 {
