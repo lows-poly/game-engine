@@ -223,6 +223,10 @@ int shader_binit( struct shader *s, enum shader_builtin preset )
 		vert_path = "src/graphics/shader/glsl/vert_default.glsl";
 		frag_path = "src/graphics/shader/glsl/frag_default.glsl";
 		break;
+	case SHADER_UCOLOUR:
+		vert_path = "src/graphics/shader/glsl/vert_default.glsl";
+		frag_path = "src/graphics/shader/glsl/frag_uniform_colour.glsl";
+		break;
 	default:
 		return -EINVAL;
 	}
@@ -318,6 +322,34 @@ int shader_set_vec3( struct shader *s, const char *name, vec3 v )
 		return -EINVAL;
 
 	glUniform3f( loc, v.x, v.y, v.z );
+	
+	return 0;
+}
+
+int shader_set_4f( struct shader *s, const char *name, const float value[4] )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform4fv( loc, 1, value );
+	
+	return 0;
+}
+
+int shader_set_vec4( struct shader *s, const char *name, vec4 v )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform4f( loc, v.x, v.y, v.z, v.w );
 	
 	return 0;
 }

@@ -4,8 +4,9 @@
 #include <stddef.h>
 #include <glad/glad.h>
 
-#include <primitives/vec3.h>
 #include <primitives/ivec3.h>
+#include <primitives/vec3.h>
+#include <primitives/vec4.h>
 #include <primitives/mat4.h>
 
 #define SHADER_UNIFORM_CACHE_MAX        32
@@ -25,6 +26,7 @@ struct shader {
 
 enum shader_builtin {
 	SHADER_COLOUR,
+	SHADER_UCOLOUR,
 };
 
 int shader_init( struct shader *s, const char *vert_path, const char *frag_path );
@@ -37,6 +39,8 @@ int shader_set_3i( struct shader *s, const char *name, const int value[3] );
 int shader_set_ivec3( struct shader *s, const char *name, ivec3 v );
 int shader_set_3f( struct shader *s, const char *name, const float value[3] );
 int shader_set_vec3( struct shader *s, const char *name, vec3 v );
+int shader_set_4f( struct shader *s, const char *name, const float value[4] );
+int shader_set_vec4( struct shader *s, const char *name, vec4 v );
 int shader_set_mat4( struct shader *s, const char *name, const mat4 mat );
 
 void shader_destroy( struct shader *s );
