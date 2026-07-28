@@ -68,7 +68,7 @@ static inline bool key_pressed( const struct input_state *input, int key )
 	return input->keys_curr[key] && !input->keys_prev[key];
 }
 
-static inline bool key_rel( const struct input_state *input, int key )
+static inline bool key_up( const struct input_state *input, int key )
 {
 	return !input->keys_curr[key] && input->keys_prev[key];
 }
@@ -83,7 +83,7 @@ static inline bool mouse_pressed( const struct input_state *input, int button )
 	return input->mouse_curr[button] && !input->mouse_prev[button];
 }
 
-static inline bool mouse_rel( const struct input_state *input, int button )
+static inline bool mouse_up( const struct input_state *input, int button )
 {
 	return !input->mouse_curr[button] && input->mouse_prev[button];
 }
