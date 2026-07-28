@@ -5,8 +5,8 @@
 
 #define VEC_PI		3.14159265358979323846f
 #define VEC_EPSILON	1e-8f
-#define VEC3_ZERO_INIT	{ 0.0f, 0.0f, 0.0f }
-#define VEC3_ZERO	((vec3)VEC3_ZERO_INIT)
+#define VEC3_ZERO_INIT	{{ 0.0f, 0.0f, 0.0f }}
+#define VEC3_ZERO	((vec3){VEC3_ZERO_INIT})
 
 typedef struct vec3 {
 	union {
