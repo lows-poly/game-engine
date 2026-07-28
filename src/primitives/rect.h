@@ -24,6 +24,16 @@ static inline rect rect_make( float x, float y, float w, float h )
 	return r;
 }
 
+static inline rect rect_make_vec2( vec2 pos, vec2 size )
+{
+	rect r;
+
+	r.pos = pos;
+	r.size = size;
+
+	return r;
+}
+
 static inline float rect_left( const rect *r )
 {
 	return r->x;
@@ -42,6 +52,14 @@ static inline float rect_top( const rect *r )
 static inline float rect_bottom( const rect *r )
 {
 	return r->y;
+}
+
+static inline void rect_to_vertices( const rect *r, vec2 *out )
+{
+	out[0].x = rect_left( r );  out[0].y = rect_bottom( r );
+	out[1].x = rect_right( r ); out[1].y = rect_bottom( r );
+	out[2].x = rect_right( r ); out[2].y = rect_top( r );
+	out[3].x = rect_left( r );  out[3].y = rect_top( r );
 }
 
 static inline vec2 rect_centre( const rect *r )
