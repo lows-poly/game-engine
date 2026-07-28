@@ -1,14 +1,25 @@
 #include "renderer.h"
-#include "primitives/colourf.h"
 
+/* 
+ * renderer_begin_frame() - Call glClear and glClearColor
+ * @c: colour primitive
+ *
+ * Convert colour primitive to float
+ */
 void renderer_begin_frame( colour c )
 {
-	colourf cf = colourf_make( c );
+	float dest[3];
+	colour_to_float( c, dest );
 
-	glClearColor( cf.r, cf.g, cf.b, cf.a );
+	glClearColor( dest[0], dest[1], dest[2], 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 }
 
+/* 
+ * renderer_enable_backface_culling() - Enable backface culling
+ * @value: bool
+ * @order: front face draw order
+ */
 void renderer_enable_backface_culling( bool value, enum draw_order order )
 {
 	if ( value ) {
@@ -20,6 +31,11 @@ void renderer_enable_backface_culling( bool value, enum draw_order order )
 	}
 }
 
+/*
+ * renderer_draw_mesh() - Use shader and draw mesh
+ * @s: shader
+ * @m: mesh
+ */
 void renderer_draw_mesh( const struct shader *s, const struct mesh *m )
 {
 	shader_use( s );
