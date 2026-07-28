@@ -56,6 +56,15 @@ int main( int argc, char *argv[] )
 	struct app app;
 	struct shader shader;
 	struct mesh triangle;
+	struct mesh_desc desc = {
+		.vertices = vertices,
+		.vertex_size = sizeof( vertices ),
+		.attribs = &attribs,
+		.attrib_count = 2,
+		.indices = NULL,
+		.vertex_count = 3,
+		.index_count = 0
+	};
 
 	if ( path_init( argv[0] ) < 0 ) {
 		fprintf( stderr, "FAILED TO INIT PATH\n" );
@@ -72,8 +81,7 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 	}
 
-	if ( mesh_init( &triangle, vertices, sizeof( vertices ), 3, attribs,
-	                2, NULL, 0 ) != 0 ) {
+	if ( mesh_init( &triangle, &desc, DRAW_STATIC ) != 0 ) {
 		fprintf( stderr, "FAILED TO INIT MESH\n" );
 		return EXIT_FAILURE;
 	}
