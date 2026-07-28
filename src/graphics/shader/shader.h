@@ -23,7 +23,12 @@ struct shader {
 	size_t u_count;
 };
 
+enum shader_builtin {
+	SHADER_COLOUR,
+};
+
 int shader_init( struct shader *s, const char *vert_path, const char *frag_path );
+int shader_binit( struct shader *s, enum shader_builtin preset );
 void shader_use( const struct shader *s );
 
 int shader_set_int( struct shader *s, const char *name, int value );
