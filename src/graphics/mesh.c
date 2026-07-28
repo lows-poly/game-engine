@@ -2,12 +2,15 @@
 #include <errno.h>
 #include "mesh.h"
 
-int mesh_init( struct mesh *m, const void *vertices, size_t vertex_size,
-               GLsizei vertex_count, const struct vertex_attrib *attribs,
-               size_t attrib_count, const unsigned int *indices,
-               GLsizei index_count )
+int mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw_type )
 {
 	int err;
+	size_t i, index_size;
+
+	if ( !desc || !desc->vertices || !desc->vertex_size ) {
+		printf("MESH_ERR: INVALID DESC\n");
+		return -EINVAL;
+	}
 
 	/* VAO */
 	err = vertex_array_create( &m->vao );
@@ -17,29 +20,29 @@ int mesh_init( struct mesh *m, const void *vertices, size_t vertex_size,
 	}
 
 	/* VBO */
-	err = buffer_create( &m->vbo, GL_ARRAY_BUFFER, vertices, vertex_size,
-	                     GL_STATIC_DRAW );
+	err = buffer_create( &m->vbo, GL_ARRAY_BUFFER, desc->vertices,
+	                     desc->vertex_size, draw_type );
 	if ( err ) {
 		printf("MESH_ERR: FAILED TO CREATE VBO\n");
 		goto clean_vao;
 	}
 
-	for ( size_t i = 0; i < attrib_count; i++ ) {
-		err = vertex_array_link_attrib( &m->vao, &m->vbo, &attribs[i] );
+	for ( i = 0; i < desc->attrib_count; i++ ) {
+		err = vertex_array_link_attrib( &m->vao, &m->vbo, &desc->attribs[i] );
 		if ( err ) {
 			printf("MESH_ERR: FAILED TO LINK ATTRIB %zu\n", i);
 			goto clean_vbo;
 		}
 	}
 
-	m->vertex_count = vertex_count;
-	m->has_indices = indices != NULL;
+	m->vertex_count = desc->vertex_count;
+	m->has_indices = desc->indices != NULL;
 	
 	/* EBO */
 	if ( m->has_indices ) {
-		size_t index_size = (size_t)index_count * sizeof( unsigned int );
+		index_size = (size_t)desc->index_count * sizeof( unsigned int );
 
-		err = buffer_create( &m->ebo, GL_ELEMENT_ARRAY_BUFFER, indices,
+		err = buffer_create( &m->ebo, GL_ELEMENT_ARRAY_BUFFER, desc->indices,
 		                     index_size, GL_STATIC_DRAW );
 		if ( err ) {
 			printf("MESH_ERR: FAILED TO CREATE EBO\n");
@@ -49,7 +52,7 @@ int mesh_init( struct mesh *m, const void *vertices, size_t vertex_size,
 		vertex_array_bind( &m->vao );
 		buffer_bind( &m->ebo );
 		
-		m->index_count = index_count;
+		m->index_count = desc->index_count;
 	}
 
 	return 0;
@@ -69,6 +72,16 @@ void mesh_draw( const struct mesh *m )
 		glDrawElements( GL_TRIANGLES, m->index_count, GL_UNSIGNED_INT, NULL );
 	else
 		glDrawArrays( GL_TRIANGLES, 0, m->vertex_count );
+}
+
+void mesh_update_vertices( struct mesh *m, const void *vertices, size_t vertex_size,
+                          size_t offset )
+{
+	if ( !m || !vertices || !vertex_size ) {
+		return;
+	}
+
+	buffer_update( &m->vbo, vertices, vertex_size, offset );
 }
 
 void mesh_destroy( struct mesh *m )
