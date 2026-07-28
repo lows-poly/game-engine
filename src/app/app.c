@@ -1,5 +1,3 @@
-#include "app.h"
-
 /*
  * app_init() - Initialise window and input
  * @app:    app struct
@@ -7,27 +5,31 @@
  * @height: Window height
  * @title:  Window title
  */
-int app_init( struct app *app, int width, int height, const char *title )
+
+#include "app.h"
+
+bool app_init( struct app *app, int width, int height, const char *title )
 {
 	if ( !window_init( &app->win, width, height, title ) )
-		return 0;
+		return false;
 
 	input_init( &app->input, &app->win );
+	
+	app->running = true;
 
-	return 1;
+	return true;
 }
 
 /*
- * app_running() - Update input, swap buffers, poll events, and limit fps
+ * app_update() - Update input, swap buffers, poll events, and limit fps
  * @app: app struct
  */
-int app_running( struct app *app )
+void app_update( struct app *app )
 {
 	input_update( &app->input );
 	window_end_frame( &app->win );
 	window_limit_fps( &app->win );
-
-	return !window_should_close( &app->win );
+	app->running = !window_should_close( &app->win );
 }
 
 /*

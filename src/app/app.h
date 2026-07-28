@@ -1,18 +1,22 @@
 #ifndef APP_H
 #define APP_H
 
+#include <stdbool.h>
+
 #include "window/window.h"
 #include "input/input.h"
 #include "renderer/renderer.h"
 
 /*
  * struct app - Application
- * @win:   window struct
- * @input: input_state struct
+ * @win:     window struct
+ * @input:   input_state struct
+ * @running: !glfwWindowShouldClose
  */
 struct app {
 	struct window win;
 	struct input_state input;
+	bool running;
 };
 
 /*
@@ -22,13 +26,13 @@ struct app {
  * @height: Window height
  * @title:  Window title
  */
-int app_init( struct app *app, int width, int height, const char *title );
+bool app_init( struct app *app, int width, int height, const char *title );
 
 /*
- * app_running() - Update input, swap buffers, poll events, and limit fps
+ * app_update() - Update input, swap buffers, poll events, and limit fps
  * @app: app struct
  */
-int app_running( struct app *app );
+void app_update( struct app *app );
 
 /*
  * app_stop() - Set close window
