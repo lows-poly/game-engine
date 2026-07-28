@@ -28,11 +28,16 @@ endif
 
 SRCS := $(shell find $(SRC_DIR) $(EXTERNAL_DIR)/glad -name '*.c')
 OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
+ENGINE_OBJS := $(filter-out $(BUILD_DIR)/$(SRC_DIR)/main.o, $(OBJS))
 
 TEST_DIR := tests
 TEST_SRCS := $(shell find $(TEST_DIR) -name '*.c')
 TEST_OBJS := $(TEST_SRCS:%.c=$(BUILD_DIR)/%.o)
-ENGINE_OBJS := $(filter-out $(BUILD_DIR)/$(SRC_DIR)/main.o, $(OBJS))
+
+EXAMPLES_DIR := examples
+EXAMPLE_SRCS := $(shell find $(EXAMPLES_DIR) -name '*.c')
+EXAMPLE_BINS := $(EXAMPLE_SRCS:$(EXAMPLES_DIR)/%.c=$(BUILD_DIR)/$(EXAMPLES_DIR)/%)
+
 
 all: $(BUILD_DIR)/$(PROJECT_NAME)
 
@@ -46,6 +51,10 @@ $(BUILD_DIR)/%.o: %.c
 $(BUILD_DIR)/tests_runner: $(TEST_OBJS) $(ENGINE_OBJS)
 	$(CC) $(TEST_OBJS) $(ENGINE_OBJS) -o $(BUILD_DIR)/tests_runner $(LDFLAGS)
 
+$(BUILD_DIR)/$(EXAMPLES_DIR)/%: $(EXAMPLES_DIR)/%.c $(ENGINE_OBJS)
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $< $(ENGINE_OBJS) -o $@ $(LDFLAGS)
+
 clean:
 	rm -rf $(BUILD_DIR)
 
@@ -55,4 +64,9 @@ exec: $(BUILD_DIR)/$(PROJECT_NAME)
 test: $(BUILD_DIR)/tests_runner
 	./$(BUILD_DIR)/tests_runner
 
-.PHONY: all clean exec test
+examples: $(EXAMPLE_BINS)
+
+exec-example: examples
+	./$(BUILD_DIR)/$(EXAMPLES_DIR)/$(NAME)
+
+.PHONY: all clean exec test examples exec-example
