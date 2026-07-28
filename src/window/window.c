@@ -1,5 +1,5 @@
 /*
- * window.h - GLFW window creation and lifecycle management
+ * window.c - GLFW window creation and lifecycle management
  *
  * Handles GLFW/glad initialisation, window creation, etc.
  *
@@ -140,7 +140,7 @@ void window_set_vsync( struct window *w, int enabled )
 		return;
 
 	w->vsync = _val;
-	glfwSwapInterval( _val );
+	glfwSwapInterval( w->vsync );
 }
 
 /*
