@@ -14,6 +14,16 @@ typedef struct vec4 {
 	};
 } vec4;
 
+static inline vec4 vec4_make( float x, float y, float z, float w )
+{
+	return (vec4){ x, y, z, w };
+}
+
+static inline vec4 vec4_from_vec3( vec3 v )
+{
+	return (vec4){ v.x, v.y, v.z, 1.0f };
+}
+
 static inline vec4 vec4_add( vec4 a, vec4 b )
 {
 	vec4 r;
