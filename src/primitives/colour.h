@@ -16,4 +16,11 @@ typedef struct colour {
 #define GREEN		((colour){ 0, 255, 0 })
 #define BLUE		((colour){ 0, 0, 255 })
 
+static inline void colour_to_float( colour src, float *dest )
+{
+	dest[0] = src.r / 255.0f;
+	dest[1] = src.g / 255.0f;
+	dest[2] = src.b / 255.0f;
+}
+
 #endif
