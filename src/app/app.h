@@ -5,6 +5,7 @@
 
 #include "window/window.h"
 #include "input/input.h"
+#include "timer/timer.h"
 #include "renderer/renderer.h"
 
 /*
@@ -16,6 +17,7 @@
 struct app {
 	struct window win;
 	struct input_state input;
+	struct timer time;
 	bool running;
 };
 

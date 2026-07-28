@@ -14,9 +14,11 @@ bool app_init( struct app *app, int width, int height, const char *title )
 		return false;
 
 	input_init( &app->input, &app->win );
+
+	if ( !timer_init( &app->time, 1.0 / 60.0 ) )
+		return false;
 	
 	app->running = true;
-
 	return true;
 }
 
@@ -26,6 +28,8 @@ bool app_init( struct app *app, int width, int height, const char *title )
  */
 void app_update( struct app *app )
 {
+	timer_tick( &app->time );
+
 	input_update( &app->input );
 	window_end_frame( &app->win );
 	window_limit_fps( &app->win );
