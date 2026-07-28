@@ -4,10 +4,10 @@
 #include "colour.h"
 
 typedef struct colourf {
-	float r;
-	float g;
-	float b;
-	float a;
+	union {
+		struct { float r, g, b, a; };
+		float raw[4];
+	};
 } colourf;
 
 static inline colourf colourf_make( colour c )
