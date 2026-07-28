@@ -76,7 +76,7 @@ bool file_read_text( const char *path, char **out_data )
 	size_t size;
 	char *buf;
 
-	if ( file_read_binary( path, &data, &size ) < 0 )
+	if ( !file_read_binary( path, &data, &size ) )
 		return false;
 
 	buf = realloc( data, size + 1 );
