@@ -20,7 +20,7 @@ int timer_init( struct timer *t, double fixed_dt )
 
 	if ( fixed_dt <= 0.0 ) {
 		_warn("INVALID PARAMETER: fixed_dt");
-		return -EINVAL;
+		return 0;
 	}
 
 	t->last_time = glfwGetTime();
@@ -30,6 +30,16 @@ int timer_init( struct timer *t, double fixed_dt )
 	t->time_scale = 1.0;
 
 	return 1;
+}
+
+void timer_set_dt( struct timer *t, double fixed_dt )
+{
+	assert( fixed_dt > 0 );
+
+	if ( !t )
+		return;
+
+	t->fixed_dt = fixed_dt;
 }
 
 void timer_tick( struct timer *t )
