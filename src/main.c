@@ -2,22 +2,18 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-#include "window/window.h"
-#include "input/input.h"
-#include "timer/timer.h"
+#include "path.h"
 
-#include "graphics/buffers/vertex_array.h"
-#include "graphics/mesh.h"
-#include "graphics/shader/shader.h"
+#include "app/app.h"
+#include "input/input.h"
 
 #include "renderer/renderer.h"
+#include "graphics/mesh.h"
+#include "graphics/shader/shader.h"
 
 #include "primitives/colour.h"
 #include "primitives/colourf.h"
 #include "primitives/vec3.h"
-
-#include "app/app.h"
-#include "path.h"
 
 #define WINDOW_TITLE		"ENGINE"
 #define WINDOW_WIDTH		800
@@ -62,21 +58,27 @@ int main( int argc, char *argv[] )
 	struct mesh triangle;
 
 	if ( path_init( argv[0] ) < 0 ) {
-		fprintf( stderr, "FAILED TO INIT PATH" );
+		fprintf( stderr, "FAILED TO INIT PATH\n" );
 		return EXIT_FAILURE;
 	}
 
 	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) ) {
-		fprintf( stderr, "FAILED TO INIT APP" );
+		fprintf( stderr, "FAILED TO INIT APP\n" );
 		return EXIT_FAILURE;
 	}
 
-	shader_init( &shader, "src/graphics/shader/glsl/vert_default.glsl",
-	             "src/graphics/shader/glsl/frag_default.glsl" );
-	mesh_init( &triangle, vertices, sizeof( vertices ), 3, attribs,
-	           2, NULL, 0 );
+	if ( shader_binit( &shader, SHADER_COLOUR ) != 0 ) {
+		fprintf( stderr, "FAILED TO INIT BUILTIN SHADER\n" );
+		return EXIT_FAILURE;
+	}
 
-	while ( app_running( &app ) ) {
+	if ( mesh_init( &triangle, vertices, sizeof( vertices ), 3, attribs,
+	                2, NULL, 0 ) != 0 ) {
+		fprintf( stderr, "FAILED TO INIT MESH\n" );
+		return EXIT_FAILURE;
+	}
+
+	while ( app.running ) {
 		renderer_begin_frame( VINTAGE_GOLD );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) ) {
@@ -84,6 +86,7 @@ int main( int argc, char *argv[] )
 		}
 
 		renderer_draw_mesh( &shader, &triangle );
+		app_update( &app );
 	}
 
 	mesh_destroy( &triangle );
