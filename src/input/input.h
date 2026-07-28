@@ -20,6 +20,7 @@ enum key {
 	KEY_B		= GLFW_KEY_B,
 	KEY_C		= GLFW_KEY_C,
 	KEY_D		= GLFW_KEY_D,
+	KEY_S		= GLFW_KEY_S,
 	KEY_W		= GLFW_KEY_W,
 
 	KEY_0		= GLFW_KEY_0,
