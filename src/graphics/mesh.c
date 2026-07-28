@@ -3,20 +3,20 @@
 #include "mesh.h"
 
 int mesh_init( struct mesh *m, const void *vertices, size_t vertex_size,
-                 GLsizei vertex_count, const struct vertex_attrib *attribs,
-                 size_t attrib_count, const unsigned int *indices,
-                 GLsizei index_count )
+               GLsizei vertex_count, const struct vertex_attrib *attribs,
+               size_t attrib_count, const unsigned int *indices,
+               GLsizei index_count )
 {
 	int err;
 
-	// VAO
+	/* VAO */
 	err = vertex_array_create( &m->vao );
 	if ( err ) {
 		printf("MESH_ERR: FAILED TO CREATE VAO\n");
 		return err;
 	}
 
-	// VBO
+	/* VBO */
 	err = buffer_create( &m->vbo, GL_ARRAY_BUFFER, vertices, vertex_size,
 	                     GL_STATIC_DRAW );
 	if ( err ) {
@@ -35,11 +35,10 @@ int mesh_init( struct mesh *m, const void *vertices, size_t vertex_size,
 	m->vertex_count = vertex_count;
 	m->has_indices = indices != NULL;
 	
-	// EBO
+	/* EBO */
 	if ( m->has_indices ) {
 		size_t index_size = (size_t)index_count * sizeof( unsigned int );
 
-		// CREATE EBO
 		err = buffer_create( &m->ebo, GL_ELEMENT_ARRAY_BUFFER, indices,
 		                     index_size, GL_STATIC_DRAW );
 		if ( err ) {
@@ -47,7 +46,6 @@ int mesh_init( struct mesh *m, const void *vertices, size_t vertex_size,
 			goto clean_vbo;
 		}
 
-		// BIND EBO
 		vertex_array_bind( &m->vao );
 		buffer_bind( &m->ebo );
 		
