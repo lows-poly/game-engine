@@ -3,10 +3,10 @@
 
 #include <stdbool.h>
 
-#include "window/window.h"
-
 #define INPUT_MAX_KEYS		  GLFW_KEY_LAST + 1
 #define INPUT_MAX_MOUSE_BUTTONS	  GLFW_MOUSE_BUTTON_LAST + 1
+
+struct window;
 
 enum key {
 	KEY_UNKNOWN	= -1,
