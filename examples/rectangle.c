@@ -16,7 +16,7 @@
 #include "primitives/rect.h"
 
 #define WINDOW_TITLE		"Rectangle Test"
-#define WINDOW_WIDTH		900
+#define WINDOW_WIDTH		800
 #define WINDOW_HEIGHT		600
 
 #define RECT_SPEED		0.2f
