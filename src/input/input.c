@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "window/window.h"
 #include "input.h"
 
 static void key_callback( GLFWwindow *window, int key, int scancode, int action,
