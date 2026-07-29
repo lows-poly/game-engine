@@ -87,29 +87,21 @@ int main( int argc, char *argv[] )
 
 		dt = (float)app.time.delta_time;
 
-		if ( key_down( &app.input, KEY_A ) ) {
+		if ( key_down( &app.input, KEY_A ) )
 			rect_bounds.x -= RECT_SPEED * dt;
-			printf( "POS: %.1f, %.1f\n", rect_bounds.x, rect_bounds.y );
-		}
-		if ( key_down( &app.input, KEY_D ) ) {
+		if ( key_down( &app.input, KEY_D ) )
 			rect_bounds.x += RECT_SPEED * dt;
-			printf( "POS: %.1f, %.1f\n", rect_bounds.x, rect_bounds.y );
-		}
-		if ( key_down( &app.input, KEY_S ) ) {
+		if ( key_down( &app.input, KEY_S ) )
 			rect_bounds.y -= RECT_SPEED * dt;
-			printf( "POS: %.1f, %.1f\n", rect_bounds.x, rect_bounds.y );
-		}
-		if ( key_down( &app.input, KEY_W ) ) {
+		if ( key_down( &app.input, KEY_W ) )
 			rect_bounds.y += RECT_SPEED * dt;
-			printf( "POS: %.1f, %.1f\n", rect_bounds.x, rect_bounds.y );
-		}
 
 		rect_to_vertices( &rect_bounds, rect_verts );
 		mesh_update_vertices( &rect_mesh, rect_verts, sizeof( rect_verts ), 0 );
 
+		shader_set_4f( &shader, "vert_colour", rect_colour.raw );
 		renderer_draw_mesh( &shader, &rect_mesh );
 
-		shader_set_4f( &shader, "vert_colour", rect_colour.raw );
 		app_update( &app );
 	}
 
