@@ -8,7 +8,7 @@
  *  0 = false
  *  1 = true
  */
-
+#define _POSIX_C_SOURCE 199309L
 #include <stdio.h>
 
 #ifdef _WIN32
