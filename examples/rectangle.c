@@ -43,7 +43,7 @@ int main( int argc, char *argv[] )
 	colourf rect_colour;
 	rect rect_bounds;
 	vec2 rect_verts[4];
-	
+
 	float dt;
 
 	/* PATH SETUP */
