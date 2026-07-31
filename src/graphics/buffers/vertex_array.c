@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include "vertex_array.h"
 
-int vertex_array_create( struct vertex_array *va )
+int vertex_array_init( struct vertex_array *va )
 {
 	GLuint id;
 
