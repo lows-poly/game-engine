@@ -2,8 +2,8 @@
 #include <errno.h>
 #include "buffer.h"
 
-int buffer_create( struct buffer *b, GLenum target, const void *data, size_t size,
-                   GLenum usage )
+int buffer_init( struct buffer *b, GLenum target, const void *data, size_t size,
+                 GLenum usage )
 {
 	GLuint id;
 
