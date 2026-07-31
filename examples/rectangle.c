@@ -60,38 +60,38 @@ int main( int argc, char *argv[] )
 
 		/* RECT CONTROLS */
 		if ( key_down( &app.input, KEY_A ) )
-			shape_move( &rect, -velocity, 0.0f );
+			shape2d_move( &rect, -velocity, 0.0f );
 
 		if ( key_down( &app.input, KEY_D ) )
-			shape_move( &rect, velocity, 0.0f );
+			shape2d_move( &rect, velocity, 0.0f );
 
 		if ( key_down( &app.input, KEY_S ) )
-			shape_move( &rect, 0.0f, -velocity );
+			shape2d_move( &rect, 0.0f, -velocity );
 
 		if ( key_down( &app.input, KEY_W ) )
-			shape_move( &rect, 0.0f, velocity );
+			shape2d_move( &rect, 0.0f, velocity );
 
 		/* TRIANGLE CONTROLS */
 		if ( key_down( &app.input, KEY_LEFT ) )
-			shape_move( &tri, -velocity, 0.0f );
+			shape2d_move( &tri, -velocity, 0.0f );
 
 		if ( key_down( &app.input, KEY_RIGHT ) )
-			shape_move( &tri, velocity, 0.0f );
+			shape2d_move( &tri, velocity, 0.0f );
 
 		if ( key_down( &app.input, KEY_DOWN ) )
-			shape_move( &tri, 0.0f, -velocity );
+			shape2d_move( &tri, 0.0f, -velocity );
 
 		if ( key_down( &app.input, KEY_UP ) )
-			shape_move( &tri, 0.0f, velocity );
+			shape2d_move( &tri, 0.0f, velocity );
 
-		shape_draw( &rect );
-		shape_draw( &tri );
+		shape2d_draw( &rect );
+		shape2d_draw( &tri );
 
 		app_update( &app );
 	}
 
-	shape_destroy( &rect );
-	shape_destroy( &tri );
+	shape2d_destroy( &rect );
+	shape2d_destroy( &tri );
 	shader_destroy( &shader );
 	app_shutdown( &app );
 
