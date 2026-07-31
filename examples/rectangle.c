@@ -11,40 +11,23 @@
 #include "graphics/mesh.h"
 #include "graphics/shader/shader.h"
 
+#include "primitives/shape2d.h"
 #include "primitives/colour.h"
-#include "primitives/colourf.h"
-#include "primitives/rect.h"
 
-#define WINDOW_TITLE		"Rectangle Test"
-#define WINDOW_WIDTH		800
-#define WINDOW_HEIGHT		600
+#define WINDOW_TITLE         "Rectangle Test"
+#define WINDOW_WIDTH         800
+#define WINDOW_HEIGHT        600
 
-#define RECT_SPEED		0.2f
-
-static const unsigned int RECT_INDICES[] = { 0, 1, 2, 2, 3, 0 };
-
-static const struct vertex_attrib RECT_ATTRIBS[1] = {
-	{
-		.index      = 0,
-		.size       = 2,
-		.type       = GL_FLOAT,
-		.normalised = GL_FALSE,
-		.stride     = sizeof( vec2 ),
-		.offset     = 0,
-	}
-};
+#define SPEED                0.2f
 
 int main( int argc, char *argv[] )
 {
 	struct app app;
 	struct shader shader;
-	struct mesh rect_mesh;
-	struct mesh_desc desc;
-	colourf rect_colour;
-	rect rect_bounds;
-	vec2 rect_verts[4];
-
+	struct shape2d rect;
+	struct shape2d tri;
 	float dt;
+	float velocity;
 
 	/* PATH SETUP */
 	if ( path_init( argv[0] ) < 0 )
@@ -55,57 +38,60 @@ int main( int argc, char *argv[] )
 		return -1;
 
 	window_set_vsync( &app.win, 1 );
-	/* window_set_target_fps( &app.win, 10 ); */
 
 	/* SHADER SETUP */
-	if ( shader_binit( &shader, SHADER_UCOLOUR ) != 0 )
+	if ( shader_init_preset( &shader, SHADER_PRIMITIVE_2D ) != 0 )
 		return -1;
 
-	/* RECT SETUP */
-	rect_colour = colourf_make( colour_make( 0, 150, 150 ) );
-	rect_bounds = rect_make_vec2( vec2_make( 0.0f, 0.0f ), vec2_make( 0.5f, 0.5f ) );
-	rect_to_vertices( &rect_bounds, rect_verts );
-
-	/* MESH SETUP */
-	desc.vertices = rect_verts;
-	desc.vertex_size = sizeof( rect_verts );
-	desc.attribs = RECT_ATTRIBS;
-	desc.attrib_count = 1;
-	desc.indices = RECT_INDICES;
-	desc.vertex_count = 4;
-	desc.index_count = 6;
-
-	if ( mesh_init( &rect_mesh, &desc, DRAW_DYNAMIC ) != 0 )
+	/* SHAPE SETUP */
+	if ( shape2d_rect_create( &rect, &shader, 0.0f, 0.0f, 0.5, 0.5f, CYAN ) != 0 )
+		return -1;
+	if ( shape2d_tri_create( &tri, &shader, 0.0f, 0.0f, 0.5, 0.5f, RED ) != 0 )
 		return -1;
 
 	while ( app.running ) {
 		renderer_begin_frame( VINTAGE_GOLD );
 
-		if ( key_pressed( &app.input, KEY_ESCAPE ) ) {
+		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
-		}
 
 		dt = (float)app.time.delta_time;
+		velocity = SPEED * dt;
 
+		/* RECT CONTROLS */
 		if ( key_down( &app.input, KEY_A ) )
-			rect_bounds.x -= RECT_SPEED * dt;
+			shape_move( &rect, -velocity, 0.0f );
+
 		if ( key_down( &app.input, KEY_D ) )
-			rect_bounds.x += RECT_SPEED * dt;
+			shape_move( &rect, velocity, 0.0f );
+
 		if ( key_down( &app.input, KEY_S ) )
-			rect_bounds.y -= RECT_SPEED * dt;
+			shape_move( &rect, 0.0f, -velocity );
+
 		if ( key_down( &app.input, KEY_W ) )
-			rect_bounds.y += RECT_SPEED * dt;
+			shape_move( &rect, 0.0f, velocity );
 
-		rect_to_vertices( &rect_bounds, rect_verts );
-		mesh_update_vertices( &rect_mesh, rect_verts, sizeof( rect_verts ), 0 );
+		/* TRIANGLE CONTROLS */
+		if ( key_down( &app.input, KEY_LEFT ) )
+			shape_move( &tri, -velocity, 0.0f );
 
-		shader_set_4f( &shader, "vert_colour", rect_colour.raw );
-		renderer_draw_mesh( &shader, &rect_mesh );
+		if ( key_down( &app.input, KEY_RIGHT ) )
+			shape_move( &tri, velocity, 0.0f );
+
+		if ( key_down( &app.input, KEY_DOWN ) )
+			shape_move( &tri, 0.0f, -velocity );
+
+		if ( key_down( &app.input, KEY_UP ) )
+			shape_move( &tri, 0.0f, velocity );
+
+		shape_draw( &rect );
+		shape_draw( &tri );
 
 		app_update( &app );
 	}
 
-	mesh_destroy( &rect_mesh );
+	shape_destroy( &rect );
+	shape_destroy( &tri );
 	shader_destroy( &shader );
 	app_shutdown( &app );
 
