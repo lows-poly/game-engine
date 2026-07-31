@@ -10,8 +10,8 @@ struct buffer {
 	GLenum target;
 };
 
-int buffer_create( struct buffer *b, GLenum target, const void *data, size_t size,
-                   GLenum usage );
+int buffer_init( struct buffer *b, GLenum target, const void *data, size_t size,
+                 GLenum usage );
 void buffer_update( const struct buffer *b, const void *data, size_t size,
                     size_t offset );
 void buffer_bind( const struct buffer *b );
