@@ -36,7 +36,7 @@ void renderer_enable_backface_culling( bool value, enum draw_order order )
  * @s: shader
  * @m: mesh
  */
-void renderer_draw_mesh( const struct shader *s, const struct mesh *m )
+void renderer_draw_mesh( const struct mesh *m, const struct shader *s )
 {
 	shader_use( s );
 	mesh_draw( m );

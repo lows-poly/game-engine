@@ -30,9 +30,9 @@ void renderer_enable_backface_culling( bool value, enum draw_order order );
 
 /*
  * renderer_draw_mesh() - Use shader and draw mesh
- * @s: shader
  * @m: mesh
+ * @s: shader
  */
-void renderer_draw_mesh( const struct shader *s, const struct mesh *m );
+void renderer_draw_mesh( const struct mesh *m, const struct shader *s );
 
 #endif
