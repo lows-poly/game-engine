@@ -2,6 +2,30 @@
 #include <errno.h>
 #include "mesh.h"
 
+static const unsigned int QUAD_INDICES[6] = { 0, 1, 2, 2, 3, 0 };
+static const struct vertex_attrib QUAD_ATTRIBS[1] = {
+	{
+		.index = 0,
+		.size = 2,
+		.type = GL_FLOAT,
+		.normalised = GL_FALSE,
+		.stride = sizeof( vec2 ),
+		.offset = 0
+	}
+};
+
+static const unsigned int TRI_INDICES[3] = { 0, 1, 2 };
+static const struct vertex_attrib TRI_ATTRIBS[1] = {
+	{
+		.index = 0,
+		.size = 2,
+		.type = GL_FLOAT,
+		.normalised = GL_FALSE,
+		.stride = sizeof( vec2 ),
+		.offset = 0
+	}
+};
+
 int mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw_type )
 {
 	int err;
@@ -13,14 +37,14 @@ int mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw
 	}
 
 	/* VAO */
-	err = vertex_array_create( &m->vao );
+	err = vertex_array_init( &m->vao );
 	if ( err ) {
 		printf("MESH_ERR: FAILED TO CREATE VAO\n");
 		return err;
 	}
 
 	/* VBO */
-	err = buffer_create( &m->vbo, GL_ARRAY_BUFFER, desc->vertices,
+	err = buffer_init( &m->vbo, GL_ARRAY_BUFFER, desc->vertices,
 	                     desc->vertex_size, draw_type );
 	if ( err ) {
 		printf("MESH_ERR: FAILED TO CREATE VBO\n");
@@ -42,7 +66,7 @@ int mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw
 	if ( m->has_indices ) {
 		index_size = (size_t)desc->index_count * sizeof( unsigned int );
 
-		err = buffer_create( &m->ebo, GL_ELEMENT_ARRAY_BUFFER, desc->indices,
+		err = buffer_init( &m->ebo, GL_ELEMENT_ARRAY_BUFFER, desc->indices,
 		                     index_size, GL_STATIC_DRAW );
 		if ( err ) {
 			printf("MESH_ERR: FAILED TO CREATE EBO\n");
@@ -64,6 +88,58 @@ clean_vao:
 	return err;
 }
 
+int mesh_init_quad( struct mesh *m, const vec2 verts[4], enum draw_type draw_type )
+{
+	struct mesh_desc desc;
+
+	if ( !m || !verts )
+		return -EINVAL;
+
+	desc.vertices = verts;
+	desc.vertex_size = sizeof( vec2 ) * 4;
+	desc.attribs = QUAD_ATTRIBS;
+	desc.attrib_count = 1;
+	desc.indices = QUAD_INDICES;
+	desc.vertex_count = 4;
+	desc.index_count = 6;
+
+	return mesh_init( m, &desc, draw_type );
+}
+
+int mesh_init_tri( struct mesh *m, const vec2 verts[3], enum draw_type draw_type )
+{
+	struct mesh_desc desc;
+
+	if ( !m || !verts )
+		return -EINVAL;
+
+	desc.vertices = verts;
+	desc.vertex_size = sizeof( vec2 ) * 3;
+	desc.attribs = TRI_ATTRIBS;
+	desc.attrib_count = 1;
+	desc.indices = TRI_INDICES;
+	desc.vertex_count = 3;
+	desc.index_count = 3;
+
+	return mesh_init( m, &desc, draw_type );
+}
+
+int mesh_update_tri( struct mesh *m, const vec2 verts[3] )
+{
+	if ( !m || !verts )
+		return -EINVAL;
+
+	return mesh_update_vertices( m, verts, sizeof( vec2 ) * 3, 0 );
+}
+
+int mesh_update_quad( struct mesh *m, const vec2 verts[4] )
+{
+	if ( !m || !verts )
+		return -EINVAL;
+
+	return mesh_update_vertices( m, verts, sizeof( vec2 ) * 4, 0 );
+}
+
 void mesh_draw( const struct mesh *m )
 {
 	vertex_array_bind( &m->vao );
@@ -74,11 +150,11 @@ void mesh_draw( const struct mesh *m )
 		glDrawArrays( GL_TRIANGLES, 0, m->vertex_count );
 }
 
-void mesh_update_vertices( struct mesh *m, const void *vertices, size_t vertex_size,
+int mesh_update_vertices( struct mesh *m, const void *vertices, size_t vertex_size,
                           size_t offset )
 {
 	if ( !m || !vertices || !vertex_size ) {
-		return;
+		return -EINVAL;
 	}
 
 	buffer_update( &m->vbo, vertices, vertex_size, offset );

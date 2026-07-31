@@ -7,6 +7,7 @@
 
 #include "buffers/buffer.h"
 #include "buffers/vertex_array.h"
+#include "primitives/vec2.h"
 
 struct mesh {
 	struct vertex_array vao;
@@ -33,9 +34,13 @@ enum draw_type {
 };
 
 int mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw_type );
+int mesh_init_quad( struct mesh *m, const vec2 verts[4], enum draw_type draw_type );
+int mesh_init_tri( struct mesh *m, const vec2 verts[3], enum draw_type draw_type );
+int mesh_update_tri( struct mesh *m, const vec2 verts[3] );
+int mesh_update_quad( struct mesh *m, const vec2 verts[4] );
+int mesh_update_vertices( struct mesh *m, const void *vertices, size_t vertex_size,
+                          size_t offset );
 void mesh_draw( const struct mesh *m );
-void mesh_update_vertices( struct mesh *m, const void *vertices, size_t vertex_size,
-                           size_t offset );
 void mesh_destroy( struct mesh *m );
 
 #endif
