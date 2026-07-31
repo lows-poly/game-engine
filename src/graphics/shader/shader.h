@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <glad/glad.h>
 
+#include <primitives/vec2.h>
 #include <primitives/ivec3.h>
 #include <primitives/vec3.h>
 #include <primitives/vec4.h>
@@ -25,22 +26,30 @@ struct shader {
 };
 
 enum shader_builtin {
-	SHADER_COLOUR,
-	SHADER_UCOLOUR,
+	SHADER_DEFAULT,
+	SHADER_PRIMITIVE_2D,
 };
 
 int shader_init( struct shader *s, const char *vert_path, const char *frag_path );
-int shader_binit( struct shader *s, enum shader_builtin preset );
+int shader_init_preset( struct shader *s, enum shader_builtin preset );
 void shader_use( const struct shader *s );
 
-int shader_set_int( struct shader *s, const char *name, int value );
-int shader_set_float( struct shader *s, const char *name, float value );
+/* UNIFORM SETTING FUNCTIONS */
+int shader_set_1i( struct shader *s, const char *name, int value );
+int shader_set_1f( struct shader *s, const char *name, float value );
+
+int shader_set_2f( struct shader *s, const char *name, const float value[2] );
+int shader_set_vec2( struct shader *s, const char *name, vec2 v );
+
 int shader_set_3i( struct shader *s, const char *name, const int value[3] );
 int shader_set_ivec3( struct shader *s, const char *name, ivec3 v );
+
 int shader_set_3f( struct shader *s, const char *name, const float value[3] );
 int shader_set_vec3( struct shader *s, const char *name, vec3 v );
+
 int shader_set_4f( struct shader *s, const char *name, const float value[4] );
 int shader_set_vec4( struct shader *s, const char *name, vec4 v );
+
 int shader_set_mat4( struct shader *s, const char *name, const mat4 mat );
 
 void shader_destroy( struct shader *s );

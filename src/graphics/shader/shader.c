@@ -213,22 +213,24 @@ int shader_init( struct shader *s, const char *vert_path, const char *frag_path 
 	return err;
 }
 
-int shader_binit( struct shader *s, enum shader_builtin preset )
+int shader_init_preset( struct shader *s, enum shader_builtin preset )
 {
 	const char *vert_path;
 	const char *frag_path;
 
 	switch ( preset ) {
-	case SHADER_COLOUR:
-		vert_path = "src/graphics/shader/glsl/vert_default.glsl";
-		frag_path = "src/graphics/shader/glsl/frag_default.glsl";
+	case SHADER_DEFAULT:
+		vert_path = "src/graphics/shader/glsl/default_vsh.glsl";
+		frag_path = "src/graphics/shader/glsl/default_fsh.glsl";
 		break;
-	case SHADER_UCOLOUR:
-		vert_path = "src/graphics/shader/glsl/vert_default.glsl";
-		frag_path = "src/graphics/shader/glsl/frag_uniform_colour.glsl";
+	case SHADER_PRIMITIVE_2D:
+		vert_path = "src/graphics/shader/glsl/primitive2d_vsh.glsl";
+		frag_path = "src/graphics/shader/glsl/primitive2d_fsh.glsl";
 		break;
 	default:
-		return -EINVAL;
+		vert_path = "src/graphics/shader/glsl/default_vsh.glsl";
+		frag_path = "src/graphics/shader/glsl/default_fsh.glsl";
+		break;
 	}
 
 	return shader_init( s, vert_path, frag_path );
@@ -242,7 +244,7 @@ void shader_use( const struct shader *s )
 	glUseProgram( s->id );
 }
 
-int shader_set_int( struct shader *s, const char *name, int value )
+int shader_set_1i( struct shader *s, const char *name, int value )
 {
 	GLint loc;
 
@@ -256,7 +258,7 @@ int shader_set_int( struct shader *s, const char *name, int value )
 	return 0;
 }
 
-int shader_set_float( struct shader *s, const char *name, float value )
+int shader_set_1f( struct shader *s, const char *name, float value )
 {
 	GLint loc;
 
@@ -266,6 +268,34 @@ int shader_set_float( struct shader *s, const char *name, float value )
 		return -EINVAL;
 
 	glUniform1f( loc, value );
+	
+	return 0;
+}
+
+int shader_set_2f( struct shader *s, const char *name, const float value[2] )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform2fv( loc, 1, value );
+	
+	return 0;
+}
+
+int shader_set_vec2( struct shader *s, const char *name, vec2 v )
+{
+	GLint loc;
+
+	loc = shader_get_uniform_loc( s, name );
+
+	if ( loc < 0 )
+		return -EINVAL;
+
+	glUniform2f( loc, v.x, v.y );
 	
 	return 0;
 }
