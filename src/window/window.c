@@ -158,7 +158,6 @@ void window_set_target_fps( struct window *w, int fps )
 	}
 
 	if ( w->vsync ) {
-		_warn("UNABLE TO SET TARGET FPS - VSYNC IS ENABLED");
 		return;
 	}
 
