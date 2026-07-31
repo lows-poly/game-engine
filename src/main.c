@@ -12,7 +12,6 @@
 #include "graphics/shader/shader.h"
 
 #include "primitives/colour.h"
-#include "primitives/colourf.h"
 #include "primitives/vec3.h"
 
 #define WINDOW_TITLE		"ENGINE"
@@ -76,7 +75,7 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 	}
 
-	if ( shader_binit( &shader, SHADER_COLOUR ) != 0 ) {
+	if ( shader_init_preset( &shader, SHADER_DEFAULT ) != 0 ) {
 		fprintf( stderr, "FAILED TO INIT BUILTIN SHADER\n" );
 		return EXIT_FAILURE;
 	}
@@ -93,7 +92,7 @@ int main( int argc, char *argv[] )
 			app_stop( &app );
 		}
 
-		renderer_draw_mesh( &shader, &triangle );
+		renderer_draw_mesh( &triangle, &shader );
 		app_update( &app );
 	}
 
