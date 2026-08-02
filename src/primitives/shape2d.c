@@ -11,63 +11,56 @@ static const vec2 UNIT_TRI[3] = {
 	{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.5f, 1.0f }
 };
 
-static int init_common( struct shape2d *s, struct shader *shader, float x,
-                        float y, float w, float h, colour c )
+/*
+ * shape2d_create()
+ * @shape
+ * @shader
+ * @x
+ * @y
+ * @width
+ * @height
+ * @colour
+ *
+ * Return:
+ * 1 - Success
+ * 0 - Failure
+ */
+int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
+                    float w, float h, colour c )
 {
 	if ( !s || !shader )
-		return -EINVAL;
+		return 0;
 
 	s->shader = shader;
 	s->pos = vec2_make( x, y );
 	s->scale = vec2_make( w, h );
 	s->colour = colourf_make( c );
 
-	return 0;
+	return 1;
 }
 
 /*
- * shape2d_rect_create() - Create a 2D rectangle
- * @s:      struct shape2d
- * @shader: struct shader
- * @x:      float
- * @y:      float
- * @w:      float
- * @h:      float
- * @c:      colour(RGB)
+ * shape2d_init() - Initialise a created shaoe struct.
+ * @shape: shape_type enum
+ * @s:     struct shape2d
+ *
+ * Return:
+ * 1 - Succes
+ * 0 - Failure
  */
-int shape2d_rect_create( struct shape2d *s, struct shader *shader, float x,
-                         float y, float w, float h, colour c )
+int shape2d_init( enum shape_type shape, struct shape2d *s )
 {
-	int err;
-
-	err = init_common( s, shader, x, y, w, h, c );
-	if ( err ) {
-		return err;
+	if ( !s )
+		return 0;
+	
+	switch ( shape ) {
+	case SHAPE2D_RECTANGLE:
+		return mesh_init_quad( &s->mesh, UNIT_QUAD, DRAW_STATIC ) == 0;
+	case SHAPE2D_TRIANGLE:
+		return mesh_init_tri( &s->mesh, UNIT_TRI, DRAW_STATIC ) == 0;
+	default:
+		return 0;
 	}
-
-	return mesh_init_quad( &s->mesh, UNIT_QUAD, DRAW_STATIC );
-}
-
-/*
- * shape2d_tri_create() - Create a 2D triangle
- * @s:      struct shape2d
- * @shader: struct shader
- * @x:      float
- * @y:      float
- * @w:      float
- * @h:      float
- * @c:      colour(RGB)
- */
-int shape2d_tri_create( struct shape2d *s, struct shader *shader, float x,
-                        float y, float w, float h, colour c )
-{
-	int err;
-
-	err = init_common( s, shader, x, y, w, h, c );
-	if ( err )
-		return err;
-
-	return mesh_init_quad( &s->mesh, UNIT_TRI, DRAW_STATIC );
 }
 
 /*
