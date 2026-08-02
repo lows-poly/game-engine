@@ -9,7 +9,7 @@ GLFW_INCLUDE_DIR := $(GLFW_DIR)/include
 GLFW_LIB_DIR := $(GLFW_DIR)/lib
 
 CC := cc
-CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -Wshadow -Wconversion \
+CFLAGS := -std=c11 -O2 -Wall -Wextra -Wpedantic -Wshadow -Wconversion \
           -Wdouble-promotion -Wnull-dereference -Wformat=2 \
           -DGL_SILENCE_DEPRECATION \
           -I$(SRC_DIR) -I$(INCLUDE_DIR) -I$(EXTERNAL_DIR) -I$(GLFW_INCLUDE_DIR)
