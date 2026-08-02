@@ -18,35 +18,26 @@
 #define WINDOW_WIDTH         800
 #define WINDOW_HEIGHT        600
 
-#define SPEED                0.2f
+#define SPEED                0.5f
+
+static int setup( struct app *app, struct shader *shader, const char *argv0 );
 
 int main( int argc, char *argv[] )
 {
 	struct app app;
 	struct shader shader;
 	struct shape2d rect;
-	struct shape2d tri;
-	float dt;
-	float velocity;
 
-	/* PATH SETUP */
-	if ( path_init( argv[0] ) < 0 )
-		return -1;
+	float dt, velocity;
 
-	/* WINDOW SETUP */
-	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
-		return -1;
-
-	window_set_vsync( &app.win, 1 );
-
-	/* SHADER SETUP */
-	if ( shader_init_preset( &shader, SHADER_PRIMITIVE_2D ) != 0 )
+	if ( !setup( &app, &shader, argv[0] ) )
 		return -1;
 
 	/* SHAPE SETUP */
-	if ( shape2d_rect_create( &rect, &shader, 0.0f, 0.0f, 0.5, 0.5f, CYAN ) != 0 )
+	if ( !shape2d_create( &rect, &shader, 0.0f, 0.0f, 0.5f, 0.5f, CYAN ) )
 		return -1;
-	if ( shape2d_tri_create( &tri, &shader, 0.0f, 0.0f, 0.5, 0.5f, RED ) != 0 )
+
+	if ( !shape2d_init( SHAPE2D_RECTANGLE, &rect ) )
 		return -1;
 
 	while ( app.running ) {
@@ -71,29 +62,32 @@ int main( int argc, char *argv[] )
 		if ( key_down( &app.input, KEY_W ) )
 			shape2d_move( &rect, 0.0f, velocity );
 
-		/* TRIANGLE CONTROLS */
-		if ( key_down( &app.input, KEY_LEFT ) )
-			shape2d_move( &tri, -velocity, 0.0f );
-
-		if ( key_down( &app.input, KEY_RIGHT ) )
-			shape2d_move( &tri, velocity, 0.0f );
-
-		if ( key_down( &app.input, KEY_DOWN ) )
-			shape2d_move( &tri, 0.0f, -velocity );
-
-		if ( key_down( &app.input, KEY_UP ) )
-			shape2d_move( &tri, 0.0f, velocity );
-
 		shape2d_draw( &rect );
-		shape2d_draw( &tri );
 
 		app_update( &app );
 	}
 
 	shape2d_destroy( &rect );
-	shape2d_destroy( &tri );
 	shader_destroy( &shader );
 	app_shutdown( &app );
 
 	return 0;
+}
+
+static int setup( struct app *app, struct shader *shader, const char *argv0 )
+{
+	if ( path_init( argv0 ) < 0 )
+		return 0;
+
+	/* WINDOW SETUP */
+	if ( !app_init( app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
+		return 0;
+
+	window_set_vsync( &app->win, 1 );
+
+	/* SHADER SETUP */
+	if ( shader_init_preset( shader, SHADER_PRIMITIVE_2D ) != 0 )
+		return 0;
+
+	return 1;
 }
