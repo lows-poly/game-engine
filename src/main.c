@@ -21,7 +21,7 @@
 
 struct vertex {
 	vec3 position;
-	colourf colour;
+	colour col;
 };
 
 static const struct vertex vertices[] = {
@@ -46,7 +46,7 @@ static const struct vertex_attrib attribs[] = {
 		.type = GL_FLOAT,
 		.normalised = GL_FALSE,
 		.stride = sizeof( struct vertex ),
-		.offset = offsetof( struct vertex, colour )
+		.offset = offsetof( struct vertex, col )
 	}
 };
 
