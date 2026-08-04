@@ -41,7 +41,7 @@ int main( int argc, char *argv[] )
 		return -1;
 
 	while ( app.running ) {
-		renderer_begin_frame( VINTAGE_GOLD );
+		renderer_begin_frame( colour_from_rgb( VINTAGE_GOLD ) );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
