@@ -1,6 +1,7 @@
 #ifndef ENGINE_IVEC3_H
 #define ENGINE_IVEC3_H
 
+#include <stdio.h>
 #include <math.h>
 
 #define IVEC3_ZERO_INIT { 0, 0, 0 }
@@ -15,6 +16,11 @@ typedef struct ivec3 {
 		int raw[3];
 	};
 } ivec3;
+
+static void ivec3_print( const struct ivec3 v )
+{
+	printf( "(%d, %d, %d)\n", v.x, v.y, v.z );
+}
 
 static inline ivec3 ivec3_add( ivec3 a, ivec3 b )
 {
