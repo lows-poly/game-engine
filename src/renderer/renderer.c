@@ -8,10 +8,7 @@
  */
 void renderer_begin_frame( colour c )
 {
-	float dest[3];
-	colour_to_float( c, dest );
-
-	glClearColor( dest[0], dest[1], dest[2], 1.0f );
+	glClearColor( c.r, c.g, c.b, c.a );
 	glClear( GL_COLOR_BUFFER_BIT );
 }
 
