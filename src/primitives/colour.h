@@ -1,61 +1,86 @@
 #ifndef ENGINE_COLOUR_H
 #define ENGINE_COLOUR_H
 
-#include <stdint.h>
+#include <stdio.h>
 
 #include "mathx.h"
 
 typedef struct colour {
 	union {
-		struct { uint8_t r, g, b; };
-		uint8_t raw[3];
-	};
-} colour;
-
-typedef struct colourf {
-	union {
 		struct { float r, g, b, a; };
 		float raw[4];
 	};
-} colourf;
+} colour;
 
-#define VINTAGE_GOLD	((colour){ 42, 48, 41 })
+typedef struct icolour {
+	int r;
+	int g;
+	int b;
+} icolour;
 
-#define BLACK		((colour){ 0, 0, 0 })
-#define WHITE		((colour){ 255, 255, 255 })
-#define RED		((colour){ 255, 0, 0 })
-#define GREEN		((colour){ 0, 255, 0 })
-#define BLUE		((colour){ 0, 0, 255 })
-#define CYAN            ((colour){ 0, 150, 150 })
+#define VINTAGE_GOLD    ((colour){ 0.164f, 0.188f, 0.16f, 1.0f })
 
-static inline colour colour_make( int r, int g, int b )
+#define BLACK           ((colour){ 0.0f, 0.0f, 0.0f, 1.0f })
+#define WHITE           ((colour){ 1.0f, 1.0f, 1.0f, 1.0f })
+#define RED             ((colour){ 1.0f, 0.0f, 0.0f, 1.0f })
+#define GREEN           ((colour){ 0.0f, 1.0f, 0.0f, 1.0f })
+#define BLUE            ((colour){ 0.0f, 0.0f, 1.0f, 1.0f })
+#define CYAN            ((colour){ 0.0f, 0.588f, 0.588f, 1.0f })
+
+static inline colour colour_make( float r, float g, float b, float a )
 {
 	colour c;
 
-	c.r = (uint8_t)clamp( r, 0, 255 );
-	c.g = (uint8_t)clamp( g, 0, 255 );
-	c.b = (uint8_t)clamp( b, 0, 255 );
+	c.r = clampf( r, 0.0f, 1.0f );
+	c.g = clampf( g, 0.0f, 1.0f );
+	c.b = clampf( b, 0.0f, 1.0f );
+	c.a = clampf( a, 0.0f, 1.0f );
 
 	return c;
 }
 
-static inline colourf colourf_make( colour c )
+static inline colour colour_from_rgb( int r, int g, int b )
 {
-	colourf cf;
+	colour c;
 
-	cf.r = c.r / 255.0f;
-	cf.g = c.g / 255.0f;
-	cf.b = c.b / 255.0f;
-	cf.a = 1.0f;
+	c.r = clamp( r, 0, 255 ) / 255.0f;
+	c.g = clamp( g, 0, 255 ) / 255.0f;
+	c.b = clamp( b, 0, 255 ) / 255.0f;
+	c.a = 1.0f;
 
-	return cf;
+	return c;
 }
 
-static inline void colour_to_float( colour src, float *dest )
+static inline icolour colour_to_rgb( colour c )
 {
-	dest[0] = src.r / 255.0f;
-	dest[1] = src.g / 255.0f;
-	dest[2] = src.b / 255.0f;
+	icolour ic;
+
+	ic.r = (int)( c.r * 255.0f );
+	ic.g = (int)( c.g * 255.0f );
+	ic.b = (int)( c.b * 255.0f );
+
+	return ic;
+}
+
+static inline icolour icolour_normalise( icolour c )
+{
+	return colour_from_rgb( c.a, c.g, c.b );
+}
+
+static inline colour colour_alpha( colour c, float alpha )
+{
+	c.a = clampf( alpha, 0.0f, 1.0f );
+	return c;
+}
+
+static void colour_print( const colour c )
+{
+	printf( "(%.3f, %.3f, %.3f, %.3f)\n", c.r, c.g, c.b, c.a );
+}
+
+static void icolour_print( const icolour c )
+{
+	printf( "(%d, %d, %d)\n", c.r, c.g, c.b );
 }
 
 #endif
