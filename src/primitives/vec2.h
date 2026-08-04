@@ -1,6 +1,7 @@
 #ifndef ENGINE_VEC2_H
 #define ENGINE_VEC2_H
 
+#include <stdio.h>
 #include <math.h>
 
 #define VEC_EPSILON     1e-8f
@@ -13,6 +14,11 @@ typedef struct vec2 {
 		float raw[2];
 	};
 } vec2;
+
+static inline void vec2_print( const struct vec2 v )
+{
+	printf( "(%.3f, %.3f)\n", v.x, v.y  );
+}
 
 static inline vec2 vec2_make( float x, float y )
 {

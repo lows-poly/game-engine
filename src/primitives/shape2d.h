@@ -1,6 +1,8 @@
 #ifndef ENGINE_SHAPE2D_H
 #define ENGINE_SHAPE2D_H
 
+#include <stdbool.h>
+
 #include "graphics/mesh.h"
 #include "graphics/shader/shader.h"
 #include "primitives/colour.h"
@@ -12,32 +14,22 @@ enum shape_type {
 };
 
 /*
- * struct shape2d - A 2 dimentional shape
+ * struct shape2d - A 2 dimentional shape.
  * @mesh
+ * @colour
  * @shader
- * @pos:    vec2
- * @scale:  vec2
- * @colour: colour-float
+ * @pos
+ * @scale
  */
 struct shape2d {
 	struct mesh mesh;
+	struct colour colour;
 	struct shader *shader;
 	vec2 pos;
 	vec2 scale;
-	colourf colour;
 };
 
-
-/*
- * shape2d_init() - Initialise a created shaoe struct.
- * @shape: shape_type enum
- * @s:     struct shape2d
- *
- * Return:
- * 1 - Success
- * Otherwise - Failure
- */
-int shape2d_init( enum shape_type shape, struct shape2d *s );
+void shape2d_set_default_colour( colour c );
 
 /*
  * shape2d_create()
@@ -54,41 +46,54 @@ int shape2d_init( enum shape_type shape, struct shape2d *s );
  * 0 - Failure
  */
 int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
-                    float w, float h, colour c );
+                    float w, float h );
 
 /*
- * shape2d_move() - Move x, y coordinate
- * @s
+ * shape2d_init() - Initialise a created shaoe struct.
+ * @shape_type
+ * @shape
+ *
+ * Return:
+ * 1 - Success
+ * Otherwise - Failure
+ */
+int shape2d_init( enum shape_type shape, struct shape2d *s );
+
+/*
+ * shape2d_move() - Move x, y coordinate.
+ * @shape
  * @dx
  * @dy
  */
 void shape2d_move( struct shape2d *s, float dx, float dy );
 
 /*
- * shape2d_set_pos() - Set x, y coordinate
- * @s
+ * shape2d_set_pos() - Set x, y coordinate.
+ * @shape
  * @x
  * @y
  */
 void shape2d_set_pos( struct shape2d *s, float x, float y );
 
 /*
- * shape2d_set_colour() - Set uniform colour
- * @s: struct shape2d
- * @c: colour
+ * shape2d_set_colour() - Set uniform colour.
+ * @shape
+ * @colour
  */
 void shape2d_set_colour( struct shape2d *s, colour c );
 
 /*
- * shape2d_draw() - Draw mesh and update uniform properties
- * @s
+ * shape2d_draw() - Draw mesh and update uniform properties.
+ * @shape
  */
 void shape2d_draw( const struct shape2d *s );
 
 /*
- * shape2d_destroy() - Destroy mesh
- * @s
+ * shape2d_destroy() - Destroy mesh.
+ * @shape
  */
 void shape2d_destroy( struct shape2d *s );
+
+void shape2d_dump( const struct shape2d *s );
 
 #endif

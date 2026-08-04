@@ -1,7 +1,10 @@
+#include <stdio.h>
 #include <errno.h>
 
 #include "shape2d.h"
 #include "renderer/renderer.h"
+
+static colour DEFAULT_SHAPE_COLOUR = CYAN;
 
 static const vec2 UNIT_QUAD[4] = {
 	{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
@@ -10,6 +13,11 @@ static const vec2 UNIT_QUAD[4] = {
 static const vec2 UNIT_TRI[3] = {
 	{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.5f, 1.0f }
 };
+
+void shape2d_set_default_colour( colour c )
+{
+	DEFAULT_SHAPE_COLOUR = c;
+}
 
 /*
  * shape2d_create()
@@ -26,7 +34,7 @@ static const vec2 UNIT_TRI[3] = {
  * 0 - Failure
  */
 int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
-                    float w, float h, colour c )
+                    float w, float h )
 {
 	if ( !s || !shader )
 		return 0;
@@ -34,7 +42,7 @@ int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
 	s->shader = shader;
 	s->pos = vec2_make( x, y );
 	s->scale = vec2_make( w, h );
-	s->colour = colourf_make( c );
+	s->colour = DEFAULT_SHAPE_COLOUR;
 
 	return 1;
 }
@@ -94,7 +102,10 @@ void shape2d_set_pos( struct shape2d *s, float x, float y )
  */
 void shape2d_set_colour( struct shape2d *s, colour c )
 {
-	s->colour = colourf_make( c );
+	if ( !s )
+		return;
+
+	s->colour = c;
 }
 
 /*
@@ -116,4 +127,26 @@ void shape2d_draw( const struct shape2d *s )
 void shape2d_destroy( struct shape2d *s )
 {
 	mesh_destroy( &s->mesh );
+}
+
+void shape2d_dump( const struct shape2d *s )
+{
+	int i;
+
+	printf("*** SHAPE2D DUMP ***\n");
+	printf("POSITION: ");
+	vec2_print( s->pos );
+	printf("SCALE: ");
+	vec2_print( s->scale );
+	printf("COLOUR: ");
+	icolour_print( colour_to_rgb( s->colour ) );
+	printf("SHADER: {\n");
+	printf("\t ID: %u\n", s->shader->id);
+	printf("\t UNIFORM_COUNT: %u\n", s->shader->u_count);
+	printf("\t UNIFORMS: {\n");
+	for ( i = 0; i < s->shader->u_count; i++  )
+		printf("\t\t %s\n", s->shader->uniforms[i].name );
+	printf("\t\t}\n");
+
+
 }

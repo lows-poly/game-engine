@@ -22,13 +22,13 @@
 
 typedef float mat4[4][4];
 
-static void mat4_print( const mat4 mat )
+static inline void mat4_print( const mat4 mat )
 {
 	int i, j;
 
 	for ( i = 0; i < 4; i++ ) {
 		for ( j = 0; j < 4; j++ )
-			printf( "%.3f ", m[i][j] );
+			printf( "%.3f ", mat[i][j] );
 
 		printf("\n");
 	}

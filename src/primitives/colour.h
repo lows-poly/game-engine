@@ -62,9 +62,9 @@ static inline icolour colour_to_rgb( colour c )
 	return ic;
 }
 
-static inline icolour icolour_normalise( icolour c )
+static inline colour icolour_normalise( icolour c )
 {
-	return colour_from_rgb( c.a, c.g, c.b );
+	return colour_from_rgb( c.r, c.g, c.b );
 }
 
 static inline colour colour_alpha( colour c, float alpha )
@@ -73,12 +73,12 @@ static inline colour colour_alpha( colour c, float alpha )
 	return c;
 }
 
-static void colour_print( const colour c )
+static inline void colour_print( const colour c )
 {
 	printf( "(%.3f, %.3f, %.3f, %.3f)\n", c.r, c.g, c.b, c.a );
 }
 
-static void icolour_print( const icolour c )
+static inline void icolour_print( const icolour c )
 {
 	printf( "(%d, %d, %d)\n", c.r, c.g, c.b );
 }

@@ -17,7 +17,7 @@ typedef struct ivec2 {
 	};
 } ivec2;
 
-static void ivec2_print( const struct ivec2 v )
+static inline void ivec2_print( const struct ivec2 v )
 {
 	printf( "(%d, %d)\n", v.x, v.y );
 }

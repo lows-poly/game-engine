@@ -1,7 +1,9 @@
 #ifndef ENGINE_VEC4_H
 #define ENGINE_VEC4_H
 
+#include <stdio.h>
 #include <math.h>
+
 #include "vec3.h"
 
 #define VEC4_ZERO_INIT	{ 0.0f, 0.0f, 0.0f, 0.0f }
@@ -13,6 +15,11 @@ typedef struct vec4 {
 		float raw[4];
 	};
 } vec4;
+
+static inline void vec4_print( const struct vec4 v )
+{
+	printf( "(%.3f, %.3f, %.3f, %.3f)\n", v.x, v.y, v.z, v.w );
+}
 
 static inline vec4 vec4_make( float x, float y, float z, float w )
 {

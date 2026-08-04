@@ -1,6 +1,7 @@
 #ifndef ENGINE_VEC3_H
 #define ENGINE_VEC3_H
 
+#include <stdio.h>
 #include <math.h>
 
 #define VEC_PI		3.14159265358979323846f
@@ -14,6 +15,11 @@ typedef struct vec3 {
 		float raw[3];
 	};
 } vec3;
+
+static inline void vec3_print( const struct vec3 v )
+{
+	printf( "(%.3f, %.3f, %.3f)\n", v.x, v.y, v.z );
+}
 
 static inline vec3 vec3_add( vec3 a, vec3 b )
 {
