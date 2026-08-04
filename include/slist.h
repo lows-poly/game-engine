@@ -1,8 +1,6 @@
 #ifndef SLIST_H
 #define SLIST_H
 
-#include <stdbool.h>
-
 #include "container_of.h"
 
 #define slist_entry( ptr, type, member ) \
@@ -37,10 +35,6 @@ static inline bool slist_empty( struct slist *list )
 	return list->head == NULL;
 }
 
-/*
- * OBJECT-FIRST
- * Add a new node onto the FRONT of the list
- */
 static inline void slist_add( struct slist *list, struct slist_node *node )
 {
 	node->next = list->head;
@@ -78,12 +72,12 @@ static inline struct slist_node *slist_del_first( struct slist *list )
 	return first;
 }
 
-static inline bool slit_del( struct slist *list, struct slist_node *node )
+static inline int slit_del( struct slist *list, struct slist_node *node )
 {
 	struct slist_node *entry = list->head;
 	struct slist_node *prev = NULL;
 
-	bool out = false;
+	bool out = 0;
 
 	while ( entry ) {
 		if ( entry == node ) {
@@ -96,7 +90,7 @@ static inline bool slit_del( struct slist *list, struct slist_node *node )
 				list->tail = prev;
 
 			entry->next = NULL;
-			out = true;
+			out = 1;
 			break;
 		}
 
