@@ -1,7 +1,9 @@
 #ifndef ENGINE_MAT4_H
 #define ENGINE_MAT4_H
 
+#include <stdio.h>
 #include <math.h>
+
 #include "vec3.h"
 
 #define MAT4_ZERO_INIT		{ 0.0f, 0.0f, 0.0f, 0.0f,  \
@@ -20,13 +22,27 @@
 
 typedef float mat4[4][4];
 
+static void mat4_print( const mat4 mat )
+{
+	int i, j;
+
+	for ( i = 0; i < 4; i++ ) {
+		for ( j = 0; j < 4; j++ )
+			printf( "%.3f ", m[i][j] );
+
+		printf("\n");
+	}
+}
+
 static inline void mat4_set_zero( mat4 mat )
 {
 	int i, j;
 
-	for ( i = 0; i < 4; i++ )
-		for ( j = 0; j < 4; j++ )
+	for ( i = 0; i < 4; i++ ) {
+		for ( j = 0; j < 4; j++ ) {
 			mat[i][j] = 0.0f;
+		}
+	}
 }
 
 static inline void mat4_identity( mat4 mat )
@@ -50,8 +66,10 @@ static inline void mat4_mul( const mat4 a, const mat4 b, mat4 dest )
 	for ( col = 0; col < 4; col++ ) {
 		for ( row = 0; row < 4; row++ ) {
 			sum = 0.0f;
+
 			for ( k = 0; k < 4; k++ )
 				sum += a[k][row] * b[col][k];
+
 			dest[col][row] = sum;
 		}
 	}
