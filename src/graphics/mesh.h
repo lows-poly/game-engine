@@ -18,6 +18,14 @@ struct mesh {
 	bool has_indices;
 };
 
+static const struct field_desc mesh_fields[] = {
+	FIELD( struct mesh, vertex_count, FIELD_INT );
+	FIELD( struct mesh, index_count, FIELD_INT );
+	FIELD( struct mesh, has_indices, FIELD_BOOL );
+};
+
+#define MESH_FIELD_COUNT ( sizeof( mesh_fields ) / sizeof( mesh_fields[0] ) )
+
 struct mesh_desc {
 	const void *vertices;
 	size_t vertex_size;
