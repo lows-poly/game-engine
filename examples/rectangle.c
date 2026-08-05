@@ -43,7 +43,7 @@ int main( int argc, char *argv[] )
 	shape2d_dump( &rect );
 
 	while ( app.running ) {
-		renderer_begin_frame( VINTAGE_GOLD );
+		renderer_begin_frame( BLACK );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
