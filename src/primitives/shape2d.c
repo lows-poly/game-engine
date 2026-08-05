@@ -4,6 +4,12 @@
 #include "shape2d.h"
 #include "renderer/renderer.h"
 
+/* 
+ * #ifndef DEFAULT_SHAPE_COLOUR
+ * #define DEFAULT_SHAPE_COLOUR	CYAN
+ * #endif
+ */
+
 static colour DEFAULT_SHAPE_COLOUR = CYAN;
 
 static const vec2 UNIT_QUAD[4] = {
@@ -131,8 +137,6 @@ void shape2d_destroy( struct shape2d *s )
 
 void shape2d_dump( const struct shape2d *s )
 {
-	int i;
-
 	printf("*** SHAPE2D DUMP ***\n");
 	printf("POSITION: ");
 	vec2_print( s->pos );
@@ -140,13 +144,5 @@ void shape2d_dump( const struct shape2d *s )
 	vec2_print( s->scale );
 	printf("COLOUR: ");
 	icolour_print( colour_to_rgb( s->colour ) );
-	printf("SHADER: {\n");
-	printf("\t ID: %u\n", s->shader->id);
-	printf("\t UNIFORM_COUNT: %u\n", s->shader->u_count);
-	printf("\t UNIFORMS: {\n");
-	for ( i = 0; i < s->shader->u_count; i++  )
-		printf("\t\t %s\n", s->shader->uniforms[i].name );
-	printf("\t\t}\n");
-
-
+	printf("\n");
 }

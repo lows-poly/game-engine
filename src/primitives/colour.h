@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "mathx.h"
+#include "debugf.h"
 
 typedef struct colour {
 	union {
@@ -12,11 +13,28 @@ typedef struct colour {
 	};
 } colour;
 
+static const struct field_desc colour_fields[] = {
+	FIELD( struct colour, r, FIELD_FLOAT );
+	FIELD( struct colour, g, FIELD_FLOAT );
+	FIELD( struct colour, b, FIELD_FLOAT );
+	FIELD( struct colour, a, FIELD_FLOAT );
+};
+
+#define COLOUR_FIELD_COUNT ( sizeof( colour_fields ) / sizeof( colour_fields[0] ) )
+
 typedef struct icolour {
 	int r;
 	int g;
 	int b;
 } icolour;
+
+static const struct field_desc icolour_fields[] = {
+	FIELD( struct icolour, r, FIELD_INT );
+	FIELD( struct icolour, g, FIELD_INT );
+	FIELD( struct icolour, b, FIELD_INT );
+};
+
+#define ICOLOUR_FIELD_COUNT ( sizeof( icolour_fields ) / sizeof( icolour_fields[0] ) )
 
 #define VINTAGE_GOLD    ((colour){ 0.164f, 0.188f, 0.16f, 1.0f })
 
