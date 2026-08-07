@@ -4,6 +4,8 @@
 #include "shape2d.h"
 #include "renderer/renderer.h"
 
+#include "debugf.h"
+
 /* 
  * #ifndef DEFAULT_SHAPE_COLOUR
  * #define DEFAULT_SHAPE_COLOUR	CYAN
@@ -39,12 +41,13 @@ void shape2d_set_default_colour( colour c )
  * 1 - Success
  * 0 - Failure
  */
-int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
-                    float w, float h )
+int shape2d_create( const char *name, struct shape2d *s, struct shader *shader,
+                    float x, float y, float w, float h )
 {
 	if ( !s || !shader )
 		return 0;
 
+	s->name = name;
 	s->shader = shader;
 	s->pos = vec2_make( x, y );
 	s->scale = vec2_make( w, h );
@@ -120,9 +123,12 @@ void shape2d_set_colour( struct shape2d *s, colour c )
  */
 void shape2d_draw( const struct shape2d *s )
 {
+	float colour_arr[4];
+	colour_to_arr( s->colour, colour_arr );
+
 	shader_set_vec2( s->shader, "u_pos", s->pos );
 	shader_set_vec2( s->shader, "u_scale", s->scale );
-	shader_set_4f( s->shader, "u_colour", s->colour.raw );
+	shader_set_4f( s->shader, "u_colour", colour_arr );
 	renderer_draw_mesh( &s->mesh, s->shader );
 }
 
@@ -135,14 +141,22 @@ void shape2d_destroy( struct shape2d *s )
 	mesh_destroy( &s->mesh );
 }
 
+static const struct field_desc shape2d_fields[] = {
+	FIELD_NESTED( struct shape2d, mesh, mesh_fields, MESH_FIELD_COUNT ),
+	FIELD_NESTED( struct shape2d, colour, colour_fields, COLOUR_FIELD_COUNT ),
+	FIELD_NESTED_PTR( struct shape2d, shader, shader_fields, SHADER_FIELD_COUNT ),
+	FIELD_NESTED( struct shape2d, pos, vec2_fields, VEC2_FIELD_COUNT ),
+	FIELD_NESTED( struct shape2d, scale, vec2_fields, VEC2_FIELD_COUNT )
+};
+
+#define SHAPE2D_FIELD_COUNT	( sizeof( shape2d_fields ) / sizeof( shape2d_fields[0] ) )
+
 void shape2d_dump( const struct shape2d *s )
 {
-	printf("*** SHAPE2D DUMP ***\n");
-	printf("POSITION: ");
-	vec2_print( s->pos );
-	printf("SCALE: ");
-	vec2_print( s->scale );
-	printf("COLOUR: ");
-	icolour_print( colour_to_rgb( s->colour ) );
-	printf("\n");
+	if ( !s )
+		return;
+
+	printf( "%s {\n", s->name );
+	dump( s, shape2d_fields, SHAPE2D_FIELD_COUNT, 1 );
+	printf("}\n");
 }
