@@ -34,7 +34,7 @@ int main( int argc, char *argv[] )
 		return -1;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create( &rect, &shader, 0.0f, 0.0f, 0.5f, 0.5f ) )
+	if ( !shape2d_create( "TEST_RECT", &rect, &shader, 0.0f, 0.0f, 0.5f, 0.5f ) )
 		return -1;
 
 	if ( !shape2d_init( SHAPE2D_RECTANGLE, &rect ) )
