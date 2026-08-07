@@ -9,6 +9,8 @@
 #include "buffers/vertex_array.h"
 #include "primitives/vec2.h"
 
+#include "debugf.h"
+
 struct mesh {
 	struct vertex_array vao;
 	struct buffer vbo;
@@ -19,9 +21,9 @@ struct mesh {
 };
 
 static const struct field_desc mesh_fields[] = {
-	FIELD( struct mesh, vertex_count, FIELD_INT );
-	FIELD( struct mesh, index_count, FIELD_INT );
-	FIELD( struct mesh, has_indices, FIELD_BOOL );
+	FIELD( struct mesh, vertex_count, FIELD_INT ),
+	FIELD( struct mesh, index_count, FIELD_INT ),
+	FIELD( struct mesh, has_indices, FIELD_BOOL )
 };
 
 #define MESH_FIELD_COUNT ( sizeof( mesh_fields ) / sizeof( mesh_fields[0] ) )
