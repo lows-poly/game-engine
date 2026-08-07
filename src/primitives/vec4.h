@@ -10,10 +10,10 @@
 #define VEC4_ZERO	((vec4)VEC4_ZERO_INIT)
 
 typedef struct vec4 {
-	union {
-		struct { float x, y, z, w; };
-		float raw[4];
-	};
+	float x;
+	float y;
+	float z;
+	float w;
 } vec4;
 
 static inline void vec4_print( const struct vec4 v )

@@ -1,19 +1,27 @@
 #ifndef ENGINE_VEC2_H
 #define ENGINE_VEC2_H
 
+#include <stddef.h>
 #include <stdio.h>
 #include <math.h>
+
+#include "debugf.h"
 
 #define VEC_EPSILON     1e-8f
 #define VEC2_ZERO_INIT  { 0.0f, 0.0f }
 #define VEC2_ZERO       ((vec2)VEC2_ZERO_INIT)
 
 typedef struct vec2 {
-	union {
-		struct { float x, y; };
-		float raw[2];
-	};
+	float x;
+	float y;
 } vec2;
+
+static const struct field_desc vec2_fields[] = {
+	FIELD( struct vec2, x, FIELD_FLOAT ),
+	FIELD( struct vec2, y, FIELD_FLOAT )
+};
+
+#define VEC2_FIELD_COUNT	( sizeof( vec2_fields ) / sizeof( vec2_fields[0] ) )
 
 static inline void vec2_print( const struct vec2 v )
 {

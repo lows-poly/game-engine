@@ -7,17 +7,17 @@
 #include "debugf.h"
 
 typedef struct colour {
-	union {
-		struct { float r, g, b, a; };
-		float raw[4];
-	};
+	float r;
+	float g;
+	float b;
+	float a;
 } colour;
 
 static const struct field_desc colour_fields[] = {
-	FIELD( struct colour, r, FIELD_FLOAT );
-	FIELD( struct colour, g, FIELD_FLOAT );
-	FIELD( struct colour, b, FIELD_FLOAT );
-	FIELD( struct colour, a, FIELD_FLOAT );
+	FIELD( struct colour, r, FIELD_FLOAT ),
+	FIELD( struct colour, g, FIELD_FLOAT ),
+	FIELD( struct colour, b, FIELD_FLOAT ),
+	FIELD( struct colour, a, FIELD_FLOAT )
 };
 
 #define COLOUR_FIELD_COUNT ( sizeof( colour_fields ) / sizeof( colour_fields[0] ) )
@@ -29,9 +29,9 @@ typedef struct icolour {
 } icolour;
 
 static const struct field_desc icolour_fields[] = {
-	FIELD( struct icolour, r, FIELD_INT );
-	FIELD( struct icolour, g, FIELD_INT );
-	FIELD( struct icolour, b, FIELD_INT );
+	FIELD( struct icolour, r, FIELD_INT ),
+	FIELD( struct icolour, g, FIELD_INT ),
+	FIELD( struct icolour, b, FIELD_INT )
 };
 
 #define ICOLOUR_FIELD_COUNT ( sizeof( icolour_fields ) / sizeof( icolour_fields[0] ) )
@@ -78,6 +78,14 @@ static inline icolour colour_to_rgb( colour c )
 	ic.b = (int)( c.b * 255.0f );
 
 	return ic;
+}
+
+static inline void colour_to_arr( colour c, float out[4] )
+{
+	out[0] = c.r;
+	out[1] = c.g;
+	out[2] = c.b;
+	out[3] = c.a;
 }
 
 static inline colour icolour_normalise( icolour c )

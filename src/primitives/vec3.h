@@ -10,10 +10,9 @@
 #define VEC3_ZERO	((vec3){VEC3_ZERO_INIT})
 
 typedef struct vec3 {
-	union {
-		struct { float x, y, z; };
-		float raw[3];
-	};
+	float x;
+	float y;
+	float z;
 } vec3;
 
 static inline void vec3_print( const struct vec3 v )
