@@ -41,13 +41,12 @@ void shape2d_set_default_colour( colour c )
  * 1 - Success
  * 0 - Failure
  */
-int shape2d_create( const char *name, struct shape2d *s, struct shader *shader,
+int shape2d_create( struct shape2d *s, struct shader *shader,
                     float x, float y, float w, float h )
 {
 	if ( !s || !shader )
 		return 0;
-
-	s->name = name;
+	
 	s->shader = shader;
 	s->pos = vec2_make( x, y );
 	s->scale = vec2_make( w, h );
@@ -156,7 +155,6 @@ void shape2d_dump( const struct shape2d *s )
 	if ( !s )
 		return;
 
-	printf( "%s {\n", s->name );
+	printf( "***SHAPE2D DUMP***\n" );
 	dump( s, shape2d_fields, SHAPE2D_FIELD_COUNT, 1 );
-	printf("}\n");
 }

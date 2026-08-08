@@ -26,7 +26,6 @@ struct shape2d {
 	struct mesh mesh;
 	struct colour colour;
 	struct shader *shader;
-	char *name;
 	vec2 pos;
 	vec2 scale;
 };
