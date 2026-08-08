@@ -46,8 +46,8 @@ void shape2d_set_default_colour( colour c );
  * 1 - Success
  * 0 - Failure
  */
-int shape2d_create( const char *name, struct shape2d *s, struct shader *shader,
-                    float x, float y, float w, float h );
+int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
+                    float w, float h );
 
 /*
  * shape2d_init() - Initialise a created shaoe struct.
