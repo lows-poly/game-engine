@@ -14,6 +14,8 @@
 #include "primitives/shape2d.h"
 #include "primitives/colour.h"
 
+#include "log.h"
+
 #define WINDOW_TITLE         "Rectangle Test"
 #define WINDOW_WIDTH         800
 #define WINDOW_HEIGHT        600
@@ -36,6 +38,10 @@ int main( int argc, char *argv[] )
 	/* SHAPE SETUP */
 	if ( !shape2d_create( "TEST_RECT", &rect, &shader, 0.0f, 0.0f, 0.5f, 0.5f ) )
 		return -1;
+
+	pr_info( "SHAPE_CREATED:\n" );
+	pr_info( "NAME: %s\n", rect.name );
+	pr_info( "NAME: %s\n", rect.name );
 
 	if ( !shape2d_init( SHAPE2D_RECTANGLE, &rect ) )
 		return -1;
