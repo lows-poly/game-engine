@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
 	if ( !shape2d_create( &rect, &shader, -1.0f, 0.0f, 0.5f, 0.5f ) )
 		return -1;
 
-	if ( !shape2d_init( SHAPE2D_RECTANGLE, &rect ) )
+	if ( !shape2d_init( &rect, SHAPE2D_RECTANGLE ) )
 		return -1;
 
 	while ( app.running ) {
