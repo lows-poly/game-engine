@@ -36,17 +36,13 @@ int main( int argc, char *argv[] )
 		return -1;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create( "TEST_RECT", &rect, &shader, 0.0f, 0.0f, 0.5f, 0.5f ) )
+	if ( !shape2d_create( &rect, &shader, -1.0f, 0.0f, 0.5f, 0.5f ) )
 		return -1;
 
-	pr_info( "SHAPE_CREATED:\n" );
-	pr_info( "NAME: %s\n", rect.name );
-	pr_info( "NAME: %s\n", rect.name );
+	pr_info( "SHAPE_CREATED\n" );
 
 	if ( !shape2d_init( SHAPE2D_RECTANGLE, &rect ) )
 		return -1;
-
-	shape2d_dump( &rect );
 
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
@@ -69,6 +65,9 @@ int main( int argc, char *argv[] )
 
 		if ( key_down( &app.input, KEY_W ) )
 			shape2d_move( &rect, 0.0f, velocity );
+
+		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
+		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
 
 		shape2d_draw( &rect );
 
