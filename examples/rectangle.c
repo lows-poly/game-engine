@@ -39,8 +39,6 @@ int main( int argc, char *argv[] )
 	if ( !shape2d_create( &rect, &shader, -1.0f, 0.0f, 0.5f, 0.5f ) )
 		return -1;
 
-	pr_info( "SHAPE_CREATED\n" );
-
 	if ( !shape2d_init( SHAPE2D_RECTANGLE, &rect ) )
 		return -1;
 
