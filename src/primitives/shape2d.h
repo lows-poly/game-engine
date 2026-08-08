@@ -50,15 +50,15 @@ int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
                     float w, float h );
 
 /*
- * shape2d_init() - Initialise a created shaoe struct.
- * @shape_type
+ * shape2d_init() - Initialise a created shape struct.
  * @shape
+ * @shape_type
  *
  * Return:
  * 1 - Success
  * Otherwise - Failure
  */
-int shape2d_init( enum shape_type shape, struct shape2d *s );
+int shape2d_init( struct shape2d *s, enum shape_type shape );
 
 /*
  * shape2d_move() - Move x, y coordinate.
