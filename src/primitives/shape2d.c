@@ -57,14 +57,14 @@ int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
 
 /*
  * shape2d_init() - Initialise a created shaoe struct.
- * @shape: shape_type enum
  * @s:     struct shape2d
+ * @shape: shape_type enum
  *
  * Return:
  * 1 - Succes
  * 0 - Failure
  */
-int shape2d_init( enum shape_type shape, struct shape2d *s )
+int shape2d_init( struct shape2d *s, enum shape_type shape )
 {
 	if ( !s )
 		return 0;
