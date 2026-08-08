@@ -23,7 +23,7 @@ void log_write( enum log_level level, const char *file, int line,
 	fprintf( stderr, "[%s] %s:%d %s(): ", tag[level], file, line, func );
 
 	va_start( ap, fmt );
-	vprintf( stderr, fmt, ap );
+	vprintf( fmt, ap );
 	va_end( ap );
 
 	fprintf( stderr, "\n" );
