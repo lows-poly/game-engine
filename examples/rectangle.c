@@ -88,8 +88,6 @@ static int setup( struct app *app, struct shader *shader, const char *argv0 )
 	if ( !app_init( app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
 		return 0;
 
-	window_set_vsync( &app->win, 1 );
-
 	/* SHADER SETUP */
 	if ( shader_init_preset( shader, SHADER_PRIMITIVE_2D ) != 0 )
 		return 0;
