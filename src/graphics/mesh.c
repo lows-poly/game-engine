@@ -158,6 +158,7 @@ int mesh_update_vertices( struct mesh *m, const void *vertices, size_t vertex_si
 	}
 
 	buffer_update( &m->vbo, vertices, vertex_size, offset );
+	return 0;
 }
 
 void mesh_destroy( struct mesh *m )
