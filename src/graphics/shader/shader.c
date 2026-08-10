@@ -20,7 +20,7 @@ static void _warn( const char *fmt, ... )
 	va_end( args );
 }
 
-static void shader_cache_uniform( struct shader *s, const char *name, GLint loc )
+static int shader_cache_uniform( struct shader *s, const char *name, GLint loc )
 {
 	size_t len;
 
@@ -28,15 +28,15 @@ static void shader_cache_uniform( struct shader *s, const char *name, GLint loc 
 	assert( name != NULL );
 
 	if ( loc < 0 )
-		return;
+		return -EINVAL;
 
 	if ( s->u_count >= SHADER_UNIFORM_CACHE_MAX )
-		return;
+		return -ENOMEM;
 
 	len = strlen( name );
 	if ( len >= SHADER_UNIFORM_NAME_MAX ) {
 		_warn("UNIFORM NAME TOO LONG, NOT CACHED: %s\n", name);
-		return;
+		return -EINVAL;
 	}
 
 	snprintf( s->uniforms[s->u_count].name, SHADER_UNIFORM_NAME_MAX,
@@ -44,11 +44,13 @@ static void shader_cache_uniform( struct shader *s, const char *name, GLint loc 
 
 	s->uniforms[s->u_count].loc = loc;
 	s->u_count++;
+	return 0;
 }
 
 static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 {
 	GLint loc;
+	GLint err;
 
 	assert( s != NULL );
 	assert( name != NULL );
@@ -63,7 +65,9 @@ static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 
 	loc = glGetUniformLocation( s->id, name );
 
-	shader_cache_uniform( s, name, loc );
+	err = (GLint)shader_cache_uniform( s, name, loc );
+	if ( err < 0 )
+		return err;
 
 	return loc;
 }
