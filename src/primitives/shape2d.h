@@ -95,6 +95,4 @@ void shape2d_draw( const struct shape2d *s );
  */
 void shape2d_destroy( struct shape2d *s );
 
-void shape2d_dump( const struct shape2d *s );
-
 #endif

@@ -4,8 +4,6 @@
 #include "shape2d.h"
 #include "renderer/renderer.h"
 
-#include "debugf.h"
-
 /* 
  * #ifndef DEFAULT_SHAPE_COLOUR
  * #define DEFAULT_SHAPE_COLOUR	CYAN
@@ -138,23 +136,4 @@ void shape2d_draw( const struct shape2d *s )
 void shape2d_destroy( struct shape2d *s )
 {
 	mesh_destroy( &s->mesh );
-}
-
-static const struct field_desc shape2d_fields[] = {
-	FIELD_NESTED( struct shape2d, mesh, mesh_fields, MESH_FIELD_COUNT ),
-	FIELD_NESTED( struct shape2d, colour, colour_fields, COLOUR_FIELD_COUNT ),
-	FIELD_NESTED_PTR( struct shape2d, shader, shader_fields, SHADER_FIELD_COUNT ),
-	FIELD_NESTED( struct shape2d, pos, vec2_fields, VEC2_FIELD_COUNT ),
-	FIELD_NESTED( struct shape2d, scale, vec2_fields, VEC2_FIELD_COUNT )
-};
-
-#define SHAPE2D_FIELD_COUNT	( sizeof( shape2d_fields ) / sizeof( shape2d_fields[0] ) )
-
-void shape2d_dump( const struct shape2d *s )
-{
-	if ( !s )
-		return;
-
-	printf( "***SHAPE2D DUMP***\n" );
-	dump( s, shape2d_fields, SHAPE2D_FIELD_COUNT, 1 );
 }
