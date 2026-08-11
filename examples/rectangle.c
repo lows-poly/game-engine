@@ -42,6 +42,9 @@ int main( int argc, char *argv[] )
 	if ( !shape2d_init( &rect, SHAPE2D_RECTANGLE ) )
 		return -1;
 
+	shader_use( &shader );
+	renderer_set_2d_projection( &shader, app.win.width, app.win.height );
+
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
 
@@ -71,7 +74,7 @@ int main( int argc, char *argv[] )
 		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
 		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
 
-		shape2d_draw( &rect, app.win.width, app.win.height );
+		shape2d_draw( &rect );
 
 		app_update( &app );
 	}
