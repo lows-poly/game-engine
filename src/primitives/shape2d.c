@@ -123,6 +123,7 @@ void shape2d_draw( const struct shape2d *s )
 	float colour_arr[4];
 	colour_to_arr( s->colour, colour_arr );
 
+	shader_use( s->shader );
 	shader_set_vec2( s->shader, "u_pos", s->pos );
 	shader_set_vec2( s->shader, "u_scale", s->scale );
 	shader_set_4f( s->shader, "u_colour", colour_arr );
