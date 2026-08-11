@@ -20,7 +20,7 @@
 #define WINDOW_WIDTH         800
 #define WINDOW_HEIGHT        600
 
-#define SPEED                0.5f
+#define SPEED                200.0f
 
 static int setup( struct app *app, struct shader *shader, const char *argv0 );
 
@@ -36,7 +36,7 @@ int main( int argc, char *argv[] )
 		return -1;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create( &rect, &shader, -0.25f, -0.25f, 0.5f, 0.5f ) )
+	if ( !shape2d_create( &rect, &shader, 100.0f, 100.0f, 64.0f, 64.0f ) )
 		return -1;
 
 	if ( !shape2d_init( &rect, SHAPE2D_RECTANGLE ) )
@@ -44,6 +44,10 @@ int main( int argc, char *argv[] )
 
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
+
+		if ( app.win.resized )
+			renderer_set_2d_projection( &shader, app.win.width,
+			                            app.win.height );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
@@ -79,6 +83,7 @@ int main( int argc, char *argv[] )
 	return 0;
 }
 
+/* USING INT AS BOOLEAN; 0 = FALSE, 1 = TRUE */
 static int setup( struct app *app, struct shader *shader, const char *argv0 )
 {
 	if ( path_init( argv0 ) < 0 )
@@ -90,6 +95,10 @@ static int setup( struct app *app, struct shader *shader, const char *argv0 )
 
 	/* SHADER SETUP */
 	if ( shader_init_preset( shader, SHADER_PRIMITIVE_2D ) != 0 )
+		return 0;
+
+	/* RENDERER SETUP */
+	if ( renderer_set_2d_projection( shader, app->win.width, app->win.height ) != 0 )
 		return 0;
 
 	return 1;
