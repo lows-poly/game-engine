@@ -1,5 +1,5 @@
-#ifndef ENGINE_RENDERER_H
-#define ENGINE_RENDERER_H
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #include <glad/glad.h>
 
@@ -33,15 +33,5 @@ void renderer_enable_backface_culling( bool value, enum draw_order order );
  * @s: shader
  */
 void renderer_draw_mesh( const struct mesh *m, const struct shader *s );
-
-/*
- * renderer_set_2d_projection()
- * @shader
- * @width
- * @height
- *
- * Return: 0 on success, otherwise failure.
- */
-int renderer_set_2d_projection( struct shader *s, int width, int height );
 
 #endif
