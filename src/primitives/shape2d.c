@@ -28,7 +28,6 @@ void shape2d_set_default_colour( colour c )
 /*
  * shape2d_create()
  * @shape
- * @shader
  * @x
  * @y
  * @width
@@ -39,13 +38,11 @@ void shape2d_set_default_colour( colour c )
  * 1 - Success
  * 0 - Failure
  */
-int shape2d_create( struct shape2d *s, struct shader *shader, float x, float y,
-                    float w, float h )
+int shape2d_create( struct shape2d *s, float x, float y, float w, float h )
 {
-	if ( !s || !shader )
+	if ( !s )
 		return 0;
 	
-	s->shader = shader;
 	s->pos = vec2_make( x, y );
 	s->scale = vec2_make( w, h );
 	s->colour = DEFAULT_SHAPE_COLOUR;
@@ -112,22 +109,6 @@ void shape2d_set_colour( struct shape2d *s, colour c )
 		return;
 
 	s->colour = c;
-}
-
-/*
- * shape2d_draw() - Draw mesh and update uniform properties
- * @s
- */
-void shape2d_draw( const struct shape2d *s )
-{
-	float colour_arr[4];
-	colour_to_arr( s->colour, colour_arr );
-
-	shader_use( s->shader );
-	shader_set_vec2( s->shader, "u_pos", s->pos );
-	shader_set_vec2( s->shader, "u_scale", s->scale );
-	shader_set_4f( s->shader, "u_colour", colour_arr );
-	renderer_draw_mesh( &s->mesh, s->shader );
 }
 
 /*
