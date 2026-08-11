@@ -7,9 +7,7 @@
 #include "input/input.h"
 
 #include "renderer/renderer.h"
-
-#include "graphics/mesh.h"
-#include "graphics/shader/shader.h"
+#include "renderer/renderer_2d.h"
 
 #include "primitives/shape2d.h"
 #include "primitives/colour.h"
@@ -22,35 +20,29 @@
 
 #define SPEED                200.0f
 
-static int setup( struct app *app, struct shader *shader, const char *argv0 );
+static int setup( struct app *app, struct renderer_2d *renderer, const char *argv0 );
 
 int main( int argc, char *argv[] )
 {
 	struct app app;
-	struct shader shader;
 	struct shape2d rect;
+	struct renderer_2d renderer;
 
 	float dt, velocity;
 
-	if ( !setup( &app, &shader, argv[0] ) )
+	if ( !setup( &app, &renderer, argv[0] ) )
 		return -1;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create( &rect, &shader, 100.0f, 100.0f, 64.0f, 64.0f ) )
+	if ( !shape2d_create( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
 		return -1;
 
 	if ( !shape2d_init( &rect, SHAPE2D_RECTANGLE ) )
 		return -1;
 
-	shader_use( &shader );
-	renderer_set_2d_projection( &shader, app.win.width, app.win.height );
-
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
-
-		if ( app.win.resized )
-			renderer_set_2d_projection( &shader, app.win.width,
-			                            app.win.height );
+		renderer_2d_update( &renderer, &app.win );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
@@ -74,20 +66,20 @@ int main( int argc, char *argv[] )
 		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
 		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
 
-		shape2d_draw( &rect );
+		renderer_2d_draw( &renderer, &rect );
 
 		app_update( &app );
 	}
 
 	shape2d_destroy( &rect );
-	shader_destroy( &shader );
+	renderer_2d_destroy( &renderer );
 	app_shutdown( &app );
 
 	return 0;
 }
 
 /* USING INT AS BOOLEAN; 0 = FALSE, 1 = TRUE */
-static int setup( struct app *app, struct shader *shader, const char *argv0 )
+static int setup( struct app *app, struct renderer_2d *renderer, const char *argv0 )
 {
 	if ( path_init( argv0 ) < 0 )
 		return 0;
@@ -96,8 +88,7 @@ static int setup( struct app *app, struct shader *shader, const char *argv0 )
 	if ( !app_init( app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
 		return 0;
 
-	/* SHADER SETUP */
-	if ( shader_init_preset( shader, SHADER_PRIMITIVE_2D ) != 0 )
+	if ( renderer_2d_init( renderer, app->win.width, app->win.height ) != 0 )
 		return 0;
 
 	return 1;
