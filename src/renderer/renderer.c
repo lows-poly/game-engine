@@ -1,4 +1,7 @@
+#include <errno.h>
+
 #include "renderer.h"
+#include "primitives/mat4.h"
 
 /* 
  * renderer_begin_frame() - Call glClear and glClearColor
@@ -37,4 +40,29 @@ void renderer_draw_mesh( const struct mesh *m, const struct shader *s )
 {
 	shader_use( s );
 	mesh_draw( m );
+}
+
+/*
+ * renderer_set_2d_projection()
+ * @shader
+ * @width
+ * @height
+ */
+int renderer_set_2d_projection( struct shader *s, int width, int height )
+{
+	mat4 proj;
+
+	if ( !s || width <= 0 || height <= 0 )
+		return -EINVAL;
+
+	/*
+	 * PIXEL COORDINATES:
+	 * LEFT   = 0
+	 * RIGHT  = WIDTH
+	 * BOTTOM = HEIGHT
+	 * TOP    = 0
+	 */
+	mat4_ortho( 0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f, proj );
+
+	return shader_set_mat4( s, "u_projection", proj );
 }
