@@ -8,6 +8,7 @@
 #include "shader.h"
 #include "path.h"
 #include "file.h"
+#include "log.h"
 
 static void _warn( const char *fmt, ... )
 {
@@ -248,168 +249,166 @@ void shader_use( const struct shader *s )
 	glUseProgram( s->id );
 }
 
-int shader_set_1i( struct shader *s, const char *name, int value )
+bool shader_set_1i( struct shader *s, const char *name, int value )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform1i( loc, value );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_1f( struct shader *s, const char *name, float value )
+bool shader_set_1f( struct shader *s, const char *name, float value )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform1f( loc, value );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_2f( struct shader *s, const char *name, const float value[2] )
+bool shader_set_2f( struct shader *s, const char *name, const float value[2] )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform2fv( loc, 1, value );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_vec2( struct shader *s, const char *name, vec2 v )
+bool shader_set_vec2( struct shader *s, const char *name, vec2 v )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform2f( loc, v.x, v.y );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_3i( struct shader *s, const char *name, const int value[3] )
+bool shader_set_3i( struct shader *s, const char *name, const int value[3] )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform3iv( loc, 1, value );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_ivec3( struct shader *s, const char *name, ivec3 v )
+bool shader_set_ivec3( struct shader *s, const char *name, ivec3 v )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform3i( loc, v.x, v.y, v.z );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_3f( struct shader *s, const char *name, const float value[3] )
+bool shader_set_3f( struct shader *s, const char *name, const float value[3] )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform3fv( loc, 1, value );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_vec3( struct shader *s, const char *name, vec3 v )
+bool shader_set_vec3( struct shader *s, const char *name, vec3 v )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform3f( loc, v.x, v.y, v.z );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_4f( struct shader *s, const char *name, const float value[4] )
+bool shader_set_4f( struct shader *s, const char *name, const float value[4] )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform4fv( loc, 1, value );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_vec4( struct shader *s, const char *name, vec4 v )
+bool shader_set_vec4( struct shader *s, const char *name, vec4 v )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniform4f( loc, v.x, v.y, v.z, v.w );
 	
-	return 0;
+	return true;
 }
 
-int shader_set_mat4( struct shader *s, const char *name, const mat4 mat )
+bool shader_set_mat4( struct shader *s, const char *name, const mat4 mat )
 {
 	GLint loc;
 
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
-		return -EINVAL;
+		return false;
 
 	glUniformMatrix4fv( loc, 1, GL_FALSE, (const float *)mat );
 	
-	return 0;
+	return true;
 }
 
 void shader_destroy( struct shader *s )
 {
-	assert( s != NULL );
-	assert( s->id != 0 );
+	if ( !s )
+		return;
 
-	GLuint id = s->id;
-
-	glDeleteProgram( id );
+	glDeleteProgram( s->id );
 
 	s->id = 0;
 	s->u_count = 0;
