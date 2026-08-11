@@ -63,15 +63,15 @@ int main( int argc, char *argv[] )
 			shape2d_move( &rect, velocity, 0.0f );
 
 		if ( key_down( &app.input, KEY_S ) )
-			shape2d_move( &rect, 0.0f, -velocity );
+			shape2d_move( &rect, 0.0f, velocity );
 
 		if ( key_down( &app.input, KEY_W ) )
-			shape2d_move( &rect, 0.0f, velocity );
+			shape2d_move( &rect, 0.0f, -velocity );
 
 		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
 		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
 
-		shape2d_draw( &rect );
+		shape2d_draw( &rect, app.win.width, app.win.height );
 
 		app_update( &app );
 	}
@@ -95,10 +95,6 @@ static int setup( struct app *app, struct shader *shader, const char *argv0 )
 
 	/* SHADER SETUP */
 	if ( shader_init_preset( shader, SHADER_PRIMITIVE_2D ) != 0 )
-		return 0;
-
-	/* RENDERER SETUP */
-	if ( renderer_set_2d_projection( shader, app->win.width, app->win.height ) != 0 )
 		return 0;
 
 	return 1;
