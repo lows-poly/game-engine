@@ -29,8 +29,8 @@ struct app {
  * @height: Window height
  * @title:  Window title
  */
-bool app_init( struct app *app, const char *argv0, int width, int height,
-               const char *title );
+bool app_init( struct app *app, int width, int height, const char *title,
+               const char *argv0 );
 
 /*
  * app_update() - Update input, swap buffers, poll events, and limit fps

@@ -11,12 +11,14 @@
 #include "path.h"
 #include "log.h"
 
-bool app_init( struct app *app, const char *argv0, int width, int height,
-               const char *title )
+bool app_init( struct app *app, int width, int height, const char *title,
+               const char *argv0 )
 {
-	if ( path_init( argv0 ) < 0 ) {
-		pr_warn("FAILED TO INIT PATH\n");
-		return false;
+	if ( argv0 ) {
+		if ( path_init( argv0 ) < 0 ) {
+			pr_warn("FAILED TO INIT PATH\n");
+			return false;
+		}
 	}
 
 	if ( !window_init( &app->win, width, height, title ) ) {
