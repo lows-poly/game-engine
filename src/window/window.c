@@ -121,6 +121,7 @@ int window_init( struct window *w, int width, int height, const char *title )
 		return 0;
 	}
 
+	glfwSwapInterval( 0 );
 	w->last_frame_time = glfwGetTime();
 
 	return 1;
