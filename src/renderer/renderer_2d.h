@@ -11,6 +11,10 @@
 struct renderer_2d {
 	struct shader default_shader;
 	struct shader *shader;
+
+	struct mesh rect_mesh;
+	struct mesh tri_mesh;
+
 	int width;
 	int height;
 };
@@ -25,6 +29,7 @@ struct renderer_2d {
  */
 int renderer_2d_init( struct renderer_2d *r, int width, int height );
 int renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
+void renderer_2d_use_default_shader( struct renderer_2d *r );
 void renderer_2d_update( struct renderer_2d *r, const struct window *w );
 void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape );
 int renderer_2d_resize( struct renderer_2d *r, int width, int height );

@@ -4,6 +4,19 @@
 #include "renderer.h"
 #include "log.h"
 
+static const vec2 UNIT_QUAD[4] = {
+	{ 0.0f, 0.0f },
+	{ 1.0f, 0.0f },
+	{ 1.0f, 1.0f },
+	{ 0.0f, 1.0f }
+};
+
+static const vec2 UNIT_TRI[3] = {
+	{ 0.0f, 1.0f },
+	{ 1.0f, 1.0f },
+	{ 0.5f, 0.0f }
+};
+
 static int set_projection( struct renderer_2d *r, int width, int height )
 {
 	mat4 proj;
@@ -66,16 +79,38 @@ int renderer_2d_init( struct renderer_2d *r, int width, int height )
 	r->width = width;
 	r->height = height;
 
+	mesh_init_quad( &r->rect_mesh, UNIT_QUAD, DRAW_STATIC );
+	mesh_init_tri( &r->tri_mesh, UNIT_TRI, DRAW_STATIC );
+
 	return set_projection( r, width, height );
 }
 
 int renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
 {
+	struct shader *prev;
+	int err;
+
 	if ( !r || !shader )
 		return -EINVAL;
 
+	prev = r->shader;
 	r->shader = shader;
-	return set_projection( r, r->width, r->height );
+
+	err = set_projection( r, r->width, r->height );
+	if ( err != 0 ) {
+		r->shader = prev;
+		return err;
+	}
+
+	return 0;
+}
+
+void renderer_2d_use_default_shader( struct renderer_2d *r )
+{
+	if ( !r )
+		return;
+
+	r->shader = &r->default_shader;
 }
 
 void renderer_2d_update( struct renderer_2d *r, const struct window *w )
@@ -91,10 +126,22 @@ void renderer_2d_update( struct renderer_2d *r, const struct window *w )
 
 void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 {
+	struct mesh *mesh;
 	float colour_arr[4];
 
 	if ( !r || !shape || !r->shader )
 		return;
+
+	switch ( shape->type ) {
+	case SHAPE2D_RECTANGLE:
+		mesh = &r->rect_mesh;
+		break;
+	case SHAPE2D_TRIANGLE:
+		mesh = &r->tri_mesh;
+		break;
+	default:
+		return;
+	}
 
 	colour_to_arr( shape->colour, colour_arr );
 
@@ -102,7 +149,7 @@ void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 	shader_set_vec2( r->shader, "u_pos", shape->pos );
 	shader_set_vec2( r->shader, "u_scale", shape->scale );
 	shader_set_4f( r->shader, "u_colour", colour_arr );
-	renderer_draw_mesh( &shape->mesh, r->shader );
+	renderer_draw_mesh( mesh, r->shader );
 }
 
 int renderer_2d_resize( struct renderer_2d *r, int width, int height )
@@ -119,6 +166,8 @@ void renderer_2d_destroy( struct renderer_2d *r )
 		return;
 
 	shader_destroy( &r->default_shader );
+	mesh_destroy( &r->rect_mesh );
+	mesh_destroy( &r->tri_mesh );
 
 	r->shader = NULL;
 	r->width = 0;
