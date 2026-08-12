@@ -26,6 +26,8 @@ struct shape2d {
 	struct colour colour;
 	vec2 pos;
 	vec2 scale;
+	vec2 origin;
+	float rotation;
 };
 
 void shape2d_set_default_colour( colour c );
@@ -42,12 +44,17 @@ bool shape2d_create( struct shape2d *s, enum shape2d_type type, float x, float y
 void shape2d_move( struct shape2d *s, float dx, float dy );
 
 /*
- * shape2d_set_pos() - Set x, y coordinate.
+ * shape2d_set_pos() - Set x, y position.
  * @shape
  * @x
  * @y
  */
 void shape2d_set_pos( struct shape2d *s, float x, float y );
+
+void shape2d_set_rotation( struct shape2d *s, float rad );
+void shape2d_rotate( struct shape2d *s, float rad );
+void shape2d_set_origin( struct shape2d *s, float x, float y );
+void shape2d_center_origin( struct shape2d *s );
 
 /*
  * shape2d_set_colour() - Set uniform colour.

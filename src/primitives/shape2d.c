@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <math.h>
 #include <errno.h>
 
 #include "shape2d.h"
 #include "renderer/renderer.h"
+#include "mathx.h"
 #include "log.h"
 
 /* 
@@ -11,8 +13,19 @@
  * #endif
  */
 
+static const float TWO_PI = 2.0f * (float)ENGINE_PI;
+
 static colour DEFAULT_SHAPE_COLOUR = CYAN;
 
+static float wrap_angle( float rad )
+{
+	rad = fmodf( rad, TWO_PI );
+
+	if ( rad < 0.0f )
+		rad += TWO_PI;
+
+	return rad;
+}
 
 void shape2d_set_default_colour( colour c )
 {
@@ -39,6 +52,8 @@ bool shape2d_create( struct shape2d *s, enum shape2d_type type, float x, float y
 	s->colour = DEFAULT_SHAPE_COLOUR;
 	s->pos = vec2_make( x, y );
 	s->scale = vec2_make( w, h );
+	s->origin = vec2_make( w * 0.5f, h * 0.5f );
+	s->rotation = 0.0f;
 
 	return true;
 }
@@ -71,6 +86,38 @@ void shape2d_set_pos( struct shape2d *s, float x, float y )
 
 	s->pos.x = x;
 	s->pos.y = y;
+}
+
+void shape2d_set_rotation( struct shape2d *s, float rad )
+{
+	if ( !s )
+		return;
+
+	s->rotation = wrap_angle( s->rotation + rad );
+}
+
+void shape2d_rotate( struct shape2d *s, float rad )
+{
+	if ( !s )
+		return;
+
+	s->rotation += rad;
+}
+
+void shape2d_set_origin( struct shape2d *s, float x, float y )
+{
+	if ( !s )
+		return;
+
+	s->origin = vec2_make( x, y );
+}
+
+void shape2d_center_origin( struct shape2d *s )
+{
+	if ( !s )
+		return;
+
+	s->origin = vec2_make( s->scale.x * 0.5f, s->scale.y * 0.5f );
 }
 
 /*
