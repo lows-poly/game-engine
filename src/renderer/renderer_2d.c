@@ -2,6 +2,7 @@
 
 #include "renderer_2d.h"
 #include "renderer.h"
+#include "primitives/mat4.h"
 #include "log.h"
 
 static const vec2 UNIT_QUAD[4] = {
@@ -61,6 +62,8 @@ static int set_projection( struct renderer_2d *r, int width, int height )
  */
 int renderer_2d_init( struct renderer_2d *r, int width, int height )
 {
+	int err;
+
 	if ( !r || width <= 0 || height <= 0 ) {
 		if ( !r )
 			pr_warn("RENDERER_2D IS NULL\n");
@@ -70,8 +73,17 @@ int renderer_2d_init( struct renderer_2d *r, int width, int height )
 		return -EINVAL;
 	}
 
+	if ( mesh_init_quad( &r->rect_mesh, UNIT_QUAD, DRAW_STATIC ) != 0 )
+		return -ENOMEM;
+
+	if ( mesh_init_tri( &r->tri_mesh, UNIT_TRI, DRAW_STATIC ) != 0 ) {
+		mesh_destroy( &r->rect_mesh );
+		return -ENOMEM;
+	}
+
 	if ( shader_init_preset( &r->default_shader, SHADER_PRIMITIVE_2D ) != 0 ) {
-		pr_warn("FAILED TO INIT 2D RENDERER: ENCOUNTER ERROR FROM SHADER PRESET INIT\n");
+		mesh_destroy( &r->rect_mesh );
+		mesh_destroy( &r->tri_mesh );
 		return -ENOMEM;
 	}
 
@@ -79,10 +91,13 @@ int renderer_2d_init( struct renderer_2d *r, int width, int height )
 	r->width = width;
 	r->height = height;
 
-	mesh_init_quad( &r->rect_mesh, UNIT_QUAD, DRAW_STATIC );
-	mesh_init_tri( &r->tri_mesh, UNIT_TRI, DRAW_STATIC );
+	err = set_projection( r, width, height );
+	if ( err != 0 ) {
+		renderer_2d_destroy( r );
+		return err;
+	}
 
-	return set_projection( r, width, height );
+	return 0;
 }
 
 int renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
@@ -111,6 +126,8 @@ void renderer_2d_use_default_shader( struct renderer_2d *r )
 		return;
 
 	r->shader = &r->default_shader;
+	if ( set_projection( r, r->width, r->height ) != 0 )
+		pr_warn("2D PROJECTION ENCOUNTERED AN ERROR WHILE SWITCHING TO DEFAULT SHADER\n");
 }
 
 void renderer_2d_update( struct renderer_2d *r, const struct window *w )
@@ -127,6 +144,7 @@ void renderer_2d_update( struct renderer_2d *r, const struct window *w )
 void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 {
 	struct mesh *mesh;
+	mat4 model;
 	float colour_arr[4];
 
 	if ( !r || !shape || !r->shader )
@@ -145,9 +163,16 @@ void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 
 	colour_to_arr( shape->colour, colour_arr );
 
+	/* model: pos, origin, rotation, scale */
+	mat4_identity( model );
+	mat4_translate( model, shape->pos.x, shape->pos.y, 0.0f );
+	mat4_translate( model, shape->origin.x, shape->origin.y, 0.0f);
+	mat4_rotate_z( model, shape->rotation );
+	mat4_translate( model, -shape->origin.x, -shape->origin.y, 0.0f );
+	mat4_scale_3f( model, shape->scale.x, shape-> scale.y, 1.0f );
+
 	shader_use( r->shader );
-	shader_set_vec2( r->shader, "u_pos", shape->pos );
-	shader_set_vec2( r->shader, "u_scale", shape->scale );
+	shader_set_mat4( r->shader, "u_model", model );
 	shader_set_4f( r->shader, "u_colour", colour_arr );
 	renderer_draw_mesh( mesh, r->shader );
 }
