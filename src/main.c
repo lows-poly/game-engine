@@ -23,6 +23,7 @@ int main( int argc, char *argv[] )
 {
 	struct app app;
 	struct shape2d rect;
+	struct shape2d tri;
 	struct renderer_2d renderer;
 	float dt, velocity;
 
@@ -34,8 +35,13 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create_rect( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
+	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, 300.0f, 300.0f, 64.0f, 64.0f ) )
 		return EXIT_FAILURE;
+
+	if ( !shape2d_create( &tri, SHAPE2D_TRIANGLE, 600.0f, 100.0f, 64.0f, 64.0f ) )
+		return EXIT_FAILURE;
+
+	shape2d_set_colour( &tri, GREEN );
 
 	/* RENDERER SETUP */
 	if ( renderer_2d_init( &renderer, app.win.width, app.win.height ) != 0 )
@@ -68,11 +74,13 @@ int main( int argc, char *argv[] )
 		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
 
 		renderer_2d_draw_shape( &renderer, &rect );
+		renderer_2d_draw_shape( &renderer, &tri );
 
 		app_update( &app );
 	}
 
 	shape2d_destroy( &rect );
+	shape2d_destroy( &tri );
 	renderer_2d_destroy( &renderer );
 	app_shutdown( &app );
 
