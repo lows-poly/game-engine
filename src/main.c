@@ -70,8 +70,7 @@ int main( int argc, char *argv[] )
 		if ( key_down( &app.input, KEY_W ) )
 			shape2d_move( &rect, 0.0f, -velocity );
 
-		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
-		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
+		shape2d_rotate( &tri, 1.0f * dt );
 
 		renderer_2d_draw_shape( &renderer, &rect );
 		renderer_2d_draw_shape( &renderer, &tri );
