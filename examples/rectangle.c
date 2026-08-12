@@ -34,7 +34,7 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create_rect( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
+	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, 100.0f, 100.0f, 64.0f, 64.0f ) )
 		return EXIT_FAILURE;
 
 	/* RENDERER SETUP */
