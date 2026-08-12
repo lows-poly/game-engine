@@ -24,11 +24,13 @@ struct app {
 /*
  * app_init() - Initialise window and input
  * @app:    app struct
+ * @argv0
  * @width:  Window width
  * @height: Window height
  * @title:  Window title
  */
-bool app_init( struct app *app, int width, int height, const char *title );
+bool app_init( struct app *app, const char *argv0, int width, int height,
+               const char *title );
 
 /*
  * app_update() - Update input, swap buffers, poll events, and limit fps
