@@ -30,14 +30,11 @@ int main( int argc, char *argv[] )
 	 * APP SETUP
 	 * window, input, path, timer
 	 */
-	if ( !app_init( &app, argv[0], WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
+	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, argv[0] ) )
 		return EXIT_FAILURE;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
-		return EXIT_FAILURE;
-
-	if ( !shape2d_init( &rect, SHAPE2D_RECTANGLE ) )
+	if ( !shape2d_create_rect( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
 		return EXIT_FAILURE;
 
 	/* RENDERER SETUP */
@@ -70,7 +67,7 @@ int main( int argc, char *argv[] )
 		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
 		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
 
-		renderer_2d_draw( &renderer, &rect );
+		renderer_2d_draw_shape( &renderer, &rect );
 
 		app_update( &app );
 	}
