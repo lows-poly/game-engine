@@ -1,103 +1,82 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stddef.h>
-
-#include "path.h"
 
 #include "app/app.h"
+#include "window/window.h"
 #include "input/input.h"
 
 #include "renderer/renderer.h"
-#include "graphics/mesh.h"
-#include "graphics/shader/shader.h"
+#include "renderer/renderer_2d.h"
 
+#include "primitives/shape2d.h"
 #include "primitives/colour.h"
-#include "primitives/vec3.h"
 
-#define WINDOW_TITLE		"ENGINE"
-#define WINDOW_WIDTH		800
-#define WINDOW_HEIGHT		600
-#define TARGET_FRAMERATE	60
+#include "log.h"
 
-struct vertex {
-	vec3 position;
-	colour col;
-};
+#define WINDOW_TITLE         "ENGINE"
+#define WINDOW_WIDTH         800
+#define WINDOW_HEIGHT        600
 
-static const struct vertex vertices[] = {
-	//  x      y     z      |  r     g     b     a
-	{ { 0.0f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-	{ {-0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-	{ { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
-};
-
-static const struct vertex_attrib attribs[] = {
-	{
-		.index = 0,
-		.size = 3,
-		.type = GL_FLOAT,
-		.normalised = GL_FALSE,
-		.stride = sizeof( struct vertex ),
-		.offset = offsetof( struct vertex, position )
-	},
-	{
-		.index = 1,
-		.size = 4,
-		.type = GL_FLOAT,
-		.normalised = GL_FALSE,
-		.stride = sizeof( struct vertex ),
-		.offset = offsetof( struct vertex, col )
-	}
-};
+#define SPEED                200.0f
 
 int main( int argc, char *argv[] )
 {
 	struct app app;
-	struct shader shader;
-	struct mesh triangle;
-	struct mesh_desc desc = {
-		.vertices = vertices,
-		.vertex_size = sizeof( vertices ),
-		.attribs = &attribs,
-		.attrib_count = 2,
-		.indices = NULL,
-		.vertex_count = 3,
-		.index_count = 0
-	};
+	struct shape2d rect;
+	struct renderer_2d renderer;
+	float dt, velocity;
 
-	if ( path_init( argv[0] ) < 0 ) {
-		fprintf( stderr, "FAILED TO INIT PATH\n" );
+	/*
+	 * APP SETUP
+	 * window, input, path, timer
+	 */
+	if ( !app_init( &app, argv[0], WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
 		return EXIT_FAILURE;
-	}
 
-	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) ) {
-		fprintf( stderr, "FAILED TO INIT APP\n" );
+	/* SHAPE SETUP */
+	if ( !shape2d_create( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
 		return EXIT_FAILURE;
-	}
 
-	if ( shader_init_preset( &shader, SHADER_DEFAULT ) != 0 ) {
-		fprintf( stderr, "FAILED TO INIT BUILTIN SHADER\n" );
+	if ( !shape2d_init( &rect, SHAPE2D_RECTANGLE ) )
 		return EXIT_FAILURE;
-	}
 
-	if ( mesh_init( &triangle, &desc, DRAW_STATIC ) != 0 ) {
-		fprintf( stderr, "FAILED TO INIT MESH\n" );
+	/* RENDERER SETUP */
+	if ( renderer_2d_init( &renderer, app.win.width, app.win.height ) != 0 )
 		return EXIT_FAILURE;
-	}
 
 	while ( app.running ) {
-		renderer_begin_frame( VINTAGE_GOLD );
+		renderer_begin_frame( BLACK );
+		renderer_2d_update( &renderer, &app.win );
 
-		if ( key_pressed( &app.input, KEY_ESCAPE ) ) {
+		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
-		}
 
-		renderer_draw_mesh( &triangle, &shader );
+		dt = (float)app.time.delta_time;
+		velocity = SPEED * dt;
+
+		/* RECT CONTROLS */
+		if ( key_down( &app.input, KEY_A ) )
+			shape2d_move( &rect, -velocity, 0.0f );
+
+		if ( key_down( &app.input, KEY_D ) )
+			shape2d_move( &rect, velocity, 0.0f );
+
+		if ( key_down( &app.input, KEY_S ) )
+			shape2d_move( &rect, 0.0f, velocity );
+
+		if ( key_down( &app.input, KEY_W ) )
+			shape2d_move( &rect, 0.0f, -velocity );
+
+		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
+		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
+
+		renderer_2d_draw( &renderer, &rect );
+
 		app_update( &app );
 	}
 
-	mesh_destroy( &triangle );
-	shader_destroy( &shader );
+	shape2d_destroy( &rect );
+	renderer_2d_destroy( &renderer );
 	app_shutdown( &app );
 
 	return EXIT_SUCCESS;
