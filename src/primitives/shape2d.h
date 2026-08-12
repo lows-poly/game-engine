@@ -9,6 +9,11 @@
 #include "primitives/colour.h"
 #include "primitives/vec2.h"
 
+enum shape2d_type {
+	SHAPE2D_RECTANGLE,
+	SHAPE2D_TRIANGLE
+};
+
 /*
  * struct shape2d - A 2 dimensional shape.
  * @mesh
@@ -17,7 +22,7 @@
  * @scale
  */
 struct shape2d {
-	struct mesh mesh;
+	enum shape2d_type type;
 	struct colour colour;
 	vec2 pos;
 	vec2 scale;
@@ -25,8 +30,8 @@ struct shape2d {
 
 void shape2d_set_default_colour( colour c );
 
-bool shape2d_create_rect( struct shape2d *s, float x, float y, float w, float h );
-bool shape2d_create_tri( struct shape2d *s, float x, float y, float w, float h );
+bool shape2d_create( struct shape2d *s, enum shape2d_type type, float x, float y,
+                     float w, float h );
 
 /*
  * shape2d_move() - Move x, y coordinate.
@@ -52,7 +57,7 @@ void shape2d_set_pos( struct shape2d *s, float x, float y );
 void shape2d_set_colour( struct shape2d *s, colour c );
 
 /*
- * shape2d_destroy() - Destroy mesh.
+ * shape2d_destroy()
  * @shape
  */
 void shape2d_destroy( struct shape2d *s );

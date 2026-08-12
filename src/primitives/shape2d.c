@@ -3,6 +3,7 @@
 
 #include "shape2d.h"
 #include "renderer/renderer.h"
+#include "log.h"
 
 /* 
  * #ifndef DEFAULT_SHAPE_COLOUR
@@ -12,44 +13,34 @@
 
 static colour DEFAULT_SHAPE_COLOUR = CYAN;
 
-static const vec2 UNIT_QUAD[4] = {
-	{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
-};
-
-static const vec2 UNIT_TRI[3] = {
-	{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.5f, 1.0f }
-};
-
-static void create_shape( struct shape2d *s, float x, float y, float w, float h )
-{
-	s->pos = vec2_make( x, y );
-	s->scale = vec2_make( w, h );
-	s->colour = DEFAULT_SHAPE_COLOUR;
-}
 
 void shape2d_set_default_colour( colour c )
 {
 	DEFAULT_SHAPE_COLOUR = c;
 }
 
-bool shape2d_create_rect( struct shape2d *s, float x, float y, float w, float h )
+bool shape2d_create( struct shape2d *s, enum shape2d_type type, float x, float y,
+                     float w, float h )
 {
-	if ( !s || x < 0 || y < 0 || w < 0 || h < 0 )
+	if ( !s )
 		return false;
 	
-	create_shape( s, x, y, w, h );
-
-	return mesh_init_quad( &s->mesh, UNIT_QUAD, DRAW_STATIC ) == 0;
-}
-
-bool shape2d_create_tri( struct shape2d *s, float x, float y, float w, float h )
-{
-	if ( !s || x < 0 || y < 0 || w < 0 || h < 0 )
+	switch ( type ) {
+	case SHAPE2D_RECTANGLE:
+		break;
+	case SHAPE2D_TRIANGLE:
+		break;
+	default:
+		pr_err("UNKNOWN SHAPE TYPE\n");
 		return false;
-	
-	create_shape( s, x, y, w, h );
+	}
 
-	return mesh_init_tri( &s->mesh, UNIT_TRI, DRAW_STATIC ) == 0;
+	s->type = type;
+	s->colour = DEFAULT_SHAPE_COLOUR;
+	s->pos = vec2_make( x, y );
+	s->scale = vec2_make( w, h );
+
+	return true;
 }
 
 /*
@@ -60,6 +51,9 @@ bool shape2d_create_tri( struct shape2d *s, float x, float y, float w, float h )
  */
 void shape2d_move( struct shape2d *s, float dx, float dy )
 {
+	if ( !s )
+		return;
+
 	s->pos.x += dx;
 	s->pos.y += dy;
 }
@@ -72,6 +66,9 @@ void shape2d_move( struct shape2d *s, float dx, float dy )
  */
 void shape2d_set_pos( struct shape2d *s, float x, float y )
 {
+	if ( !s )
+		return;
+
 	s->pos.x = x;
 	s->pos.y = y;
 }
@@ -90,10 +87,10 @@ void shape2d_set_colour( struct shape2d *s, colour c )
 }
 
 /*
- * shape2d_destroy() - Destroy mesh
+ * shape2d_destroy()
  * @s
  */
 void shape2d_destroy( struct shape2d *s )
 {
-	mesh_destroy( &s->mesh );
+	(void)s;
 }
