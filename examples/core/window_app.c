@@ -8,7 +8,7 @@ int main( void )
 {
 	struct app application;
 
-	if ( !app_init( &application, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
+	if ( !app_init( &application, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL ) )
 		return -1;
 
 	while ( application.running ) {
