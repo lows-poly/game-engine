@@ -20,58 +20,36 @@ static const vec2 UNIT_TRI[3] = {
 	{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.5f, 1.0f }
 };
 
+static void create_shape( struct shape2d *s, float x, float y, float w, float h )
+{
+	s->pos = vec2_make( x, y );
+	s->scale = vec2_make( w, h );
+	s->colour = DEFAULT_SHAPE_COLOUR;
+}
+
 void shape2d_set_default_colour( colour c )
 {
 	DEFAULT_SHAPE_COLOUR = c;
 }
 
-/*
- * shape2d_create()
- * @shape
- * @x
- * @y
- * @width
- * @height
- * @colour
- *
- * Return:
- * 1 - Success
- * 0 - Failure
- */
-int shape2d_create( struct shape2d *s, float x, float y, float w, float h )
+bool shape2d_create_rect( struct shape2d *s, float x, float y, float w, float h )
 {
-	if ( !s )
-		return 0;
+	if ( !s || x < 0 || y < 0 || w < 0 || h < 0 )
+		return false;
 	
-	s->pos = vec2_make( x, y );
-	s->scale = vec2_make( w, h );
-	s->colour = DEFAULT_SHAPE_COLOUR;
+	create_shape( s, x, y, w, h );
 
-	return 1;
+	return mesh_init_quad( &s->mesh, UNIT_QUAD, DRAW_STATIC ) == 0;
 }
 
-/*
- * shape2d_init() - Initialise a created shaoe struct.
- * @s:     struct shape2d
- * @shape: shape_type enum
- *
- * Return:
- * 1 - Succes
- * 0 - Failure
- */
-int shape2d_init( struct shape2d *s, enum shape_type shape )
+bool shape2d_create_tri( struct shape2d *s, float x, float y, float w, float h )
 {
-	if ( !s )
-		return 0;
+	if ( !s || x < 0 || y < 0 || w < 0 || h < 0 )
+		return false;
 	
-	switch ( shape ) {
-	case SHAPE2D_RECTANGLE:
-		return mesh_init_quad( &s->mesh, UNIT_QUAD, DRAW_STATIC ) == 0;
-	case SHAPE2D_TRIANGLE:
-		return mesh_init_tri( &s->mesh, UNIT_TRI, DRAW_STATIC ) == 0;
-	default:
-		return 0;
-	}
+	create_shape( s, x, y, w, h );
+
+	return mesh_init_tri( &s->mesh, UNIT_TRI, DRAW_STATIC ) == 0;
 }
 
 /*
