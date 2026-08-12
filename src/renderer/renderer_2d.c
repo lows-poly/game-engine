@@ -46,8 +46,6 @@ static int set_projection( struct renderer_2d *r, int width, int height )
 int renderer_2d_init( struct renderer_2d *r, int width, int height )
 {
 	if ( !r || width <= 0 || height <= 0 ) {
-		pr_warn("FAILED TO INIT 2D RENDERER\n");
-
 		if ( !r )
 			pr_warn("RENDERER_2D IS NULL\n");
 		else
@@ -57,7 +55,7 @@ int renderer_2d_init( struct renderer_2d *r, int width, int height )
 	}
 
 	if ( shader_init_preset( &r->shader, SHADER_PRIMITIVE_2D ) != 0 ) {
-		pr_warn("FAILED TO INIT 2D RENDERER\n");
+		pr_warn("FAILED TO INIT 2D RENDERER: ENCOUNTER ERROR FROM SHADER PRESET INIT\n");
 		return -ENOMEM;
 	}
 
