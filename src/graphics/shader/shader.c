@@ -25,10 +25,7 @@ static int shader_cache_uniform( struct shader *s, const char *name, GLint loc )
 {
 	size_t len;
 
-	assert( s != NULL );
-	assert( name != NULL );
-
-	if ( loc < 0 )
+	if ( !s || !name )
 		return -EINVAL;
 
 	if ( s->u_count >= SHADER_UNIFORM_CACHE_MAX )
