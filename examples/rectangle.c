@@ -1,6 +1,5 @@
 #include <stdio.h>
-
-#include "path.h"
+#include <stdlib.h>
 
 #include "app/app.h"
 #include "window/window.h"
@@ -14,31 +13,33 @@
 
 #include "log.h"
 
-#define WINDOW_TITLE         "Rectangle Test"
+#define WINDOW_TITLE         "RECTANGLE"
 #define WINDOW_WIDTH         800
 #define WINDOW_HEIGHT        600
 
 #define SPEED                200.0f
-
-static int setup( struct app *app, struct renderer_2d *renderer, const char *argv0 );
 
 int main( int argc, char *argv[] )
 {
 	struct app app;
 	struct shape2d rect;
 	struct renderer_2d renderer;
-
 	float dt, velocity;
 
-	if ( !setup( &app, &renderer, argv[0] ) )
-		return -1;
+	/*
+	 * APP SETUP
+	 * window, input, path, timer
+	 */
+	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, argv[0] ) )
+		return EXIT_FAILURE;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
-		return -1;
+	if ( !shape2d_create_rect( &rect, 100.0f, 100.0f, 64.0f, 64.0f ) )
+		return EXIT_FAILURE;
 
-	if ( !shape2d_init( &rect, SHAPE2D_RECTANGLE ) )
-		return -1;
+	/* RENDERER SETUP */
+	if ( renderer_2d_init( &renderer, app.win.width, app.win.height ) != 0 )
+		return EXIT_FAILURE;
 
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
@@ -66,7 +67,7 @@ int main( int argc, char *argv[] )
 		/* printf( "POS: (%.2f, %.2f)\n", rect.pos.x, rect.pos.y );
 		printf( "SCALE: (%.2f, %.2f)\n", rect.scale.x, rect.scale.y ); */
 
-		renderer_2d_draw( &renderer, &rect );
+		renderer_2d_draw_shape( &renderer, &rect );
 
 		app_update( &app );
 	}
@@ -75,21 +76,5 @@ int main( int argc, char *argv[] )
 	renderer_2d_destroy( &renderer );
 	app_shutdown( &app );
 
-	return 0;
-}
-
-/* USING INT AS BOOLEAN; 0 = FALSE, 1 = TRUE */
-static int setup( struct app *app, struct renderer_2d *renderer, const char *argv0 )
-{
-	if ( path_init( argv0 ) < 0 )
-		return 0;
-
-	/* WINDOW SETUP */
-	if ( !app_init( app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
-		return 0;
-
-	if ( renderer_2d_init( renderer, app->win.width, app->win.height ) != 0 )
-		return 0;
-
-	return 1;
+	return EXIT_SUCCESS;
 }
