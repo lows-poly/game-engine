@@ -1,6 +1,8 @@
 #ifndef MATHX_H
 #define MATHX_H
 
+#define ENGINE_PI	3.14159265358979323846
+
 static inline float clampf( float x, float lo, float hi )
 {
 	float r;
