@@ -9,7 +9,8 @@
 #include "primitives/colour.h"
 
 struct renderer_2d {
-	struct shader shader;
+	struct shader default_shader;
+	struct shader *shader;
 	int width;
 	int height;
 };
