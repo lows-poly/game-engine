@@ -24,9 +24,9 @@ struct renderer_2d {
  * return: 0 on success, failure otherwise.
  */
 int renderer_2d_init( struct renderer_2d *r, int width, int height );
-void renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
+int renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
 void renderer_2d_update( struct renderer_2d *r, const struct window *w );
-void renderer_2d_draw( struct renderer_2d *r, struct shape2d *shape );
+void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape );
 int renderer_2d_resize( struct renderer_2d *r, int width, int height );
 void renderer_2d_destroy( struct renderer_2d *r );
 

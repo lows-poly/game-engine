@@ -8,6 +8,9 @@ static int set_projection( struct renderer_2d *r, int width, int height )
 {
 	mat4 proj;
 
+	if ( !r || !r->shader )
+		return -EINVAL;
+
 	if ( width <= 0 || height <= 0 ) {
 		pr_warn("FAILED TO SET 2D PROJECTION: INVALID ARGUMENTS\n");
 		return -EINVAL;
@@ -66,29 +69,36 @@ int renderer_2d_init( struct renderer_2d *r, int width, int height )
 	return set_projection( r, width, height );
 }
 
-/* TODO */
-void renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
+int renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
 {
 	if ( !r || !shader )
-		return;
+		return -EINVAL;
 
 	r->shader = shader;
+	return set_projection( r, r->width, r->height );
 }
 
 void renderer_2d_update( struct renderer_2d *r, const struct window *w )
 {
+	if ( !r || !w || !r->shader )
+		return;
+
 	if ( !w->resized )
 		return;
 
 	set_projection( r, w->width, w->height );
 }
 
-void renderer_2d_draw( struct renderer_2d *r, struct shape2d *shape )
+void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 {
 	float colour_arr[4];
+
+	if ( !r || !shape || !r->shader )
+		return;
+
 	colour_to_arr( shape->colour, colour_arr );
 
-	shader_use( &r->shader );
+	shader_use( r->shader );
 	shader_set_vec2( r->shader, "u_pos", shape->pos );
 	shader_set_vec2( r->shader, "u_scale", shape->scale );
 	shader_set_4f( r->shader, "u_colour", colour_arr );
