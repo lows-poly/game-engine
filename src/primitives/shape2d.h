@@ -50,7 +50,7 @@ void shape2d_move( struct shape2d *s, float dx, float dy );
  * @y
  */
 void shape2d_set_pos( struct shape2d *s, float x, float y );
-
+void shape2d_set_scale( struct shape2d *s, float x, float y );
 void shape2d_set_rotation( struct shape2d *s, float rad );
 void shape2d_rotate( struct shape2d *s, float rad );
 void shape2d_set_origin( struct shape2d *s, float x, float y );

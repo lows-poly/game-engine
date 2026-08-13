@@ -88,6 +88,14 @@ void shape2d_set_pos( struct shape2d *s, float x, float y )
 	s->pos.y = y;
 }
 
+void shape2d_set_scale( struct shape2d *s, float x, float y )
+{
+	if ( !s )
+		return;
+
+	s->scale = vec2_make( x, y );
+}
+
 void shape2d_set_rotation( struct shape2d *s, float rad )
 {
 	if ( !s )
