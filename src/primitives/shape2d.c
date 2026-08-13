@@ -93,7 +93,7 @@ void shape2d_set_rotation( struct shape2d *s, float rad )
 	if ( !s )
 		return;
 
-	s->rotation = wrap_angle( s->rotation + rad );
+	s->rotation = rad;
 }
 
 void shape2d_rotate( struct shape2d *s, float rad )
@@ -101,7 +101,7 @@ void shape2d_rotate( struct shape2d *s, float rad )
 	if ( !s )
 		return;
 
-	s->rotation += rad;
+	s->rotation += wrap_angle( s->rotation + rad );
 }
 
 void shape2d_set_origin( struct shape2d *s, float x, float y )
