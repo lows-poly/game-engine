@@ -15,7 +15,7 @@
 		pos = n, n = pos ? pos->next : NULL )
 
 struct slist_node {
-	struct node *next;
+	struct slist_node *next;
 };
 
 // Entire singly-linked list
