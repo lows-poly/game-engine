@@ -166,7 +166,7 @@ void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 	/* model: pos, origin, rotation, scale */
 	mat4_identity( model );
 	mat4_translate( model, shape->pos.x, shape->pos.y, 0.0f );
-	mat4_translate( model, shape->origin.x, shape->origin.y, 0.0f);
+	/* mat4_translate( model, shape->origin.x, shape->origin.y, 0.0f); */
 	mat4_rotate_z( model, shape->rotation );
 	mat4_translate( model, -shape->origin.x, -shape->origin.y, 0.0f );
 	mat4_scale_3f( model, shape->scale.x, shape->scale.y, 1.0f );
