@@ -19,7 +19,7 @@
 
 #define SPEED                200.0f
 
-#define MAX_BULLETS          2
+#define MAX_BULLETS          3
 
 static void create_bullet( struct shape2d *arr, int *count, vec2 pos, float tri_height )
 {
