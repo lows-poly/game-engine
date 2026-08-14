@@ -63,6 +63,7 @@ static void update_bullet( struct shape2d *arr, int *b_count, float speed )
 			shape2d_destroy( bullet );
 			arr[i] = arr[*b_count - 1];
 			(*b_count)--;
+			i--;
 		}
 		printf("BULLET: %p Y-POS (%.2f)\n", bullet , bullet->pos.y);
 	}
@@ -73,7 +74,7 @@ int main( int argc, char *argv[] )
 	struct app app;
 	struct shape2d tri;
 	struct renderer_2d renderer;
-	
+
 	struct shape2d bullets[MAX_BULLETS];
 	int bullet_count;
 
@@ -142,10 +143,10 @@ int main( int argc, char *argv[] )
 
 		/* BULLET */
 		if ( key_pressed( &app.input, KEY_ENTER ) )
-			create_bullet( &bullets, &bullet_count, tri.pos, tri.scale.y );
+			create_bullet( bullets, &bullet_count, tri.pos, tri.scale.y );
 
-		update_bullet( &bullets, &bullet_count, 700.0f * dt );
-		draw_bullet( &bullets, bullet_count, &renderer );
+		update_bullet( bullets, &bullet_count, 700.0f * dt );
+		draw_bullet( bullets, bullet_count, &renderer );
 
 		renderer_2d_draw_shape( &renderer, &tri );
 
