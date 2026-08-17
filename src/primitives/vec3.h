@@ -187,11 +187,11 @@ static inline vec3 vec3_centre( vec3 a, vec3 b )
 
 static inline float vec3_dist2( vec3 a, vec3 b )
 {
-	float d1 = b.x - a.x;
-	float d2 = b.y - a.y;
-	float d3 = b.z - a.z;
+	float dx = b.x - a.x;
+	float dy = b.y - a.y;
+	float dz = b.z - a.z;
 
-	return (d1 * d1) + (d2 * d2) + (d3 * d3);
+	return (dx * dx) + (dy * dy) + (dz * dz);
 }
 
 static inline float vec3_dist( vec3 a, vec3 b )
