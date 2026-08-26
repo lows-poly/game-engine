@@ -17,7 +17,6 @@ bool app_init( struct app *app, int width, int height, const char *title,
 	if ( argv0 ) {
 		if ( path_init( argv0 ) < 0 ) {
 			pr_warn("FAILED TO INIT PATH\n");
-			return false;
 		}
 	}
 
