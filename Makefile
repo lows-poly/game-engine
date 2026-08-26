@@ -5,25 +5,23 @@ EXTERNAL_DIR := external
 BUILD_DIR := build
 
 GLFW_DIR := $(EXTERNAL_DIR)/glfw
-GLFW_INCLUDE_DIR := $(GLFW_DIR)/include
-GLFW_LIB_DIR := $(GLFW_DIR)/lib
 
 CC := cc
 CFLAGS := -std=c11 -O2 -Wall -Wextra -Wpedantic -Wshadow -Wconversion \
           -Wdouble-promotion -Wnull-dereference -Wformat=2 \
           -DGL_SILENCE_DEPRECATION \
-          -I$(SRC_DIR) -I$(INCLUDE_DIR) -I$(EXTERNAL_DIR) -I$(GLFW_INCLUDE_DIR)
+          -I$(SRC_DIR) -I$(INCLUDE_DIR) -I$(EXTERNAL_DIR) -I$(GLFW_DIR)
 
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
     CFLAGS  += -DGL_SILENCE_DEPRECATION
-    LDFLAGS := -L$(GLFW_LIB_DIR) -lglfw3 -ldl \
+    LDFLAGS := -L$(GLFW_DIR) -lglfw3 -ldl \
                -framework OpenGL -framework Cocoa \
                -framework IOKit -framework CoreVideo
 else
     # Linux
-    LDFLAGS := -L$(GLFW_LIB_DIR) -lglfw -lGL -ldl -lm -lpthread
+    LDFLAGS := -L$(GLFW_DIR) -lglfw -lGL -ldl -lm -lpthread
 endif
 
 SRCS := $(shell find $(SRC_DIR) $(EXTERNAL_DIR)/glad -name '*.c')
