@@ -81,7 +81,7 @@ int renderer_2d_init( struct renderer_2d *r, int width, int height )
 		return -ENOMEM;
 	}
 
-	if ( shader_init_preset( &r->default_shader, SHADER_PRIMITIVE_2D ) != 0 ) {
+	if ( shader_init_preset( &r->default_shader, SHADER_BASIC_2D ) != 0 ) {
 		mesh_destroy( &r->rect_mesh );
 		mesh_destroy( &r->tri_mesh );
 		return -ENOMEM;
