@@ -2,24 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
-#include <stdarg.h>
 
 #include "shader.h"
-#include "path.h"
 #include "file.h"
 #include "log.h"
-
-static void _warn( const char *fmt, ... )
-{
-	va_list args;
-
-	fprintf( stderr, "SHADER: " );
-
-	va_start( args, fmt );
-	vfprintf( stderr, fmt, args );
-	va_end( args );
-}
 
 static int shader_cache_uniform( struct shader *s, const char *name, GLint loc )
 {
@@ -33,7 +19,7 @@ static int shader_cache_uniform( struct shader *s, const char *name, GLint loc )
 
 	len = strlen( name );
 	if ( len >= SHADER_UNIFORM_NAME_MAX ) {
-		_warn("UNIFORM NAME TOO LONG, NOT CACHED: %s\n", name);
+		pr_warn("UNIFORM NAME TOO LONG, NOT CACHED: %s\n", name);
 		return -EINVAL;
 	}
 
@@ -50,9 +36,15 @@ static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 	GLint loc;
 	GLint err;
 
-	assert( s != NULL );
-	assert( name != NULL );
-	assert( s->id != 0 );
+	if ( !s ) {
+		pr_warn("FAILED TO GET UNIFORM LOC: NULL SHADER\n");
+		return 0;
+	}
+
+	if ( !name ) {
+		pr_warn("FAILED TO GET UNIFORM LOC: NULL UNIFORM NAME\n");
+		return 0;
+	}
 
 	for ( size_t i = 0; i < s->u_count; i++ ) {
 		struct shader_uniform *u = &s->uniforms[i];
@@ -75,12 +67,15 @@ static GLuint shader_compile( GLenum type, const char *src )
 	int success;
 	GLuint id;
 
-	assert( src != NULL );
+	if ( !src ) {
+		pr_warn("UNABLE TO FIND SHADER SOURCE\n");
+		return 0;
+	}
 
 	id = glCreateShader( type );
 
 	if ( id == 0 ) {
-		_warn("glCreateShader FAILED FOR TYPE %d\n", (int)type);
+		pr_warn("FAILED TO CREATE SHADER FOR TYPE: %d\n", (int)type);
 		return 0;
 	}
 	
@@ -94,13 +89,13 @@ static GLuint shader_compile( GLenum type, const char *src )
 
 		switch ( type ) {
 		case GL_VERTEX_SHADER:
-			_warn("VERTEX COMPILATION FAILED: %s\n", info_log);
+			pr_warn("VERTEX COMPILATION FAILED: %s\n", info_log);
 			break;
 		case GL_FRAGMENT_SHADER:
-			_warn("FRAGMENT COMPILATION FAILED: %s\n", info_log);
+			pr_warn("FRAGMENT COMPILATION FAILED: %s\n", info_log);
 			break;
 		default:
-			_warn( info_log );
+			pr_warn( info_log );
 			break;
 		};
 
@@ -116,12 +111,13 @@ static int shader_link_program( GLuint vert, GLuint frag, GLuint *out )
 	GLuint id;
 	int success;
 
-	assert( out != NULL );
+	if ( !out )
+		return -EINVAL;
 
 	id = glCreateProgram();
 
 	if ( id == 0 ) {
-		_warn("UNABLE TO CREATE PROGRAM\n");
+		pr_err("NO MEMORY FOR SHADER PROGRAM\n");
 		return -ENOMEM;
 	}
 
@@ -137,7 +133,7 @@ static int shader_link_program( GLuint vert, GLuint frag, GLuint *out )
 		char info_log[512];
 
 		glGetProgramInfoLog( id, 512, NULL, info_log );
-		_warn( info_log );
+		pr_warn( info_log );
 
 		glDeleteProgram( id );
 		return -EINVAL;
@@ -153,9 +149,13 @@ static int shader_init_from_src( struct shader *s, const char *vert_src,
 	GLuint vert, frag;
 	int err;
 
-	assert( s != NULL );
-	assert( vert_src != NULL );
-	assert( frag_src != NULL );
+	if ( !s )
+		return -EINVAL;
+
+	if ( !vert_src || !frag_src ) {
+		pr_warn("NO VERTEX/FRAGMENT SHADER SOURCES\n");
+		return -EINVAL;
+	}
 
 	vert = shader_compile( GL_VERTEX_SHADER, vert_src );
 	frag = shader_compile( GL_FRAGMENT_SHADER, frag_src );
@@ -187,9 +187,13 @@ int shader_init( struct shader *s, const char *vert_path, const char *frag_path 
 	char *frag_src = NULL;
 	int err;
 
-	assert( s != NULL );
-	assert( vert_path != NULL );
-	assert( frag_path != NULL );
+	if ( !s )
+		return -EINVAL;
+
+	if ( !vert_path || !frag_path ) {
+		pr_warn("UNABLE TO FIND SHADER PATHS\n");
+		return -EINVAL;
+	}
 
 	if ( !file_read_text_rel( vert_path, &vert_src ) )
 		return -EINVAL;
@@ -199,7 +203,7 @@ int shader_init( struct shader *s, const char *vert_path, const char *frag_path 
 	}
 
 	if ( !vert_src || !frag_src ) {
-		_warn("FILE READ REPORTED SUCCESS WITH NULL BUFFER\n");
+		pr_warn("FILE READ REPORTED SUCCESS WITH NULL BUFFER\n");
 
 		file_free( vert_src );
 		file_free( frag_src );
@@ -221,27 +225,23 @@ int shader_init_preset( struct shader *s, enum shader_builtin preset )
 	const char *frag_path;
 
 	switch ( preset ) {
-	case SHADER_DEFAULT:
-		vert_path = "src/graphics/shader/glsl/default_vsh.glsl";
-		frag_path = "src/graphics/shader/glsl/default_fsh.glsl";
-		break;
-	case SHADER_PRIMITIVE_2D:
-		vert_path = "src/graphics/shader/glsl/primitive2d_vsh.glsl";
-		frag_path = "src/graphics/shader/glsl/primitive2d_fsh.glsl";
+	case SHADER_BASIC_2D:
+		vert_path = basic_2d_vsh_src;
+		frag_path = basic_2d_fsh_src;
 		break;
 	default:
-		vert_path = "src/graphics/shader/glsl/default_vsh.glsl";
-		frag_path = "src/graphics/shader/glsl/default_fsh.glsl";
+		vert_path = basic_2d_vsh_src;
+		frag_path = basic_2d_fsh_src;
 		break;
 	}
 
-	return shader_init( s, vert_path, frag_path );
+	return shader_init_from_src( s, vert_path, frag_path );
 }
 
 void shader_use( const struct shader *s )
 {
-	assert( s != NULL );
-	assert( s->id != 0 );
+	if ( !s )
+		return;
 
 	glUseProgram( s->id );
 }
@@ -402,8 +402,10 @@ bool shader_set_mat4( struct shader *s, const char *name, const mat4 mat )
 
 void shader_destroy( struct shader *s )
 {
-	if ( !s )
+	if ( !s ) {
+		pr_warn("ATTEMPTED TO DESTROY NULL SHADER\n");
 		return;
+	}
 
 	glDeleteProgram( s->id );
 

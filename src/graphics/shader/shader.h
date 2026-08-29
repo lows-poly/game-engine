@@ -5,13 +5,13 @@
 #include <stdbool.h>
 #include <glad/glad.h>
 
-#include <primitives/vec2.h>
-#include <primitives/ivec3.h>
-#include <primitives/vec3.h>
-#include <primitives/vec4.h>
-#include <primitives/mat4.h>
+#include "glsl/basic_2d.h"
 
-#include "debugf.h"
+#include "primitives/vec2.h"
+#include "primitives/ivec3.h"
+#include "primitives/vec3.h"
+#include "primitives/vec4.h"
+#include "primitives/mat4.h"
 
 #define SHADER_UNIFORM_CACHE_MAX        32
 #define SHADER_UNIFORM_NAME_MAX         64
@@ -29,16 +29,8 @@ struct shader {
 };
 
 enum shader_builtin {
-	SHADER_DEFAULT,
-	SHADER_PRIMITIVE_2D,
+	SHADER_BASIC_2D,
 };
-
-static const struct field_desc shader_fields[] = {
-	FIELD( struct shader, id, FIELD_UINT ),
-	FIELD( struct shader, u_count, FIELD_UINT )
-};
-
-#define SHADER_FIELD_COUNT	( sizeof( shader_fields ) / sizeof( shader_fields[0] ) )
 
 int shader_init( struct shader *s, const char *vert_path, const char *frag_path );
 int shader_init_preset( struct shader *s, enum shader_builtin preset );
