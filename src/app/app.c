@@ -43,7 +43,6 @@ bool app_init( struct app *app, int width, int height, const char *title,
 void app_update( struct app *app )
 {
 	timer_tick( &app->time );
-
 	input_update( &app->input );
 	window_end_frame( &app->win );
 	window_limit_fps( &app->win );
