@@ -54,10 +54,7 @@ static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 	}
 
 	loc = glGetUniformLocation( s->id, name );
-
-	err = (GLint)shader_cache_uniform( s, name, loc );
-	if ( err < 0 )
-		return err;
+	shader_cache_uniform( s, name, loc );
 
 	return loc;
 }
@@ -89,13 +86,13 @@ static GLuint shader_compile( GLenum type, const char *src )
 
 		switch ( type ) {
 		case GL_VERTEX_SHADER:
-			pr_warn("VERTEX COMPILATION FAILED: %s\n", info_log);
+			pr_warn("%s", info_log);
 			break;
 		case GL_FRAGMENT_SHADER:
-			pr_warn("FRAGMENT COMPILATION FAILED: %s\n", info_log);
+			pr_warn("%s", info_log);
 			break;
 		default:
-			pr_warn( info_log );
+			pr_warn("%s", info_log);
 			break;
 		};
 
