@@ -23,7 +23,6 @@ struct shader_uniform {
 
 struct shader {
 	GLuint id;
-
 	struct shader_uniform uniforms[SHADER_UNIFORM_CACHE_MAX];
 	size_t u_count;
 };
