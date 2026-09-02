@@ -28,8 +28,10 @@ int main( int argc, char *argv[] )
 	struct renderer_2d renderer;
 
 	struct shape2d stars[MAX_STARS];
-	int start_count;
-	int i;
+	vec2 pos;
+	float scale;
+
+	int i, start_count;
 
 	float dt;
 
@@ -44,16 +46,17 @@ int main( int argc, char *argv[] )
 	if ( renderer_2d_init( &renderer, app.win.width, app.win.height ) != 0 )
 		return EXIT_FAILURE;
 
-	srand(time(NULL));
+	srand(time(0));
 	shape2d_set_default_colour( WHITE );
 
 	for ( i = 0; i < MAX_STARS; i++ ) {
-		vec2 pos = { randf( 0.1f, (float)WINDOW_WIDTH ),
-		             randf( 0.1f, (float)WINDOW_HEIGHT) };
-		vec2 scale = { randf( 0.1f, 2.5f ), randf( 0.1f, 2.5f ) };
-		shape2d_create( &stars[i], SHAPE2D_RECTANGLE, randf( 0.1f,
-		                (float)WINDOW_WIDTH ), randf( 0.1f, (float)WINDOW_HEIGHT ),
-		                randf( 1.0f, 2.5f ), randf( 1.0f, 2.5f ) );
+		pos.x = randf( 0.1f, (float)WINDOW_WIDTH );
+		pos.y = randf( 0.1f, (float)WINDOW_HEIGHT);
+		
+		scale = randf( 0.5f, 1.5f );
+
+		shape2d_create( &stars[i], SHAPE2D_RECTANGLE, pos.x, pos.y,
+		                scale, scale );
 	}
 
 	while ( app.running ) {
