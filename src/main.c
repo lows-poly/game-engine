@@ -53,7 +53,7 @@ int main( int argc, char *argv[] )
 		pos.x = randf( 0.1f, (float)WINDOW_WIDTH );
 		pos.y = randf( 0.1f, (float)WINDOW_HEIGHT);
 		
-		scale = randf( 0.5f, 1.5f );
+		scale = randf( 0.5, 1.5f );
 
 		shape2d_create( &stars[i], SHAPE2D_RECTANGLE, pos.x, pos.y,
 		                scale, scale );
