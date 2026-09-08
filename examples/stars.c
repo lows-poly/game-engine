@@ -15,11 +15,11 @@
 #include "mathx.h"
 #include "log.h"
 
-#define WINDOW_TITLE         "ENGINE"
+#define WINDOW_TITLE         "STARS"
 #define WINDOW_WIDTH         800
 #define WINDOW_HEIGHT        600
 
-#define MAX_STARS          256
+#define MAX_STARS            256
 
 int main( int argc, char *argv[] )
 {
@@ -31,9 +31,9 @@ int main( int argc, char *argv[] )
 	vec2 pos;
 	float scale;
 
-	int i, start_count;
+	int i;
 
-	float dt;
+	float time_, dt;
 
 	/*
 	 * APP SETUP
@@ -53,11 +53,13 @@ int main( int argc, char *argv[] )
 		pos.x = randf( 0.1f, (float)WINDOW_WIDTH );
 		pos.y = randf( 0.1f, (float)WINDOW_HEIGHT);
 		
-		scale = randf( 0.5, 1.5f );
+		scale = randf( 0.5f, 1.5f );
 
 		shape2d_create( &stars[i], SHAPE2D_RECTANGLE, pos.x, pos.y,
 		                scale, scale );
 	}
+
+	time_ = 0;
 
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
@@ -67,9 +69,16 @@ int main( int argc, char *argv[] )
 			app_stop( &app );
 
 		dt = (float)app.time.delta_time;
+		time_ += dt;
 		
 		for ( i = 0; i < MAX_STARS; i++ ) {
 			renderer_2d_draw_shape( &renderer, &stars[i] );
+
+			if ( time_ >= 1.0f ) {
+				time_ = 0.0f;
+				shape2d_move( &stars[i], randf( -45.0f * dt, 45.0f * dt ),
+			                      randf( -45.0f * dt, 45.0f * dt ) );
+			}
 		}
 
 		app_update( &app );
