@@ -26,7 +26,7 @@
 #define GALAXY_ARMS		3
 #define GALAXY_TURNS		1.06f
 #define GALAXY_ARM_SPREAD	0.95f
-#define GALAXY_RADIUS_BIAS	2.5f
+#define GALAXY_RADIUS_BIAS	1.85f
 #define ORBIT_SWIRL		0.02f
 
 #define STAR_MERGE_MIN_SCALE	1.5f
@@ -34,20 +34,21 @@
 #define STAR_MERGE_GROWTH	0.9f
 
 struct star_field {
-	mat4	model[STAR_MAX];
-	colour	colour[STAR_MAX];
-	vec2	pos[STAR_MAX];
-	vec2	vel[STAR_MAX];
-	float	mass[STAR_MAX];
-	float	scale[STAR_MAX];
-	float	rot[STAR_MAX];
-	float	rot_speed[STAR_MAX];
-	float	phase[STAR_MAX];
-	float	speed[STAR_MAX];
+	struct mesh *mesh;
+	mat4	*model;
+	colour	*colour;
+	vec2	*pos;
+	vec2	*vel;
+	float	*mass;
+	float	*scale;
+	float	*rot;
+	float	*rot_speed;
+	float	*phase;
+	float	*speed;
 	int count;
+	int cap;
 	int bounds_w;
 	int bounds_h;
-	struct mesh *mesh;
 };
 
 static colour star_rand_colour( void )
@@ -74,7 +75,7 @@ static float star_rand_mass( float scale )
 {
 	float mass;
 
-	mass = scale * randf( 0.8f, 1.5f );
+	mass = scale * randf( 0.8f, 1.0f );
 
 	/* RANDOM CHANCE OF A SMALL, DENSE, HIGH MASS STAR (something like
 	 * neutron star) */
@@ -89,8 +90,8 @@ static float star_rand_scale( void )
 
 	scale = randf( 0.5f, 1.5f );
 
-	if ( randf( 0.0f, 1.0f ) < 0.01f )
-		scale = randf( 4.0f, 5.0f );
+	if ( randf( 0.0f, 1.0f ) < 0.009f )
+		scale = randf( 3.0f, 5.0f );
 
 	return scale;
 }
@@ -104,6 +105,7 @@ static void stars_draw( struct star_field *sf, struct shader *shader );
 static void stars_merge( struct star_field *sf, int i, int j );
 static void stars_swap_remove( struct star_field *sf, int i );
 static void stars_resolve_collisions( struct star_field *sf );
+static void stars_destroy( struct star_field *sf );
 
 int main( int argc, char *argv[] )
 {
@@ -130,10 +132,13 @@ int main( int argc, char *argv[] )
 
 	/* STARS SETUP */
 	if ( !stars_init( &stars, &renderer.rect_mesh, STAR_MAX, WINDOW_WIDTH,
-	                  WINDOW_HEIGHT ) )
+	                  WINDOW_HEIGHT ) ) {
+		renderer_2d_destroy( &renderer );
+		app_shutdown( &app );
 		return EXIT_FAILURE;
+	}
 
-	for ( i = 0; i < STAR_MAX; i++ ) {
+	for ( i = 0; i < STAR_MAX - 1; i++ ) {
 		if ( randf( 0.0f, 1.0f ) <= 0.25f )
 			/* SCREEN RANDOM */
 			stars_place_random( &stars, i );
@@ -158,6 +163,7 @@ int main( int argc, char *argv[] )
 		app_update( &app );
 	}
 
+	stars_destroy( &stars );
 	renderer_2d_destroy( &renderer );
 	app_shutdown( &app );
 
@@ -176,6 +182,23 @@ static int stars_init( struct star_field *sf, struct mesh *mesh, int count,
 
 	memset( sf, 0, sizeof( *sf ) );
 
+	sf->model = malloc( sizeof( *sf->model ) * count );
+	sf->colour = malloc( sizeof( *sf->colour ) * count );
+	sf->pos = malloc( sizeof( *sf->pos ) * count );
+	sf->vel = malloc( sizeof( *sf->vel ) * count );
+	sf->mass = malloc( sizeof( *sf->mass ) * count );
+	sf->scale = malloc( sizeof( *sf->scale ) * count );
+	sf->rot = malloc( sizeof( *sf->rot ) * count );
+	sf->rot_speed = malloc( sizeof( *sf->rot_speed ) * count );
+	sf->phase = malloc( sizeof( *sf->phase ) * count );
+	sf->speed = malloc( sizeof( *sf->speed ) * count );
+
+	if ( !sf->model || !sf->colour || !sf->pos || !sf->vel || !sf->mass ||
+	     !sf->scale || !sf->rot || !sf->rot_speed || !sf->phase || !sf->speed ) {
+		stars_destroy( sf );
+		return 0;
+	}
+
 	sf->count = count;
 	sf->mesh = mesh;
 	sf->bounds_w = bounds_w;
@@ -192,7 +215,7 @@ static void stars_place_spiral( struct star_field *sf, int i )
 	int arm;
 	float arm_angle;
 	vec2 to_star;
-	vec2 tangent;
+	vec2 tangent, inward;
 
 	if ( !sf || i < 0 || i >= sf->count )
 		return;
@@ -221,7 +244,10 @@ static void stars_place_spiral( struct star_field *sf, int i )
 
 	if ( vec2_mag( to_star ) > VEC_EPSILON ) {
 		tangent = vec2_normalise( vec2_make( -to_star.y, to_star.x ) );
-		sf->vel[i] = vec2_scale( tangent, radius * -ORBIT_SWIRL );
+		inward = vec2_normalise( vec2_scale( to_star, -1.0f ) );
+
+		sf->vel[i] = vec2_add( vec2_scale( tangent, radius * -ORBIT_SWIRL ),
+		                       vec2_scale( inward, radius * 0.008f ) );
 	} else {
 		sf->vel[i] = VEC2_ZERO;
 	}
@@ -232,7 +258,7 @@ static void stars_place_spiral( struct star_field *sf, int i )
 	sf->colour[i] = star_rand_colour();
 
 	sf->phase[i] = randf( 0.0f, (float)TWO_PI );
-	sf->speed[i] = randf( 9.0f, 15.0f );
+	sf->speed[i] = randf( 4.0f, 8.0f );
 }
 
 static void stars_place_random( struct star_field *sf, int i )
@@ -267,8 +293,8 @@ static void stars_update( struct star_field *sf, float dt, float elapsed )
 	gravity_apply( sf->pos, sf->vel, sf->mass, sf->count, dt );
 
 	for ( i = 0; i < sf->count; i++ ) {
-		sf->pos[i].x = sf->pos[i].x + sf->vel[i].x * dt, (float)sf->bounds_w;
-		sf->pos[i].y = sf->pos[i].y + sf->vel[i].y * dt, (float)sf->bounds_h;
+		sf->pos[i].x = sf->pos[i].x + sf->vel[i].x * dt;
+		sf->pos[i].y = sf->pos[i].y + sf->vel[i].y * dt;
 
 		sf->rot[i] += sf->rot_speed[i] * dt;
 	}
@@ -276,8 +302,12 @@ static void stars_update( struct star_field *sf, float dt, float elapsed )
 	stars_resolve_collisions( sf );
 
 	for ( i = 0; i < sf->count; i++ ) {
-		t = elapsed * sf->speed[i] + sf->phase[i];
-		sf->colour[i].a = 0.5f + 0.25f * sinf( t );
+		if ( sf->scale[i] >= 5.0f ) {
+			sf->colour[i].a = 1.0f;
+		} else {
+			t = elapsed * sf->speed[i] + sf->phase[i];
+			sf->colour[i].a = 0.5f + 0.25f * sinf( t );
+		}
 
 		mat4_identity( sf->model[i] );
 		mat4_translate( sf->model[i], sf->pos[i].x, sf->pos[i].y, 0.0f );
@@ -386,4 +416,23 @@ static void stars_resolve_collisions( struct star_field *sf )
 			j--;
 		}
 	}
+}
+
+static void stars_destroy( struct star_field *sf )
+{
+	if ( !sf )
+		return;
+
+	free( sf->model );
+	free( sf->colour );
+	free( sf->pos );
+	free( sf->vel );
+	free( sf->mass );
+	free( sf->scale );
+	free( sf->rot );
+	free( sf->rot_speed );
+	free( sf->phase );
+	free( sf->speed );
+
+	memset( sf, 0, sizeof( *sf ) );
 }
