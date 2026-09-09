@@ -15,10 +15,12 @@ graphics programming.
 </div>
 
 <div align="center">
+    <p>Window</p>
     <img src="assets/mac_preview.png" width="400" height="400"/>
     <img src="assets/linux_preview.png" width="400" height="400"/>
 </div>
 
 <div align="center">
-    <img src="assets/triangle_preview.png" width="400" height="400"/>
+    <p>Star simulation (8086)</p>
+    <img src="assets/mac_star_preview.png" width="400" height="400"/>
 </div>
