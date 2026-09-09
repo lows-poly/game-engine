@@ -25,8 +25,8 @@
 
 #define GALAXY_ARMS		3
 #define GALAXY_TURNS		1.06f
-#define GALAXY_ARM_SPREAD	0.70f
-#define GALAXY_RADIUS_BIAS	3.5f
+#define GALAXY_ARM_SPREAD	0.95f
+#define GALAXY_RADIUS_BIAS	2.5f
 #define ORBIT_SWIRL		0.02f
 
 #define STAR_MERGE_MIN_SCALE	1.5f
