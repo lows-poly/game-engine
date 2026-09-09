@@ -122,6 +122,10 @@ int window_init( struct window *w, int width, int height, const char *title )
 	}
 
 	glfwSwapInterval( 0 );
+
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 	w->last_frame_time = glfwGetTime();
 
 	return 1;
