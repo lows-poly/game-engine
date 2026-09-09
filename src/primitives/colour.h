@@ -13,28 +13,11 @@ typedef struct colour {
 	float a;
 } colour;
 
-static const struct field_desc colour_fields[] = {
-	FIELD( struct colour, r, FIELD_FLOAT ),
-	FIELD( struct colour, g, FIELD_FLOAT ),
-	FIELD( struct colour, b, FIELD_FLOAT ),
-	FIELD( struct colour, a, FIELD_FLOAT )
-};
-
-#define COLOUR_FIELD_COUNT ( sizeof( colour_fields ) / sizeof( colour_fields[0] ) )
-
 typedef struct icolour {
 	int r;
 	int g;
 	int b;
 } icolour;
-
-static const struct field_desc icolour_fields[] = {
-	FIELD( struct icolour, r, FIELD_INT ),
-	FIELD( struct icolour, g, FIELD_INT ),
-	FIELD( struct icolour, b, FIELD_INT )
-};
-
-#define ICOLOUR_FIELD_COUNT ( sizeof( icolour_fields ) / sizeof( icolour_fields[0] ) )
 
 #define VINTAGE_GOLD    ((colour){ 0.164f, 0.188f, 0.16f, 1.0f })
 
@@ -53,6 +36,18 @@ static inline colour colour_make( float r, float g, float b, float a )
 	c.g = clampf( g, 0.0f, 1.0f );
 	c.b = clampf( b, 0.0f, 1.0f );
 	c.a = clampf( a, 0.0f, 1.0f );
+
+	return c;
+}
+
+static inline colour colour_from_rgba( int r, int g, int b, int a )
+{
+	colour c;
+
+	c.r = clamp( r, 0, 255 ) / 255.0f;
+	c.g = clamp( g, 0, 255 ) / 255.0f;
+	c.b = clamp( b, 0, 255 ) / 255.0f;
+	c.a = clamp( a, 0, 255 ) / 255.0f;
 
 	return c;
 }
@@ -93,10 +88,9 @@ static inline colour icolour_normalise( icolour c )
 	return colour_from_rgb( c.r, c.g, c.b );
 }
 
-static inline colour colour_alpha( colour c, float alpha )
+static inline colour colour_alpha( colour *src, float alpha )
 {
-	c.a = clampf( alpha, 0.0f, 1.0f );
-	return c;
+	src->a = alpha; 
 }
 
 static inline void colour_print( const colour c )
