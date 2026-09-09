@@ -204,9 +204,9 @@ static void stars_place_spiral( struct star_field *sf, int i )
 	radius = t * max_radius;
 
 	arm = rand() % GALAXY_ARMS;
-	arm_angle = ( (float)2PI / (float)GALAXY_ARMS ) * (float)arm;
+	arm_angle = ( (float)TWO_PI / (float)GALAXY_ARMS ) * (float)arm;
 
-	angle = arm_angle + t * GALAXY_TURNS * (float)2PI;
+	angle = arm_angle + t * GALAXY_TURNS * (float)TWO_PI;
 
 	angle += randf( -GALAXY_ARM_SPREAD, GALAXY_ARM_SPREAD );
 	radius += randf( -8.0f, 8.0f );
