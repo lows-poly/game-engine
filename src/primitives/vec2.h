@@ -16,13 +16,6 @@ typedef struct vec2 {
 	float y;
 } vec2;
 
-static const struct field_desc vec2_fields[] = {
-	FIELD( struct vec2, x, FIELD_FLOAT ),
-	FIELD( struct vec2, y, FIELD_FLOAT )
-};
-
-#define VEC2_FIELD_COUNT	( sizeof( vec2_fields ) / sizeof( vec2_fields[0] ) )
-
 static inline void vec2_print( const struct vec2 v )
 {
 	printf( "(%.3f, %.3f)\n", v.x, v.y  );
@@ -63,14 +56,14 @@ static inline float vec2_cross( vec2 a, vec2 b )
 	return (a.x * b.y) - (a.y * b.x);
 }
 
-static inline float vec2_mag2( vec2 v )
+static inline float vec2_mag_sq( vec2 v )
 {
 	return vec2_dot( v, v );
 }
 
 static inline float vec2_mag( vec2 v )
 {
-	return sqrtf( vec2_mag2( v ) );
+	return sqrtf( vec2_mag_sq( v ) );
 }
 
 static inline vec2 vec2_add_scalar( vec2 v, float s )
@@ -174,7 +167,7 @@ static inline vec2 vec2_centre( vec2 a, vec2 b )
 	return vec2_scale( vec2_add( a, b ), 0.5f );
 }
 
-static inline float vec2_dist2( vec2 a, vec2 b )
+static inline float vec2_dist_sq( vec2 a, vec2 b )
 {
 	float d1 = b.x - a.x;
 	float d2 = b.y - a.y;
@@ -184,7 +177,7 @@ static inline float vec2_dist2( vec2 a, vec2 b )
 
 static inline float vec2_dist( vec2 a, vec2 b )
 {
-	return sqrtf( vec2_dist2( a, b ) );
+	return sqrtf( vec2_dist_sq( a, b ) );
 }
 
 static inline vec2 vec2_reflect( vec2 i, vec2 n )
