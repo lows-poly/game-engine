@@ -5,8 +5,8 @@
 
 #include "primitives/vec2.h"
 
-#define G		1.9f
-#define G_SOFT		7.4f
+#define G		35.5f
+#define G_SOFT		2.4f
 #define G_MAX_SPEED	150.0f
 #define G_MIN_MASS	1.5f
 
@@ -64,8 +64,6 @@ static inline void gravity_apply( vec2 *pos, vec2 *vel, const float *mass,
 		if ( mass[j] >= G_MIN_MASS )
 			attractors[attractor_count++] = j;
 	}
-
-	printf("ATTRACTING BODIES: %d\n", attractor_count);
 
 	for ( i = 0; i < count; i++ ) {
 		accel = VEC2_ZERO;
