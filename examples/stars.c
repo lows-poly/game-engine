@@ -26,7 +26,7 @@
 #define GALAXY_ARMS		3
 #define GALAXY_TURNS		1.06f
 #define GALAXY_ARM_SPREAD	0.95f
-#define GALAXY_RADIUS_BIAS	2.85f
+#define GALAXY_RADIUS_BIAS	2.05f
 #define ORBIT_SWIRL		0.02f
 
 #define STAR_MERGE_MIN_SCALE	1.5f
@@ -90,7 +90,7 @@ static float star_rand_scale( void )
 
 	scale = randf( 0.5f, 1.5f );
 
-	if ( randf( 0.0f, 1.0f ) < 0.009f )
+	if ( randf( 0.0f, 1.0f ) < 0.02f )
 		scale = randf( 3.0f, 5.0f );
 
 	return scale;
@@ -139,7 +139,7 @@ int main( int argc, char *argv[] )
 	}
 
 	for ( i = 0; i < STAR_MAX - 1; i++ ) {
-		if ( randf( 0.0f, 1.0f ) <= 0.25f )
+		if ( randf( 0.0f, 1.0f ) <= 0.15f )
 			/* SCREEN RANDOM */
 			stars_place_random( &stars, i );
 		else
@@ -247,7 +247,7 @@ static void stars_place_spiral( struct star_field *sf, int i )
 		inward = vec2_normalise( vec2_scale( to_star, -1.0f ) );
 
 		sf->vel[i] = vec2_add( vec2_scale( tangent, radius * -ORBIT_SWIRL ),
-		                       vec2_scale( inward, radius * 0.008f ) );
+		                       vec2_scale( inward, radius * 0.005f ) );
 	} else {
 		sf->vel[i] = VEC2_ZERO;
 	}
