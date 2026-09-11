@@ -7,7 +7,7 @@
 
 #define G		35.5f
 #define G_SOFT		4.4f
-#define G_MAX_SPEED	150.0f
+#define G_MAX_SPEED	50.0f
 #define G_MIN_MASS	1.5f
 
 /*
