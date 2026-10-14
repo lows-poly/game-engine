@@ -90,10 +90,16 @@ int window_should_close( struct window *w );
 void window_set_should_close( struct window *w, int value );
 
 /*
- * window_end_frame() - Swap buffers and poll events
- * @w: window
+ * window_poll_events()
+ * @window
  */
-void window_end_frame( struct window *w );
+void window_poll_events( void );
+
+/**
+ * window_swap_buffers()
+ * @window
+ */
+void window_swap_buffers( struct window *w );
 
 /*
  * window_limit_fps() - Limit the frame rate to the configured value

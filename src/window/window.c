@@ -193,22 +193,30 @@ int window_should_close( struct window *w )
  */
 void window_set_should_close( struct window *w, int value )
 {
-	if ( !w->handle )
+	if ( !w || !w->handle )
 		return;
 
 	glfwSetWindowShouldClose( w->handle, value );
 }
 
 /*
- * window_end_frame() - Swap buffers and poll events
- * @w: window
+ * window_poll_events()
+ * @window
  */
-void window_end_frame( struct window *w )
+void window_poll_events( void )
 {
-	if ( !w->handle )
+	glfwPollEvents();
+}
+
+/**
+ * window_swap_buffers()
+ * @window
+ */
+void window_swap_buffers( struct window *w )
+{
+	if ( !w || !w->handle )
 		return;
 
-	glfwPollEvents();
 	w->resized = 0;
 	glfwSwapBuffers( w->handle );
 }
