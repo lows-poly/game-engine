@@ -40,6 +40,7 @@ static int set_projection( struct renderer_2d *r, int width, int height )
 	mat4_ortho( 0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f, proj );
 
 	shader_use( r->shader );
+
 	if ( !shader_set_mat4( r->shader, "u_projection", proj ) ) {
 		pr_warn("FAILED TO SET 2D PROJECTION UNIFORM\n");
 		return -EINVAL;
