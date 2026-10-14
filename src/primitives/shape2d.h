@@ -10,6 +10,7 @@
 #include "primitives/vec2.h"
 
 enum shape2d_type {
+	SHAPE2D_VOID,
 	SHAPE2D_RECTANGLE,
 	SHAPE2D_TRIANGLE
 };

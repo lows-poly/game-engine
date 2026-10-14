@@ -13,8 +13,6 @@
  * #endif
  */
 
-static const float TWO_PI = 2.0f * (float)ENGINE_PI;
-
 static colour DEFAULT_SHAPE_COLOUR = CYAN;
 
 static float wrap_angle( float rad )
@@ -36,16 +34,11 @@ bool shape2d_create( struct shape2d *s, enum shape2d_type type, float x, float y
                      float w, float h )
 {
 	if ( !s )
-		return false;
-	
-	switch ( type ) {
-	case SHAPE2D_RECTANGLE:
-		break;
-	case SHAPE2D_TRIANGLE:
-		break;
-	default:
-		pr_err("UNKNOWN SHAPE TYPE\n");
-		return false;
+		goto FEXIT;
+
+	if ( !type ) {
+		pr_warn("INVALID SHAPE2D TYPE ENUM\n");
+		goto FEXIT;
 	}
 
 	s->type = type;
@@ -56,6 +49,9 @@ bool shape2d_create( struct shape2d *s, enum shape2d_type type, float x, float y
 	s->rotation = 0.0f;
 
 	return true;
+
+FEXIT:
+	return false;
 }
 
 /*
