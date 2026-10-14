@@ -13,9 +13,9 @@ int main( void )
 
 	while ( !window_should_close( &win ) ) {
 		/* Your code here */
-		 
-		/* Swap buffers & poll events */
-		window_end_frame( &win );
+		
+		window_poll_events();
+		window_swap_buffers( &win );
 	}
 
 	window_close( &win );

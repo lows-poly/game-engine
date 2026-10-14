@@ -161,6 +161,7 @@ int main( int argc, char *argv[] )
 		stars_draw( &stars, renderer.shader );
 
 		app_update( &app );
+		renderer_end_frame( &app.win );
 	}
 
 	stars_destroy( &stars );

@@ -70,6 +70,7 @@ int main( int argc, char *argv[] )
 		renderer_2d_draw_shape( &renderer, &rect );
 
 		app_update( &app );
+		renderer_end_frame( &app.win );
 	}
 
 	shape2d_destroy( &rect );
