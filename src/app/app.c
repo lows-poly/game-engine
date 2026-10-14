@@ -44,6 +44,7 @@ void app_update( struct app *app )
 {
 	timer_tick( &app->time );
 	input_update( &app->input );
+	window_poll_events();
 	window_limit_fps( &app->win );
 	app->running = !window_should_close( &app->win );
 }
