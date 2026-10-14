@@ -15,23 +15,18 @@
 #include "mathx.h"
 #include "log.h"
 
-#define WINDOW_TITLE         "ENGINE"
-#define WINDOW_WIDTH         800
-#define WINDOW_HEIGHT        600
+#define WINDOW_TITLE	"ENGINE"
+#define WINDOW_WIDTH	800
+#define WINDOW_HEIGHT	600
 
-#define MAX_STARS          256
+#define SHAPE_SCALE	100.0f
 
 int main( int argc, char *argv[] )
 {
 	struct app app;
-	struct shape2d tri;
 	struct renderer_2d renderer;
-
-	struct shape2d stars[MAX_STARS];
-	vec2 pos;
-	float scale;
-
-	int i, start_count;
+	
+	struct shape2d rect;
 
 	float dt;
 
@@ -43,21 +38,12 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 
 	/* RENDERER SETUP */
-	if ( renderer_2d_init( &renderer, app.win.width, app.win.height ) != 0 )
+	if ( renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) != 0 )
 		return EXIT_FAILURE;
 
-	srand(time(0));
-	shape2d_set_default_colour( WHITE );
-
-	for ( i = 0; i < MAX_STARS; i++ ) {
-		pos.x = randf( 0.1f, (float)WINDOW_WIDTH );
-		pos.y = randf( 0.1f, (float)WINDOW_HEIGHT);
-		
-		scale = randf( 0.5, 1.5f );
-
-		shape2d_create( &stars[i], SHAPE2D_RECTANGLE, pos.x, pos.y,
-		                scale, scale );
-	}
+	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, (float)WINDOW_WIDTH / 2,
+	                     (float)WINDOW_HEIGHT / 2, SHAPE_SCALE, SHAPE_SCALE ) )
+		return EXIT_FAILURE;
 
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
@@ -67,12 +53,11 @@ int main( int argc, char *argv[] )
 			app_stop( &app );
 
 		dt = (float)app.time.delta_time;
-		
-		for ( i = 0; i < MAX_STARS; i++ ) {
-			renderer_2d_draw_shape( &renderer, &stars[i] );
-		}
 
+		renderer_2d_draw_shape( &renderer, &rect );
+		
 		app_update( &app );
+		renderer_end_frame( &app.win );
 	}
 
 	renderer_2d_destroy( &renderer );
