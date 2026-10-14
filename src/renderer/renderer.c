@@ -21,10 +21,9 @@ void renderer_begin_frame( colour c )
  */
 void renderer_end_frame( struct window *window )
 {
-	if ( !window || !window->handle )
+	if ( !window )
 		return;
 
-	window_poll_events();
 	window_swap_buffers( window );
 }
 
