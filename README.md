@@ -1,12 +1,31 @@
 # GAME ENGINE
 
-A small game engine written in C. This project is intended for learning C and
-graphics programming.
+<div align="center">
+
+*Work in progess*
+
+</div>
+
+A small game engine for learning C programming language and graphics programming.
 
 - Window & Input: GLFW
 - Graphics API: OpenGL
 
-*Work in progress*
+## Features
+- Window & keyboard input handling
+- 2D shape rendering
+- Basic math and utility libraries
+
+# Roadmap
+- Texture support
+- More 2D shapes
+- Collision detection
+- Sprite rendering and animation
+- Camera controls
+- Basic audio support
+- Font rendering
+
+*Example programs can be found in examples directory.*
 
 <div align="center">
 
