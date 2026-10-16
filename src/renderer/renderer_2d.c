@@ -1,5 +1,3 @@
-#include <errno.h>
-
 #include "renderer_2d.h"
 #include "renderer.h"
 #include "primitives/mat4.h"
@@ -23,11 +21,11 @@ static int set_projection( struct renderer_2d *r, int width, int height )
 	mat4 proj;
 
 	if ( !r || !r->shader )
-		return -EINVAL;
+		return 0;
 
 	if ( width <= 0 || height <= 0 ) {
 		pr_warn("FAILED TO SET 2D PROJECTION: INVALID ARGUMENTS\n");
-		return -EINVAL;
+		return 0;
 	}
 
 	/*
@@ -43,14 +41,27 @@ static int set_projection( struct renderer_2d *r, int width, int height )
 
 	if ( !shader_set_mat4( r->shader, "u_projection", proj ) ) {
 		pr_warn("FAILED TO SET 2D PROJECTION UNIFORM\n");
-		return -EINVAL;
+		return 0;
 	}
 
 	r->width = width;
 	r->height = height;
 
-	pr_info("SUCCESSFULLY SET 2D PROJECTION\n");
-	return 0;
+	return 1;
+}
+
+void renderer_2d_destroy( struct renderer_2d *r )
+{
+	if ( !r )
+		return;
+
+	shader_destroy( &r->default_shader );
+	mesh_destroy( &r->rect_mesh );
+	mesh_destroy( &r->tri_mesh );
+
+	r->shader = NULL;
+	r->width = 0;
+	r->height = 0;
 }
 
 /*
@@ -59,66 +70,55 @@ static int set_projection( struct renderer_2d *r, int width, int height )
  * @width
  * @height
  *
- * return: 0 on success, failure otherwise.
+ * return: false on failure.
  */
-int renderer_2d_init( struct renderer_2d *r, int width, int height )
+bool renderer_2d_init( struct renderer_2d *r, int width, int height )
 {
-	int err;
-
-	if ( !r || width <= 0 || height <= 0 ) {
-		if ( !r )
-			pr_warn("RENDERER_2D IS NULL\n");
-		else
-			pr_warn("WIDTH, HEIGHT IS EXPECTED TO BE ABOVE ZERO\n");
-
-		return -EINVAL;
-	}
+	if ( !r || width <= 0 || height <= 0 )
+		return false;
 
 	if ( mesh_init_quad( &r->rect_mesh, UNIT_QUAD, DRAW_STATIC ) != 0 )
-		return -ENOMEM;
+		return false;
 
 	if ( mesh_init_tri( &r->tri_mesh, UNIT_TRI, DRAW_STATIC ) != 0 ) {
 		mesh_destroy( &r->rect_mesh );
-		return -ENOMEM;
+		return false;
 	}
 
 	if ( shader_init_preset( &r->default_shader, SHADER_BASIC_2D ) != 0 ) {
 		mesh_destroy( &r->rect_mesh );
 		mesh_destroy( &r->tri_mesh );
-		return -ENOMEM;
+		return false;
 	}
 
 	r->shader = &r->default_shader;
 	r->width = width;
 	r->height = height;
 
-	err = set_projection( r, width, height );
-	if ( err != 0 ) {
+	if ( !set_projection( r, width, height ) ) {
 		renderer_2d_destroy( r );
-		return err;
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
-int renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
+bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
 {
 	struct shader *prev;
-	int err;
 
 	if ( !r || !shader )
-		return -EINVAL;
+		return false;
 
 	prev = r->shader;
 	r->shader = shader;
 
-	err = set_projection( r, r->width, r->height );
-	if ( err != 0 ) {
+	if ( !set_projection( r, r->width, r->height ) ) {
 		r->shader = prev;
-		return err;
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
 void renderer_2d_use_default_shader( struct renderer_2d *r )
@@ -127,7 +127,7 @@ void renderer_2d_use_default_shader( struct renderer_2d *r )
 		return;
 
 	r->shader = &r->default_shader;
-	if ( set_projection( r, r->width, r->height ) != 0 )
+	if ( !set_projection( r, r->width, r->height ) )
 		pr_warn("2D PROJECTION ENCOUNTERED AN ERROR WHILE SWITCHING TO DEFAULT SHADER\n");
 }
 
@@ -176,24 +176,10 @@ void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 	renderer_draw_mesh( mesh, r->shader );
 }
 
-int renderer_2d_resize( struct renderer_2d *r, int width, int height )
+bool renderer_2d_resize( struct renderer_2d *r, int width, int height )
 {
-	if ( width <= 0 || height <= 0 )
-		return -EINVAL;
+	if ( !r || width <= 0 || height <= 0 )
+		return false;
 
 	return set_projection( r, width, height );
-}
-
-void renderer_2d_destroy( struct renderer_2d *r )
-{
-	if ( !r )
-		return;
-
-	shader_destroy( &r->default_shader );
-	mesh_destroy( &r->rect_mesh );
-	mesh_destroy( &r->tri_mesh );
-
-	r->shader = NULL;
-	r->width = 0;
-	r->height = 0;
 }
