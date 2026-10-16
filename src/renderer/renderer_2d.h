@@ -25,9 +25,9 @@ struct renderer_2d {
  * @width
  * @height
  *
- * return: 0 on success, failure otherwise.
+ * return: false on failure.
  */
-int renderer_2d_init( struct renderer_2d *r, int width, int height );
+bool renderer_2d_init( struct renderer_2d *r, int width, int height );
 int renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
 void renderer_2d_use_default_shader( struct renderer_2d *r );
 void renderer_2d_update( struct renderer_2d *r, const struct window *w );
