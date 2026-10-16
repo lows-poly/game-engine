@@ -194,6 +194,7 @@ int shader_init( struct shader *s, const char *vert_path, const char *frag_path 
 
 	if ( !file_read_text_rel( vert_path, &vert_src ) )
 		return -EINVAL;
+
 	if ( !file_read_text_rel( frag_path, &frag_src ) ) {
 		file_free( vert_src );
 		return -EINVAL;
