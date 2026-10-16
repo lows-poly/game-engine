@@ -1,5 +1,3 @@
-#include <errno.h>
-
 #include "renderer.h"
 #include "primitives/mat4.h"
 
