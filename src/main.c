@@ -12,8 +12,6 @@
 #include "primitives/shape2d.h"
 #include "primitives/colour.h"
 
-#include "graphics/textures/texture.h"
-
 #include "mathx.h"
 #include "log.h"
 
@@ -29,10 +27,6 @@ int main( int argc, char *argv[] )
 	struct renderer_2d renderer;
 	
 	struct shape2d rect;
-	struct texture tex_null;
-	struct texture_config tex_cfg;
-
-	float dt;
 
 	/*
 	 * APP SETUP
@@ -49,19 +43,12 @@ int main( int argc, char *argv[] )
 	                     (float)WINDOW_HEIGHT / 2, SHAPE_SCALE, SHAPE_SCALE ) )
 		return EXIT_FAILURE;
 
-	tex_cfg = TEXTURE_CONFIG_DEFAULT;
-
-	if ( !texture_init( &tex_null, "assets/textures/dummy.png", 0, &tex_cfg ) )
-		pr_err("UNABLE TO INIT TEXTURE\n");
-
 	while ( app.running ) {
 		renderer_begin_frame( BLACK );
 		renderer_2d_update( &renderer, &app.win );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
-
-		dt = (float)app.time.delta_time;
 
 		renderer_2d_draw_shape( &renderer, &rect );
 		
