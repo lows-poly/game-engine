@@ -86,8 +86,8 @@ static GLenum _texture_wrap_to_gl( enum texture_wrap wrap )
  * @slot
  * @config
  */
-bool texture_init( struct texture *texture, const char *img, unsigned int slot,
-                   struct texture_config *config )
+int texture_init( struct texture *texture, const char *img, unsigned int slot,
+                  struct texture_config *config )
 {
 	GLuint id;
 	GLint max_slots;
