@@ -1,8 +1,7 @@
 # Ignore the build directory
 build/
 
-# Ignore Makefile
-# Makefile
-
-# Ignore .project-root
-.project-root
+# Ignore hidden files
+.*
+!.gitignore
+!.github/
