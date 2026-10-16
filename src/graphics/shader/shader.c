@@ -86,13 +86,13 @@ static GLuint shader_compile( GLenum type, const char *src )
 
 		switch ( type ) {
 		case GL_VERTEX_SHADER:
-			pr_warn("%s", info_log);
+			pr_err("%s\n", info_log);
 			break;
 		case GL_FRAGMENT_SHADER:
-			pr_warn("%s", info_log);
+			pr_err("%s\n", info_log);
 			break;
 		default:
-			pr_warn("%s", info_log);
+			pr_err("%s\n", info_log);
 			break;
 		};
 
