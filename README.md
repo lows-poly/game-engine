@@ -16,7 +16,7 @@ A small game engine for learning C programming language and graphics programming
 - 2D shape rendering
 - Basic math and utility libraries
 
-# Roadmap
+## Roadmap
 - Texture support
 - More 2D shapes
 - Collision detection
