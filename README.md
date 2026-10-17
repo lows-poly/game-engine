@@ -33,12 +33,6 @@ A small game engine for learning C programming language and graphics programming
 </div>
 
 <div align="center">
-    <p>Window</p>
-    <img src="assets/mac_preview.png" width="400" height="400"/>
-    <img src="assets/linux_preview.png" width="400" height="400"/>
-</div>
-
-<div align="center">
-    <p>Star simulation (8086)</p>
+    <p>Star simulation (8086 rectangle shapes)</p>
     <img src="assets/mac_star_preview.png" width="400" height="400"/>
 </div>
