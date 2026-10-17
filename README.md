@@ -1,7 +1,6 @@
-# GAME ENGINE
-
 <div align="center">
 
+# GAME ENGINE
 *Work in progess*
 
 </div>
