@@ -14,10 +14,11 @@
 bool app_init( struct app *app, int width, int height, const char *title,
                const char *argv0 )
 {
-	if ( argv0 ) {
-		if ( path_init( argv0 ) < 0 ) {
-			pr_warn("FAILED TO INIT PATH\n");
-		}
+	if ( !app )
+		return false;
+
+	if ( argv0 && path_init( argv0 ) < 0 ) {
+		pr_warn("FAILED TO INIT PATH\n");
 	}
 
 	if ( !window_init( &app->win, width, height, title ) ) {
@@ -29,11 +30,16 @@ bool app_init( struct app *app, int width, int height, const char *title,
 
 	if ( !timer_init( &app->time, 1.0 / 60.0 ) ) {
 		pr_warn("FAILED TO INIT TIMER\n");
-		return false;
+		goto CLEAN_WINDOW_EXIT;
 	}
 	
 	app->running = true;
 	return true;
+
+CLEAN_WINDOW_EXIT:
+	window_close( &app->win );
+
+	return false;
 }
 
 /*
@@ -43,8 +49,8 @@ bool app_init( struct app *app, int width, int height, const char *title,
 void app_update( struct app *app )
 {
 	timer_tick( &app->time );
-	input_update( &app->input );
 	window_poll_events();
+	input_update( &app->input );
 	window_limit_fps( &app->win );
 	app->running = !window_should_close( &app->win );
 }
