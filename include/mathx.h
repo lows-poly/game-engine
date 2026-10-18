@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define PI	3.14159265358979323846
-#define TWO_PI	PI * PI
+#define TWO_PI	(PI * 2.0)
 
 static inline float clampf( float x, float lo, float hi )
 {
