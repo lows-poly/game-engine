@@ -7,17 +7,20 @@ int buffer_init( struct buffer *b, GLenum target, const void *data, size_t size,
 {
 	GLuint id;
 
-	if ( !data || !size ) {
-		printf("BUFFER_ERR: INVALID DATA\n");
+	if ( !b || !data )
 		return -EINVAL;
-	}
 
 	glGenBuffers( 1, &id );
+
+	if ( id <= 0 )
+		return -EINVAL;
+
 	glBindBuffer( target, id );
 	glBufferData( target, size, data, usage );
 
 	b->id = id;
 	b->target = target;
+
 	return 0;
 }
 void buffer_update( const struct buffer *b, const void *data, size_t size,
@@ -39,8 +42,9 @@ void buffer_unbind( const struct buffer *b )
 
 void buffer_destroy( struct buffer *b )
 {
-	GLuint id = b->id;
+	if ( !b || b->id <= 0 )
+		return;
 
-	if ( id )
-		glDeleteBuffers( 1, &id );
+	glDeleteBuffers( 1, &b->id );
+	b->id = 0;
 }

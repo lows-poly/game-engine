@@ -19,12 +19,16 @@ int vertex_array_init( struct vertex_array *va )
 int vertex_array_link_attrib( struct vertex_array *va, const struct buffer *vbo,
                               const struct vertex_attrib *attrib )
 {
-	if ( !va || !vbo ) {
-		printf("VERTEX_ARRAY_ERR: INVALID ARGS\n");
-		return -EINVAL;
-	}
+	GLuint id;
 
-	glBindVertexArray( va->id );
+	if ( !va || !vbo || !attrib )
+		return -EINVAL;
+
+	glBindVertexArray( &id );
+
+	if ( id <= 0 )
+		return -ENOMEM;
+
 	buffer_bind( vbo );
 	glVertexAttribPointer( attrib->index, attrib->size, attrib->type,
 	                       attrib->normalised, attrib->stride,
@@ -47,6 +51,9 @@ void vertex_array_unbind( void )
 
 void vertex_array_destroy( struct vertex_array *va )
 {
-	if ( va->id )
-		glDeleteVertexArrays( 1, &va->id );
+	if ( !va || va->id <= 0 )
+		return;
+
+	glDeleteVertexArrays( 1, &va->id );
+	va->id = 0;
 }
