@@ -31,6 +31,9 @@ int mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw
 	int err;
 	size_t i, index_size;
 
+	if ( !m )
+		return -EINVAL;
+
 	if ( !desc || !desc->vertices || !desc->vertex_size ) {
 		printf("MESH_ERR: INVALID DESC\n");
 		return -EINVAL;
