@@ -34,20 +34,15 @@ static int shader_cache_uniform( struct shader *s, const char *name, GLint loc )
 static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 {
 	GLint loc;
-	GLint err;
+	size_t i;
 
-	if ( !s ) {
-		pr_warn("FAILED TO GET UNIFORM LOC: NULL SHADER\n");
-		return 0;
-	}
+	struct shader_uniform *u;
 
-	if ( !name ) {
-		pr_warn("FAILED TO GET UNIFORM LOC: NULL UNIFORM NAME\n");
-		return 0;
-	}
+	if ( !s || !name )
+		loc = -1;
 
-	for ( size_t i = 0; i < s->u_count; i++ ) {
-		struct shader_uniform *u = &s->uniforms[i];
+	for ( i = 0; i < s->u_count; i++ ) {
+		u = &s->uniforms[i];
 
 		if ( strcmp( u->name, name ) == 0 )
 			return u->loc;
