@@ -84,6 +84,9 @@ static void framebuffer_size_callback( GLFWwindow *handle, int width, int height
  */
 int window_init( struct window *w, int width, int height, const char *title )
 {
+	if ( !w || width < 0 || height < 0 || !title )
+		return -EINVAL;
+
 	if ( !glfwInit() ) {
 		_warn("FAILED TO INIT GLFW");
 		return 0;
@@ -133,19 +136,16 @@ int window_init( struct window *w, int width, int height, const char *title )
 
 /*
  * window_set_vsync() - Enable or disable vertical synchronisation
- * @w:       window
- * @enabled: Non-zero to enable, zero to disable
+ * @w
+ * @enabled
  */
-void window_set_vsync( struct window *w, int enabled )
+void window_set_vsync( struct window *w, bool enabled )
 {
-	int _val;
-	_val = enabled ? 1 : 0;
-
-	if ( !w->handle )
+	if ( !w || !w->handle )
 		return;
 
-	w->vsync = _val;
-	glfwSwapInterval( w->vsync );
+	w->vsync = enabled;
+	glfwSwapInterval( enabled );
 }
 
 /*
@@ -157,14 +157,11 @@ void window_set_vsync( struct window *w, int enabled )
  */
 void window_set_target_fps( struct window *w, int fps )
 {
-	if ( fps <= 0 ) {
-		_warn("INVALID TARGET FPS");
+	if ( !w || fps <= 0 )
 		return;
-	}
 
-	if ( w->vsync ) {
+	if ( w->vsync )
 		return;
-	}
 
 	w->frame_time_target = 1.0 / (double)fps;
 }
@@ -179,10 +176,10 @@ void window_set_target_fps( struct window *w, int fps )
  * 0 - Window should remain open
  * 1 - Window should close
  */
-int window_should_close( struct window *w )
+bool window_should_close( struct window *w )
 {
-	if ( !w->handle )
-		return 1;
+	if ( !w || !w->handle )
+		return false;
 
 	return glfwWindowShouldClose( w->handle );
 }
@@ -191,7 +188,7 @@ int window_should_close( struct window *w )
  * window_set_should_close() - Call glfwSetWindowShouldClose()
  * @value: 0 = false, 1 = true
  */
-void window_set_should_close( struct window *w, int value )
+void window_set_should_close( struct window *w, bool value )
 {
 	if ( !w || !w->handle )
 		return;
@@ -257,6 +254,9 @@ void window_limit_fps( struct window *w )
  */
 void window_close( struct window *w )
 {
+	if ( !w || !w->handle )
+		return;
+
 	if ( w->handle ) {
 		glfwDestroyWindow( w->handle );
 		w->handle = NULL;
