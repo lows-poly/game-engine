@@ -32,8 +32,8 @@ static int set_projection( struct renderer_2d *r, int width, int height )
 	 * PIXEL COORDINATES:
 	 * LEFT   = 0
 	 * RIGHT  = WIDTH
-	 * BOTTOM = HEIGHT
 	 * TOP    = 0
+	 * BOTTOM = HEIGHT
 	 */
 	mat4_ortho( 0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f, proj );
 
@@ -74,18 +74,24 @@ void renderer_2d_destroy( struct renderer_2d *r )
  */
 bool renderer_2d_init( struct renderer_2d *r, int width, int height )
 {
-	if ( !r || width <= 0 || height <= 0 )
+	if ( !r || width <= 0 || height <= 0 ) {
+		pr_warn("INVALID ARGUMENTS\n");
 		return false;
+	}
 
-	if ( mesh_init_quad( &r->rect_mesh, UNIT_QUAD, DRAW_STATIC ) != 0 )
+	if ( !mesh_init_quad( &r->rect_mesh, UNIT_QUAD, DRAW_STATIC ) ) {
+		pr_warn("FAILED TO INIT MESH QUAD\n");
 		return false;
+	}
 
-	if ( mesh_init_tri( &r->tri_mesh, UNIT_TRI, DRAW_STATIC ) != 0 ) {
+	if ( !mesh_init_tri( &r->tri_mesh, UNIT_TRI, DRAW_STATIC ) ) {
+		pr_warn("FAILED TO INIT MESH TRI\n");
 		mesh_destroy( &r->rect_mesh );
 		return false;
 	}
 
 	if ( shader_init_preset( &r->default_shader, SHADER_BASIC_2D ) != 0 ) {
+		pr_warn("FAILED TO INIT SHADER PRESET\n");
 		mesh_destroy( &r->rect_mesh );
 		mesh_destroy( &r->tri_mesh );
 		return false;
@@ -96,11 +102,31 @@ bool renderer_2d_init( struct renderer_2d *r, int width, int height )
 	r->height = height;
 
 	if ( !set_projection( r, width, height ) ) {
+		pr_warn("PROJECTION FAILED\n");
 		renderer_2d_destroy( r );
 		return false;
 	}
 
 	return true;
+}
+
+void renderer_2d_sync_viewport( struct renderer_2d *r, struct window *w )
+{
+	int width;
+	int height;
+
+	if ( !r || !w )
+		return;
+
+	if ( !window_take_resize( w, &width, &height ) )
+		return;
+
+	if ( width <= 0 || height <= 0 )
+		return;
+
+	r->width = width;
+	r->height = height;
+	set_projection( r, width, height );
 }
 
 bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
@@ -139,7 +165,7 @@ void renderer_2d_update( struct renderer_2d *r, const struct window *w )
 	if ( !w->resized )
 		return;
 
-	set_projection( r, w->width, w->height );
+	set_projection( r, w->framebuffer_width, w->framebuffer_height );
 }
 
 void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
@@ -174,12 +200,4 @@ void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 	shader_set_mat4( r->shader, "u_model", model );
 	shader_set_4f( r->shader, "u_colour", colour_arr );
 	renderer_draw_mesh( mesh, r->shader );
-}
-
-bool renderer_2d_resize( struct renderer_2d *r, int width, int height )
-{
-	if ( !r || width <= 0 || height <= 0 )
-		return false;
-
-	return set_projection( r, width, height );
 }
