@@ -3,31 +3,29 @@
 #include <glad/glad.h>
 #include "vertex_array.h"
 
-int vertex_array_init( struct vertex_array *va )
+bool vertex_array_init( struct vertex_array *va )
 {
 	GLuint id;
 
 	if ( !va )
-		return -EINVAL;
+		return false;
 
 	glGenVertexArrays( 1, &id );
 	va->id = id;
 
-	return 0;
+	return true;
 }
 
-int vertex_array_link_attrib( struct vertex_array *va, const struct buffer *vbo,
+bool vertex_array_link_attrib( struct vertex_array *va, const struct buffer *vbo,
                               const struct vertex_attrib *attrib )
 {
-	GLuint id;
-
 	if ( !va || !vbo || !attrib )
-		return -EINVAL;
+		return false;
 
-	glBindVertexArray( &id );
+	glBindVertexArray( va->id );
 
-	if ( id <= 0 )
-		return -ENOMEM;
+	if ( va->id <= 0 || vbo->id <= 0 )
+		return false;
 
 	buffer_bind( vbo );
 	glVertexAttribPointer( attrib->index, attrib->size, attrib->type,
@@ -36,7 +34,7 @@ int vertex_array_link_attrib( struct vertex_array *va, const struct buffer *vbo,
 	glEnableVertexAttribArray( attrib->index );
 	buffer_unbind( vbo );
 
-	return 0;
+	return true;
 }
 
 void vertex_array_bind( const struct vertex_array *va )
