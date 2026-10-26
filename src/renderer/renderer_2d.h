@@ -28,7 +28,7 @@ struct renderer_2d {
  * return: false on failure.
  */
 bool renderer_2d_init( struct renderer_2d *r, int width, int height );
-void renderer_2d_sync_viewport( struct renderer_2d *r, struct window *w );
+void renderer_2d_update( struct renderer_2d *r, struct window *w );
 bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
 void renderer_2d_use_default_shader( struct renderer_2d *r );
 void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape );

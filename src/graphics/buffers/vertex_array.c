@@ -10,10 +10,11 @@ bool vertex_array_init( struct vertex_array *va )
 	if ( !va )
 		return false;
 
+	id = 0;
 	glGenVertexArrays( 1, &id );
 	va->id = id;
 
-	return true;
+	return id != 0;
 }
 
 bool vertex_array_link_attrib( struct vertex_array *va, const struct buffer *vbo,
@@ -22,10 +23,10 @@ bool vertex_array_link_attrib( struct vertex_array *va, const struct buffer *vbo
 	if ( !va || !vbo || !attrib )
 		return false;
 
-	glBindVertexArray( va->id );
-
 	if ( va->id <= 0 || vbo->id <= 0 )
 		return false;
+
+	glBindVertexArray( va->id );
 
 	buffer_bind( vbo );
 	glVertexAttribPointer( attrib->index, attrib->size, attrib->type,

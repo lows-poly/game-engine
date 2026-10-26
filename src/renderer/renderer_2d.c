@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "renderer_2d.h"
 #include "renderer.h"
 #include "primitives/mat4.h"
@@ -79,6 +81,8 @@ bool renderer_2d_init( struct renderer_2d *r, int width, int height )
 		return false;
 	}
 
+	memset( r, 0, sizeof( *r ) );
+
 	if ( !mesh_init_quad( &r->rect_mesh, UNIT_QUAD, DRAW_STATIC ) ) {
 		pr_warn("FAILED TO INIT MESH QUAD\n");
 		return false;
@@ -110,7 +114,7 @@ bool renderer_2d_init( struct renderer_2d *r, int width, int height )
 	return true;
 }
 
-void renderer_2d_sync_viewport( struct renderer_2d *r, struct window *w )
+void renderer_2d_update( struct renderer_2d *r, struct window *w )
 {
 	int width;
 	int height;
@@ -124,9 +128,10 @@ void renderer_2d_sync_viewport( struct renderer_2d *r, struct window *w )
 	if ( width <= 0 || height <= 0 )
 		return;
 
-	r->width = width;
-	r->height = height;
-	set_projection( r, width, height );
+	if ( set_projection( r, width, height ) ) {
+		r->width = width;
+		r->height = height;
+	}
 }
 
 bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
@@ -155,17 +160,6 @@ void renderer_2d_use_default_shader( struct renderer_2d *r )
 	r->shader = &r->default_shader;
 	if ( !set_projection( r, r->width, r->height ) )
 		pr_warn("2D PROJECTION ENCOUNTERED AN ERROR WHILE SWITCHING TO DEFAULT SHADER\n");
-}
-
-void renderer_2d_update( struct renderer_2d *r, const struct window *w )
-{
-	if ( !r || !w || !r->shader )
-		return;
-
-	if ( !w->resized )
-		return;
-
-	set_projection( r, w->framebuffer_width, w->framebuffer_height );
 }
 
 void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
@@ -197,7 +191,9 @@ void renderer_2d_draw_shape( struct renderer_2d *r, struct shape2d *shape )
 	mat4_scale_3f( model, shape->scale.x, shape->scale.y, 1.0f );
 
 	shader_use( r->shader );
-	shader_set_mat4( r->shader, "u_model", model );
-	shader_set_4f( r->shader, "u_colour", colour_arr );
+	if ( !shader_set_mat4( r->shader, "u_model", model ) ||
+	     !shader_set_4f( r->shader, "u_colour", colour_arr ) )
+		return;
+
 	renderer_draw_mesh( mesh, r->shader );
 }

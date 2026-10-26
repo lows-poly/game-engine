@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 #include "mesh.h"
 #include "log.h"
@@ -35,6 +36,8 @@ bool mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type dra
 
 	if ( !m )
 		return false;
+
+	memset( m, 0, sizeof( *m ) );
 
 	if ( !desc || !desc->vertices || !desc->vertex_size ) {
 		pr_warn("FAILED TO INIT MESH: INVALID DESCRIPTION\n");
@@ -147,6 +150,9 @@ bool mesh_update_quad( struct mesh *m, const vec2 verts[4] )
 
 void mesh_draw( const struct mesh *m )
 {
+	if ( !m || !m->vao.id )
+		return;
+
 	vertex_array_bind( &m->vao );
 
 	if ( m->has_indices )
@@ -158,12 +164,10 @@ void mesh_draw( const struct mesh *m )
 bool mesh_update_vertices( struct mesh *m, const void *vertices, size_t vertex_size,
                            size_t offset )
 {
-	if ( !m || !vertices || vertex_size <= 0 ) {
+	if ( !m || !vertices || !vertex_size || !m->vbo.id )
 		return false;
-	}
 
-	buffer_update( &m->vbo, vertices, vertex_size, offset );
-	return true;
+	return buffer_update( &m->vbo, vertices, vertex_size, offset );
 }
 
 void mesh_destroy( struct mesh *m )
@@ -176,4 +180,5 @@ void mesh_destroy( struct mesh *m )
 
 	buffer_destroy( &m->vbo );
 	vertex_array_destroy( &m->vao );
+	memset( m, 0, sizeof( *m ) );
 }

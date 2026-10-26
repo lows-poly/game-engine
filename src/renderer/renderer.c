@@ -36,6 +36,9 @@ void renderer_enable_backface_culling( bool value, enum draw_order order )
  */
 void renderer_draw_mesh( const struct mesh *m, const struct shader *s )
 {
+	if ( !m || !s || !m->vao.id || !s->id )
+		return;
+
 	shader_use( s );
 	mesh_draw( m );
 }

@@ -7,9 +7,10 @@ bool buffer_init( struct buffer *b, GLenum target, const void *data, size_t size
 {
 	GLuint id;
 
-	if ( !b || !data || size <= 0 )
+	if ( !b || !data || !size )
 		return false;
 
+	id = 0;
 	glGenBuffers( 1, &id );
 
 	if ( id <= 0 )
@@ -27,7 +28,7 @@ bool buffer_init( struct buffer *b, GLenum target, const void *data, size_t size
 bool buffer_update( const struct buffer *b, const void *data, size_t size,
                     size_t offset )
 {
-	if ( !b || !data || size <= 0 )
+	if ( !b || !b->id || !data || !size )
 		return false;
 
 	if ( offset > b->size || size > b->size - offset )
@@ -57,9 +58,13 @@ void buffer_unbind( const struct buffer *b )
 
 void buffer_destroy( struct buffer *b )
 {
-	if ( !b || b->id <= 0 )
+	if ( !b )
 		return;
 
-	glDeleteBuffers( 1, &b->id );
+	if ( b->id )
+		glDeleteBuffers( 1, &b->id );
+
 	b->id = 0;
+	b->target = 0;
+	b->size = 0;
 }

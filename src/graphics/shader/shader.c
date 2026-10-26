@@ -11,7 +11,7 @@ static int shader_cache_uniform( struct shader *s, const char *name, GLint loc )
 {
 	size_t len;
 
-	if ( !s || !name )
+	if ( !s || !s->id || !name )
 		return -EINVAL;
 
 	if ( s->u_count >= SHADER_UNIFORM_CACHE_MAX )
@@ -38,8 +38,8 @@ static GLint shader_get_uniform_loc( struct shader *s, const char *name )
 
 	struct shader_uniform *u;
 
-	if ( !s || !name )
-		loc = -1;
+	if ( !s || !s->id || !name )
+		return -1;
 
 	for ( i = 0; i < s->u_count; i++ ) {
 		u = &s->uniforms[i];
@@ -125,7 +125,7 @@ static int shader_link_program( GLuint vert, GLuint frag, GLuint *out )
 		char info_log[512];
 
 		glGetProgramInfoLog( id, 512, NULL, info_log );
-		pr_warn( info_log );
+		pr_warn( "%s", info_log );
 
 		glDeleteProgram( id );
 		return -EINVAL;
@@ -143,6 +143,8 @@ static int shader_init_from_src( struct shader *s, const char *vert_src,
 
 	if ( !s )
 		return -EINVAL;
+
+	memset( s, 0, sizeof( *s ) );
 
 	if ( !vert_src || !frag_src ) {
 		pr_warn("NO VERTEX/FRAGMENT SHADER SOURCES\n");
@@ -181,6 +183,8 @@ int shader_init( struct shader *s, const char *vert_path, const char *frag_path 
 
 	if ( !s )
 		return -EINVAL;
+
+	memset( s, 0, sizeof( *s ) );
 
 	if ( !vert_path || !frag_path ) {
 		pr_warn("UNABLE TO FIND SHADER PATHS\n");
@@ -271,6 +275,9 @@ bool shader_set_2f( struct shader *s, const char *name, const float value[2] )
 {
 	GLint loc;
 
+	if ( !value )
+		return false;
+
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
@@ -298,6 +305,9 @@ bool shader_set_vec2( struct shader *s, const char *name, vec2 v )
 bool shader_set_3i( struct shader *s, const char *name, const int value[3] )
 {
 	GLint loc;
+
+	if ( !value )
+		return false;
 
 	loc = shader_get_uniform_loc( s, name );
 
@@ -327,6 +337,9 @@ bool shader_set_3f( struct shader *s, const char *name, const float value[3] )
 {
 	GLint loc;
 
+	if ( !value )
+		return false;
+
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
@@ -355,6 +368,9 @@ bool shader_set_4f( struct shader *s, const char *name, const float value[4] )
 {
 	GLint loc;
 
+	if ( !value )
+		return false;
+
 	loc = shader_get_uniform_loc( s, name );
 
 	if ( loc < 0 )
@@ -382,6 +398,9 @@ bool shader_set_vec4( struct shader *s, const char *name, vec4 v )
 bool shader_set_mat4( struct shader *s, const char *name, const mat4 mat )
 {
 	GLint loc;
+
+	if ( !mat )
+		return false;
 
 	loc = shader_get_uniform_loc( s, name );
 

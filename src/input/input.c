@@ -1,7 +1,5 @@
 #include <string.h>
 
-#include <GLFW/glfw3.h>
-
 #include "input.h"
 #include "window/window.h"
 
