@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "vec3.h"
-
 #define MAT4_ZERO_INIT		{ 0.0f, 0.0f, 0.0f, 0.0f,  \
                                   0.0f, 0.0f, 0.0f, 0.0f,  \
                                   0.0f, 0.0f, 0.0f, 0.0f,  \
@@ -28,7 +26,7 @@ static inline void mat4_print( const mat4 mat )
 
 	for ( i = 0; i < 4; i++ ) {
 		for ( j = 0; j < 4; j++ )
-			printf( "%.3f ", mat[i][j] );
+			printf( "%.3f ", (double)mat[i][j] );
 
 		printf("\n");
 	}

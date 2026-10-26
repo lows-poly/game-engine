@@ -18,7 +18,7 @@ typedef struct vec4 {
 
 static inline void vec4_print( const struct vec4 v )
 {
-	printf( "(%.3f, %.3f, %.3f, %.3f)\n", v.x, v.y, v.z, v.w );
+	printf( "(%.3f, %.3f, %.3f, %.3f)\n", (double)v.x, (double)v.y, (double)v.z, (double)v.w );
 }
 
 static inline vec4 vec4_make( float x, float y, float z, float w )

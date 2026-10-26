@@ -6,8 +6,8 @@
 
 #define VEC_PI		3.14159265358979323846f
 #define VEC_EPSILON	1e-8f
-#define VEC3_ZERO_INIT	{{ 0.0f, 0.0f, 0.0f }}
-#define VEC3_ZERO	((vec3){VEC3_ZERO_INIT})
+#define VEC3_ZERO_INIT	{ 0.0f, 0.0f, 0.0f }
+#define VEC3_ZERO	((vec3)VEC3_ZERO_INIT)
 
 typedef struct vec3 {
 	float x;
@@ -17,7 +17,7 @@ typedef struct vec3 {
 
 static inline void vec3_print( const struct vec3 v )
 {
-	printf( "(%.3f, %.3f, %.3f)\n", v.x, v.y, v.z );
+	printf( "(%.3f, %.3f, %.3f)\n", (double)v.x, (double)v.y, (double)v.z );
 }
 
 static inline vec3 vec3_add( vec3 a, vec3 b )

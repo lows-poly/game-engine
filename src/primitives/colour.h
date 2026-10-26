@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "mathx.h"
-#include "debugf.h"
 
 typedef struct colour {
 	float r;
@@ -44,10 +43,10 @@ static inline colour colour_from_rgba( int r, int g, int b, int a )
 {
 	colour c;
 
-	c.r = clamp( r, 0, 255 ) / 255.0f;
-	c.g = clamp( g, 0, 255 ) / 255.0f;
-	c.b = clamp( b, 0, 255 ) / 255.0f;
-	c.a = clamp( a, 0, 255 ) / 255.0f;
+	c.r = clampf( (float)r, 0.0f, 255.0f ) / 255.0f;
+	c.g = clampf( (float)g, 0.0f, 255.0f ) / 255.0f;
+	c.b = clampf( (float)b, 0.0f, 255.0f ) / 255.0f;
+	c.a = clampf( (float)a, 0.0f, 255.0f ) / 255.0f;
 
 	return c;
 }
@@ -56,9 +55,9 @@ static inline colour colour_from_rgb( int r, int g, int b )
 {
 	colour c;
 
-	c.r = clamp( r, 0, 255 ) / 255.0f;
-	c.g = clamp( g, 0, 255 ) / 255.0f;
-	c.b = clamp( b, 0, 255 ) / 255.0f;
+	c.r = clampf( (float)r, 0.0f, 255.0f ) / 255.0f;
+	c.g = clampf( (float)g, 0.0f, 255.0f ) / 255.0f;
+	c.b = clampf( (float)b, 0.0f, 255.0f ) / 255.0f;
 	c.a = 1.0f;
 
 	return c;
@@ -88,14 +87,14 @@ static inline colour icolour_normalise( icolour c )
 	return colour_from_rgb( c.r, c.g, c.b );
 }
 
-static inline colour colour_alpha( colour *src, float alpha )
+static inline void colour_alpha( colour *src, float alpha )
 {
 	src->a = alpha; 
 }
 
 static inline void colour_print( const colour c )
 {
-	printf( "(%.3f, %.3f, %.3f, %.3f)\n", c.r, c.g, c.b, c.a );
+	printf( "(%.3f, %.3f, %.3f, %.3f)\n", (double)c.r, (double)c.g, (double)c.b, (double)c.a );
 }
 
 static inline void icolour_print( const icolour c )

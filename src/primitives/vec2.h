@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "debugf.h"
-
 #define VEC_EPSILON     1e-8f
 #define VEC2_ZERO_INIT  { 0.0f, 0.0f }
 #define VEC2_ZERO       ((vec2)VEC2_ZERO_INIT)
@@ -18,7 +16,7 @@ typedef struct vec2 {
 
 static inline void vec2_print( const struct vec2 v )
 {
-	printf( "(%.3f, %.3f)\n", v.x, v.y  );
+	printf( "(%.3f, %.3f)\n", (double)v.x, (double)v.y );
 }
 
 static inline vec2 vec2_make( float x, float y )
