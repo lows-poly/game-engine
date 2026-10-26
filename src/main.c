@@ -36,28 +36,39 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 
 	/* RENDERER SETUP */
-	if ( renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) != 0 )
+	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
+		goto CLEAN_APP_EXIT;
 		return EXIT_FAILURE;
+	}
 
 	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, (float)WINDOW_WIDTH / 2,
 	                     (float)WINDOW_HEIGHT / 2, SHAPE_SCALE, SHAPE_SCALE ) )
+	{
+		goto CLEAN_RENDERER_EXIT;
 		return EXIT_FAILURE;
+	}
 
-	while ( app.running ) {
+	while ( app_begin_frame( &app ) ) {
+		renderer_2d_sync_viewport( &renderer, &app.win );
 		renderer_begin_frame( BLACK );
-		renderer_2d_update( &renderer, &app.win );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
 
-		renderer_2d_draw_shape( &renderer, &rect );
-		
-		app_update( &app );
-		renderer_end_frame( &app.win );
+
+		app_end_frame( &app );
 	}
 
 	renderer_2d_destroy( &renderer );
 	app_shutdown( &app );
 
 	return EXIT_SUCCESS;
+
+CLEAN_RENDERER_EXIT:
+	renderer_2d_destroy( &renderer );
+
+CLEAN_APP_EXIT:
+	app_shutdown( &app );
+
+	return EXIT_FAILURE;
 }
