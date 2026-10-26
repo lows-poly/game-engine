@@ -11,10 +11,8 @@ int main( void )
 	if ( !app_init( &application, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL ) )
 		return -1;
 
-	while ( application.running ) {
-		/* Your code here */
-
-		app_update( &application );
+	while ( app_begin_frame( &application ) ) {
+		app_end_frame( &application );
 	}
 
 	app_shutdown( &application );

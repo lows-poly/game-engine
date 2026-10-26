@@ -18,7 +18,7 @@ int main( void )
 		window_swap_buffers( &win );
 	}
 
-	window_close( &win );
+	window_destroy( &win );
 
 	return 0;
 }

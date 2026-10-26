@@ -34,21 +34,26 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 
 	/* SHAPE SETUP */
-	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, 100.0f, 100.0f, 64.0f, 64.0f ) )
+	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, 100.0f, 100.0f, 64.0f, 64.0f ) ) {
+		app_shutdown( &app );
 		return EXIT_FAILURE;
+	}
 
 	/* RENDERER SETUP */
-	if ( renderer_2d_init( &renderer, app.win.width, app.win.height ) != 0 )
+	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
+		shape2d_destroy( &rect );
+		app_shutdown( &app );
 		return EXIT_FAILURE;
+	}
 
-	while ( app.running ) {
+	while ( app_begin_frame( &app ) ) {
+		renderer_2d_sync_viewport( &renderer, &app.win );
 		renderer_begin_frame( BLACK );
-		renderer_2d_update( &renderer, &app.win );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
 
-		dt = (float)app.time.delta_time;
+		dt = (float)app.timer.delta_time;
 		velocity = SPEED * dt;
 
 		/* RECT CONTROLS */
@@ -69,8 +74,7 @@ int main( int argc, char *argv[] )
 
 		renderer_2d_draw_shape( &renderer, &rect );
 
-		app_update( &app );
-		renderer_end_frame( &app.win );
+		app_end_frame( &app );
 	}
 
 	shape2d_destroy( &rect );

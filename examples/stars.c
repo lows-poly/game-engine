@@ -25,7 +25,7 @@
 
 #define GALAXY_ARMS		3
 #define GALAXY_TURNS		1.06f
-#define GALAXY_ARM_SPREAD	0.95f
+#define GALAXY_ARM_SPREAD	0.75f
 #define GALAXY_RADIUS_BIAS	2.05f
 #define ORBIT_SWIRL		0.02f
 
@@ -127,12 +127,15 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 
 	/* RENDERER SETUP */
-	if ( renderer_2d_init( &renderer, app.win.width, app.win.height ) != 0 )
+	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
+		app_shutdown( &app );
 		return EXIT_FAILURE;
+	}
 
 	/* STARS SETUP */
 	if ( !stars_init( &stars, &renderer.rect_mesh, STAR_MAX, WINDOW_WIDTH,
-	                  WINDOW_HEIGHT ) ) {
+	                  WINDOW_HEIGHT ) )
+	{
 		renderer_2d_destroy( &renderer );
 		app_shutdown( &app );
 		return EXIT_FAILURE;
@@ -147,21 +150,24 @@ int main( int argc, char *argv[] )
 			stars_place_spiral( &stars, i );
 	}
 
-	while ( app.running ) {
+	while ( app_begin_frame( &app ) ) {
+		renderer_2d_sync_viewport( &renderer, &app.win );
 		renderer_begin_frame( BLACK );
-		renderer_2d_update( &renderer, &app.win );
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
 
-		dt = (float)app.time.delta_time;
+		while ( timer_step( &app.timer ) ) {
+			/* FIXED UPDATES */
+		}
+
+		dt = (float)app.timer.delta_time;
 		time_ += dt;
 		
 		stars_update( &stars, dt, time_ );
 		stars_draw( &stars, renderer.shader );
 
-		app_update( &app );
-		renderer_end_frame( &app.win );
+		app_end_frame( &app );
 	}
 
 	stars_destroy( &stars );
