@@ -1,5 +1,4 @@
 #include "renderer.h"
-#include "primitives/mat4.h"
 
 /* 
  * renderer_begin_frame() - Call glClear and glClearColor
