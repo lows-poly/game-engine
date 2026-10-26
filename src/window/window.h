@@ -1,118 +1,61 @@
-/*
+/**
  * window.h - GLFW window creation and lifecycle management
  *
  * Handles GLFW/glad initialisation, window creation, etc.
- *
- * NOTE:
- * Using int as boolean:
- *  0 = false
- *  1 = true
  */
 
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef ENGINE_WINDOW_H
+#define ENGINE_WINDOW_H
+
+#include <stdbool.h>
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 
-#include <input/input.h>
-
-/*
- * struct window - Private/internal use window state
- * @handle:            GLFW window handle
- * @frame_time_target: Target duration of a frame in seconds
- * @last_frame_time:   Timestamp of the previous frame
- * @width:             Framebuffer width
- * @height:            Framebyffer height
- * @vsync:             Vertical synchronisation
- * @resized:           Framebuffer resized
- */
-struct window {
-	GLFWwindow *handle;
-	struct input_state *input;
-	double frame_time_target;
-	double last_frame_time;
-	int width;
-	int height;
-	int vsync;
-	int resized;
-};
-
-/*
- * window_init() - Initialise GLFW and create window
- * @w:      window
- * @width:  Window width
- * @height: Window height
- * @title:  Window title
- *
- * Initialise glfw, create the window, setup framebuffer callback, create the
- * OpenGL context, and load OpenGL functions through glad
- *
- * Return:
- * 0 = Failure
- * 1 = Success
- */
-int window_init( struct window *w, int width, int height, const char *title );
-
-/*
- * window_set_vsync() - Enable or disable vertical synchronisation
- * @w:       window
- * @enabled: Non-zero to enable, zero to disable
- */
-void window_set_vsync( struct window *w, int enabled );
-
-/*
- * window_set_target_fps() - Set the maximum framerate
- * @w:   window
- * @fps: Target framerate per second
- *
- * The frame-rate limit is applied when vsync is disabled.
- */
-void window_set_target_fps( struct window *w, int fps );
-
-/*
- * window_should_close() - Process the current frame and check for closure
- * @w: window
- *
- * Return whether the window should close.
- *
- * Return:
- * 0 - Window should remain open
- * 1 - Window should close
- */
-int window_should_close( struct window *w );
-
-/* 
- * window_set_should_close() - Call glfwSetWindowShouldClose()
- * @w:     window
- * @value: 0 = false, 1 = true
- */
-void window_set_should_close( struct window *w, int value );
-
-/*
- * window_poll_events()
- * @window
- */
-void window_poll_events( void );
+struct input_state;
 
 /**
- * window_swap_buffers()
+ * struct window - Private/internal use window state
+ * @handle:            GLFW window handle
+ * @framebuffer_width
+ * @framebuffer_height
+ * @resized
+ * @vsync
+ * @glfw_init
+ */
+struct window {
+	struct input_state *input;
+	GLFWwindow *handle;
+	int framebuffer_width;
+	int framebuffer_height;
+	bool resized;
+	bool vsync;
+	bool glfw_init;
+};
+
+/**
+ * window_init() - Initialise GLFW and create window
  * @window
- */
-void window_swap_buffers( struct window *w );
-
-/*
- * window_limit_fps() - Limit the frame rate to the configured value
- * @w: window
+ * @width
+ * @height
+ * @title
  *
- * Sleeps until the target frame duration has elapsed since the previous frame.
+ * Initialise glfw, create the window, setup framebuffer callback, create the
+ * OpenGL context, and load OpenGL functions.
+ *
+ * Return: True on success.
  */
-void window_limit_fps( struct window *w );
+bool window_init( struct window *w, int width, int height, const char *title );
+void window_destroy( struct window *w );
 
-/*
- * window_close() - Destroy glfw and close window
- * @w: window
- */
-void window_close( struct window *w );
+void window_poll_events( void );
+void window_swap_buffers( const struct window *w );
+
+bool window_should_close( const struct window *w );
+void window_set_should_close( struct window *w, bool should_close );
+
+void window_set_vsync( struct window *w, bool enabled );
+
+bool window_take_resize( struct window *w, int *width, int *height );
 
 #endif

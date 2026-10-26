@@ -1,266 +1,162 @@
-/*
- * window.c - GLFW window creation and lifecycle management
- *
- * Handles GLFW/glad initialisation, window creation, etc.
- *
- * NOTE:
- * Using int as boolean:
- *  0 = false
- *  1 = true
- */
-#define _POSIX_C_SOURCE 199309L
-#include <stdio.h>
+#include <string.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <time.h>
-#endif
+#include <glad/glad.h>
 
 #include "window.h"
 
-#define WINDOW_GL_MAJOR 4
-#define WINDOW_GL_MINOR 1
+#define WINDOW_GL_MAJOR	4
+#define WINDOW_GL_MINOR	1
 
-/*
- * _warn() - Print a window subsystem warning
- * @msg: Warning mesage
- */
-static void _warn( const char *msg )
-{
-	fprintf( stderr, "WINDOW: %s\n", msg );
-}
-
-/*
- * _sleep_ms() - Sleep for the specified number of milliseconds
- * @ms:	Duration in milliseconds
- */
-static void _sleep_ms( double ms )
-{
-#ifdef _WIN32
-	Sleep( (DWORD)ms );
-#else
-	struct timespec ts;
-	ts.tv_sec = (time_t)(ms / 1000.0);
-	ts.tv_nsec = (long)((ms - (ts.tv_sec * 1000.0)) * 1e6);
-	nanosleep( &ts, NULL );
-#endif
-}
-
-/* 
- * framebuffer_size_callback() - Handle framebuffer resizing
- * @handle: GLFW window
- * @width:  New framebuffer width
- * @height: New framebuffer height
- */
 static void framebuffer_size_callback( GLFWwindow *handle, int width, int height )
 {
 	struct window *w;
-
+	
 	w = glfwGetWindowUserPointer( handle );
 	if ( !w )
 		return;
 
-	w->width = width;
-	w->height = height;
-	w->resized = 1;
+	w->framebuffer_width = width;
+	w->framebuffer_height = height;
+	w->resized = true;
 
 	glViewport( 0, 0, width, height );
 }
 
-/*
+/**
  * window_init() - Initialise GLFW and create window
- * @w:      window
- * @width:  Window width
- * @height: Window height
- * @title:  Window title
+ * @window
+ * @width
+ * @height
+ * @title
  *
  * Initialise glfw, create the window, setup framebuffer callback, create the
- * OpenGL context, and load OpenGL functions through glad
+ * OpenGL context, and load OpenGL functions.
  *
- * Return:
- * 0 = Failure
- * 1 = Success
+ * Return: True on success.
  */
-int window_init( struct window *w, int width, int height, const char *title )
+bool window_init( struct window *w, int width, int height, const char *title )
 {
-	if ( !w || width < 0 || height < 0 || !title )
-		return -EINVAL;
+	if ( !w || !title || width <= 0 || height <= 0 )
+		return false;
 
-	if ( !glfwInit() ) {
-		_warn("FAILED TO INIT GLFW");
-		return 0;
-	}
+	memset( w, 0, sizeof( *w ) );
+	w->input = NULL;
+
+	if ( !glfwInit() )
+		return false;
+
+	w->glfw_init = true;
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, WINDOW_GL_MAJOR );
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, WINDOW_GL_MINOR );
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-	glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
+
+#ifdef __APPLE__
+	glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE );
+#endif
 
 	w->handle = glfwCreateWindow( width, height, title, NULL, NULL );
+	if ( !w->handle )
+		goto ERR_GLFW;
 
-	if ( !w->handle ) {
-		_warn("FAILED TO CREATE WINDOW");
-		glfwTerminate();
-		return 0;
-	}
+	glfwMakeContextCurrent( w->handle );
 
-	w->input = NULL;
-	w->width = width;
-	w->height = height;
-	w->resized = 0;
-	w->frame_time_target = 0.0;
-	w->vsync = 0;
+	if ( !gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress ) )
+		goto ERR_WINDOW;
 
 	glfwSetWindowUserPointer( w->handle, w );
 	glfwSetFramebufferSizeCallback( w->handle, framebuffer_size_callback );
-	glfwMakeContextCurrent( w->handle );
 
-	if ( !gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress ) ) {
-		_warn("FAILED TO LOAD GL FUNCTIONS");
-		glfwDestroyWindow( w->handle );
-		w->handle = NULL;
-		glfwTerminate();
-		return 0;
-	}
-
-	glfwSwapInterval( 0 );
+	glfwGetFramebufferSize( w->handle, &w->framebuffer_width, &w->framebuffer_height );
+	glViewport( 0, 0, w->framebuffer_width, w->framebuffer_height );
 
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-	w->last_frame_time = glfwGetTime();
+	window_set_vsync( w, false );
 
-	return 1;
+	return true;
+
+ERR_WINDOW:
+	glfwDestroyWindow( w->handle );
+	w->handle = NULL;
+
+ERR_GLFW:
+	glfwTerminate();
+	w->glfw_init = false;
+
+	return false;
 }
 
-/*
- * window_set_vsync() - Enable or disable vertical synchronisation
- * @w
- * @enabled
- */
-void window_set_vsync( struct window *w, bool enabled )
+void window_destroy( struct window *w )
 {
-	if ( !w || !w->handle )
+	if ( !w )
 		return;
 
-	w->vsync = enabled;
-	glfwSwapInterval( enabled );
+	if ( w->handle ) {
+		glfwSetWindowUserPointer( w->handle, NULL );
+		glfwDestroyWindow( w->handle );
+		w->handle = NULL;
+	}
+
+	if ( w->glfw_init ) {
+		glfwTerminate();
+		w->glfw_init = false;
+	}
+
+	w->framebuffer_width = 0;
+	w->framebuffer_height = 0;
+	w->resized = false;
+	w->vsync = false;
 }
 
-/*
- * window_set_target_fps() - Set the maximum framerate
- * @w:   window
- * @fps: Target framerate per second
- *
- * The frame-rate limit is applied when vsync is disabled.
- */
-void window_set_target_fps( struct window *w, int fps )
-{
-	if ( !w || fps <= 0 )
-		return;
-
-	if ( w->vsync )
-		return;
-
-	w->frame_time_target = 1.0 / (double)fps;
-}
-
-/*
- * window_should_close() - Process the current frame and check for closure
- * @w: window
- *
- * Return whether the window should close.
- *
- * Return:
- * 0 - Window should remain open
- * 1 - Window should close
- */
-bool window_should_close( struct window *w )
-{
-	if ( !w || !w->handle )
-		return false;
-
-	return glfwWindowShouldClose( w->handle );
-}
-
-/* 
- * window_set_should_close() - Call glfwSetWindowShouldClose()
- * @value: 0 = false, 1 = true
- */
-void window_set_should_close( struct window *w, bool value )
-{
-	if ( !w || !w->handle )
-		return;
-
-	glfwSetWindowShouldClose( w->handle, value );
-}
-
-/*
- * window_poll_events()
- * @window
- */
 void window_poll_events( void )
 {
 	glfwPollEvents();
 }
 
-/**
- * window_swap_buffers()
- * @window
- */
-void window_swap_buffers( struct window *w )
+void window_swap_buffers( const struct window *w )
 {
 	if ( !w || !w->handle )
 		return;
 
-	w->resized = 0;
 	glfwSwapBuffers( w->handle );
 }
 
-/*
- * window_limit_fps() - Limit the frame rate to the configured value
- * @w: window
- *
- * Sleeps until the target frame duration has elapsed since the previous frame.
- */
-void window_limit_fps( struct window *w )
+bool window_should_close( const struct window *w )
 {
-	double now;
-	double elapsed;
-	double remaining;
+	if ( !w || !w->handle )
+		return true;
 
-	if ( w->frame_time_target <= 0.0 )
-		return;
-
-	now = glfwGetTime();
-	elapsed = now - w->last_frame_time;
-	remaining = w->frame_time_target - elapsed;
-
-	if ( remaining > 0.001 )
-		_sleep_ms( (remaining - 0.001) * 1000.0 );
-
-	do {
-		now = glfwGetTime();
-		elapsed = now - w->last_frame_time;
-	} while ( elapsed < w->frame_time_target );
-
-	w->last_frame_time = now;
+	return glfwWindowShouldClose( w->handle ) != 0;
 }
 
-/*
- * window_close() - Destroy glfw and close window
- * @w: window
- */
-void window_close( struct window *w )
+void window_set_should_close( struct window *w, bool should_close )
 {
 	if ( !w || !w->handle )
 		return;
 
-	if ( w->handle ) {
-		glfwDestroyWindow( w->handle );
-		w->handle = NULL;
-	}
+	glfwSetWindowShouldClose( w->handle, should_close ? GLFW_TRUE : GLFW_FALSE );
+}
 
-	glfwTerminate();
+void window_set_vsync( struct window *w, bool enabled )
+{
+	if ( !w || !w->handle )
+		return;
+
+	glfwMakeContextCurrent( w->handle );
+	glfwSwapInterval( enabled ? 1 : 0 );
+	w->vsync = enabled;
+}
+
+bool window_take_resize( struct window *w, int *width, int *height )
+{
+	if ( !w || !width || !height || !w->resized )
+		return false;
+
+	*width = w->framebuffer_width;
+	*height = w->framebuffer_height;
+	w->resized = false;
+
+	return true;
 }
