@@ -3,16 +3,18 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+
 #include <glad/glad.h>
 
 struct buffer {
 	GLuint id;
 	GLenum target;
+	size_t size;
 };
 
-int buffer_init( struct buffer *b, GLenum target, const void *data, size_t size,
-                 GLenum usage );
-void buffer_update( const struct buffer *b, const void *data, size_t size,
+bool buffer_init( struct buffer *b, GLenum target, const void *data, size_t size,
+                  GLenum usage );
+bool buffer_update( const struct buffer *b, const void *data, size_t size,
                     size_t offset );
 void buffer_bind( const struct buffer *b );
 void buffer_unbind( const struct buffer *b );
