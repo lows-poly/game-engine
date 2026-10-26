@@ -1,6 +1,8 @@
 # Ignore the build directory
 build/
 
+compile_commands.json
+
 # Ignore hidden files
 .*
 !.gitignore
