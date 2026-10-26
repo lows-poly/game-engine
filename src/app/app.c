@@ -1,75 +1,95 @@
-/*
- * app_init() - Initialise window and input
- * @app:    app struct
- * @argv0
- * @width:  Window width
- * @height: Window height
- * @title:  Window title
- */
+#include <string.h>
 
 #include "app.h"
-#include "path.h"
 #include "log.h"
+#include "path.h"
 
-bool app_init( struct app *app, int width, int height, const char *title,
-               const char *argv0 )
+#define APP_FIXED_DT	(1.0 / 60.0)
+
+bool app_init( struct app *app, int width, int height, const char *title, const char *argv0 )
 {
 	if ( !app )
 		return false;
 
-	if ( argv0 && path_init( argv0 ) < 0 ) {
+	memset( app, 0, sizeof( *app ) );
+
+	if ( argv0 && path_init( argv0 ) < 0 )
 		pr_warn("FAILED TO INIT PATH\n");
-	}
 
 	if ( !window_init( &app->win, width, height, title ) ) {
 		pr_warn("FAILED TO INIT WINDOW\n");
-		return false;
+		goto ERR;
 	}
 
-	input_init( &app->input, &app->win );
+	app->window_init = true;
 
-	if ( !timer_init( &app->time, 1.0 / 60.0 ) ) {
+	if ( !input_init( &app->input, &app->win ) ) {
+		pr_warn("FAILED TO INIT INPUT\n");
+		goto ERR;
+	}
+
+	app->input_init = true;
+
+	if ( !timer_init( &app->timer, APP_FIXED_DT ) ) {
 		pr_warn("FAILED TO INIT TIMER\n");
-		goto CLEAN_WINDOW_EXIT;
+		goto ERR;
 	}
-	
+
 	app->running = true;
 	return true;
 
-CLEAN_WINDOW_EXIT:
-	window_close( &app->win );
-
+ERR:
+	app_shutdown( app );
 	return false;
 }
 
-/*
- * app_update() - Update input, swap buffers, poll events, and limit fps
- * @app: app struct
- */
-void app_update( struct app *app )
+bool app_begin_frame( struct app *app )
 {
-	timer_tick( &app->time );
+	if ( !app || !app->running || !app->window_init )
+		return false;
+
+	input_begin_frame( &app->input );
 	window_poll_events();
-	input_update( &app->input );
-	window_limit_fps( &app->win );
+	timer_tick( &app->timer );
+
 	app->running = !window_should_close( &app->win );
+
+	return app->running;
 }
 
-/*
- * app_stop() - Set close window
- * @app: app struct
- */
+void app_end_frame( struct app *app )
+{
+	if ( !app || !app->window_init )
+		return;
+
+	window_swap_buffers( &app->win );
+}
+
 void app_stop( struct app *app )
 {
-	window_set_should_close( &app->win, 1 );
+	if ( !app )
+		return;
+
+	app->running = false;
+	window_set_should_close( &app->win, true );
 }
 
-/*
- * app_shutdown() - Destroy input and window
- * @app: app struct
- */
 void app_shutdown( struct app *app )
 {
-	input_destroy( &app->input, &app->win );
-	window_close( &app->win );
+	if ( !app )
+		return;
+
+	app->running = false;
+
+	if ( app->input_init ) {
+		input_destroy( &app->input, &app->win );
+		app->input_init = false;
+	}
+
+	if ( app->window_init ) {
+		window_destroy( &app->win );
+		app->window_init = false;
+	}
+
+	memset( app, 0, sizeof( *app ) );
 }

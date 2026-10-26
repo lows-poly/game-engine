@@ -1,53 +1,43 @@
-#ifndef APP_H
-#define APP_H
+#ifndef ENGINE_APP_H
+#define ENGINE_APP_H
 
 #include <stdbool.h>
 
-#include "window/window.h"
 #include "input/input.h"
 #include "timer/timer.h"
-#include "renderer/renderer.h"
+#include "window/window.h"
 
-/*
- * struct app - Application
- * @win:     window struct
- * @input:   input_state struct
- * @running: !glfwWindowShouldClose
+/**
+ * struct app
+ * @window
+ * @input
+ * @timer
+ * @running
+ * @window_init
+ * @input_init
  */
 struct app {
 	struct window win;
 	struct input_state input;
-	struct timer time;
+	struct timer timer;
 	bool running;
+	bool window_init;
+	bool input_init;
 };
 
 /*
- * app_init() - Initialise window and input
- * @app:    app struct
+ * app_init() - Initialise window, input, timer, and path(if any).
+ * @app
+ * @width
+ * @height
+ * @title
  * @argv0
- * @width:  Window width
- * @height: Window height
- * @title:  Window title
  */
 bool app_init( struct app *app, int width, int height, const char *title,
                const char *argv0 );
-
-/*
- * app_update() - Update input, swap buffers, poll events, and limit fps
- * @app: app struct
- */
-void app_update( struct app *app );
-
-/*
- * app_stop() - Set close window
- * @app: app struct
- */
+bool app_begin_frame( struct app *app );
+void app_end_frame( struct app *app );
 void app_stop( struct app *app );
-
-/*
- * app_shutdown() - Destroy input and window
- * @app: app struct
- */
 void app_shutdown( struct app *app );
 
 #endif
