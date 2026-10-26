@@ -12,11 +12,11 @@ A small game engine for learning C programming language and graphics programming
 
 ## Features
 - Window & keyboard input handling
-- 2D shape rendering
+- 2D Shape rendering
+- 2D Texture rendering
 - Basic math and utility libraries
 
 ## Roadmap
-- Texture support
 - More 2D shapes
 - Collision detection
 - Sprite rendering and animation
