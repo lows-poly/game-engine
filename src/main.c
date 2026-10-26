@@ -28,6 +28,8 @@ int main( int argc, char *argv[] )
 	
 	struct shape2d rect;
 
+	(void)argc;
+
 	/*
 	 * APP SETUP
 	 * window, input, path, timer
@@ -54,7 +56,6 @@ int main( int argc, char *argv[] )
 
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
-
 
 		app_end_frame( &app );
 	}
