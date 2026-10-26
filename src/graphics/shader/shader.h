@@ -30,6 +30,7 @@ struct shader {
 
 enum shader_builtin {
 	SHADER_BASIC_2D,
+	SHADER_TEXTURED_2D
 };
 
 int shader_init( struct shader *s, const char *vert_path, const char *frag_path );

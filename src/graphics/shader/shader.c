@@ -226,6 +226,10 @@ int shader_init_preset( struct shader *s, enum shader_builtin preset )
 		vert_path = basic_2d_vsh_src;
 		frag_path = basic_2d_fsh_src;
 		break;
+	case SHADER_TEXTURED_2D:
+		vert_path = textured_2d_vsh_src;
+		frag_path = textured_2d_fsh_src;
+		break;
 	default:
 		vert_path = basic_2d_vsh_src;
 		frag_path = basic_2d_fsh_src;
