@@ -3,7 +3,8 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include <glad/glad.h>
+
+#include "glad/glad.h"
 
 #include "glsl/basic_2d.h"
 
