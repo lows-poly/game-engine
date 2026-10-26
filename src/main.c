@@ -3,7 +3,6 @@
 #include <time.h>
 
 #include "app/app.h"
-#include "window/window.h"
 #include "input/input.h"
 
 #include "renderer/renderer.h"
@@ -11,9 +10,6 @@
 
 #include "primitives/shape2d.h"
 #include "primitives/colour.h"
-
-#include "mathx.h"
-#include "log.h"
 
 #define WINDOW_TITLE	"ENGINE"
 #define WINDOW_WIDTH	800
