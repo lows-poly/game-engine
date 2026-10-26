@@ -13,18 +13,6 @@ void renderer_begin_frame( colour c )
 	glClear( GL_COLOR_BUFFER_BIT );
 }
 
-/**
- * renderer_end_frame() - Poll events & swap buffers
- * @window
- */
-void renderer_end_frame( struct window *window )
-{
-	if ( !window )
-		return;
-
-	window_swap_buffers( window );
-}
-
 /* 
  * renderer_enable_backface_culling() - Enable backface culling
  * @value: bool

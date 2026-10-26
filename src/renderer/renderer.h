@@ -1,8 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <glad/glad.h>
-
 #include "window/window.h"
 #include "graphics/shader/shader.h"
 #include "graphics/mesh.h"
@@ -20,12 +18,6 @@ enum draw_order {
  * Convert colour primitive to float
  */
 void renderer_begin_frame( colour c );
-
-/**
- * renderer_end_frame() - Poll events & swap buffers
- * @window
- */
-void renderer_end_frame( struct window *window );
 
 /* 
  * renderer_enable_backface_culling() - Enable backface culling.
