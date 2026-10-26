@@ -99,11 +99,12 @@ int texture_init( struct texture *texture, const char *img, unsigned int slot,
 
 	enum texture_filter mag_filter_cfg;
 
-	mag_filter_cfg = config->mag_filter;
 	id = 0;
 
 	if ( !texture || !img || !config )
 		return 0;
+
+	mag_filter_cfg = config->mag_filter;
 
 	if ( config->type != TEXTURE_2D ) {
 		pr_err("FAILED TO INIT TEXTURE: UNSUPPORTED TEXTURE TYPE\n");
