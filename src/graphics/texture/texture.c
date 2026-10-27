@@ -2,6 +2,8 @@
 
 #include "log.h"
 
+static const struct texture_config default_config = TEXTURE_CONFIG_DEFAULT;
+
 static GLenum _texture_type_to_gl( enum texture_type type )
 {
 	switch ( type ) {
@@ -81,7 +83,7 @@ static GLenum _texture_wrap_to_gl( enum texture_wrap wrap )
 }
 
 static int texture_load_new( struct texture *texture, const char *img,
-                             unsigned int slot, struct texture_config *config )
+                             unsigned int slot, const struct texture_config *config )
 {
 	GLuint id;
 	GLint max_slots;
@@ -98,8 +100,11 @@ static int texture_load_new( struct texture *texture, const char *img,
 	texture->id = 0;
 	texture->type = 0;
 
-	if ( !img || !config )
+	if ( !img )
 		return 0;
+
+	if ( !config )
+		config = &default_config;
 
 	mag_filter_cfg = config->mag_filter;
 
@@ -223,7 +228,7 @@ bool texture_init( struct texture *texture )
  * Return: True on success.
  */
 bool texture_load( struct texture *texture, const char *img, unsigned int slot,
-                  struct texture_config *config )
+                   const struct texture_config *config )
 {
 	struct texture loaded = { 0 };
 
@@ -248,7 +253,7 @@ bool texture_load( struct texture *texture, const char *img, unsigned int slot,
  * Return: True on success.
  */
 bool texture_reload( struct texture *texture, const char *img, unsigned int slot,
-                    struct texture_config *config )
+                     const struct texture_config *config )
 {
 	struct texture loaded = { 0 };
 	GLuint old_id;

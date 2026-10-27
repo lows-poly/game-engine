@@ -67,8 +67,6 @@ struct texture_config {
 /**
  * texture_init() - Initialise a new texture object to the empty state.
  * @texture
- * @min_filter
- * @mag_filter
  *
  * Return: True on success.
  */
@@ -77,26 +75,28 @@ bool texture_init( struct texture *texture );
 /**
  * texture_load() - Load an image into an initialised, empty texture obj.
  * @texture
- * @min_filter
- * @mag_filter
+ * @img
+ * @slot
+ * @config: Loading configuration, or NULL to use default config.
  *
  * Return: True on success.
  */
 bool texture_load( struct texture *texture, const char *img, unsigned int slot,
-                  struct texture_config *config );
+                   const struct texture_config *config );
 
 /**
  * texture_reload() - Replace a loaded texture.
  * @texture
- * @min_filter
- * @mag_filter
+ * @img
+ * @slot
+ * @config: Loading configuration, or NULL to use default config.
  *
  * On failure, the existing texture is preserved.
  *
  * Return: True on success.
  */
 bool texture_reload( struct texture *texture, const char *img, unsigned int slot,
-                    struct texture_config *config );
+                     const struct texture_config *config );
 
 bool texture_set_filter( struct texture *texture, enum texture_filter min_filter,
                         enum texture_filter mag_filter );
