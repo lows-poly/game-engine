@@ -4,18 +4,15 @@
 #include <time.h>
 
 #include "app/app.h"
-#include "window/window.h"
 #include "input/input.h"
 
 #include "renderer/renderer.h"
 #include "renderer/renderer_2d.h"
 
-#include "primitives/shape2d.h"
 #include "primitives/colour.h"
 
 #include "physics.h"
 #include "mathx.h"
-#include "log.h"
 
 #define WINDOW_TITLE		"ENGINE"
 #define WINDOW_WIDTH		800
@@ -116,6 +113,8 @@ int main( int argc, char *argv[] )
 	float time_, dt;
 	int i;
 
+	struct view_2d view;
+
 	time_ = 0;
 	srand(time(0));
 
@@ -128,6 +127,20 @@ int main( int argc, char *argv[] )
 
 	/* RENDERER SETUP */
 	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
+		app_shutdown( &app );
+		return EXIT_FAILURE;
+	}
+
+	view = renderer.view;
+	view.scale = VIEW_2D_FIT;
+	view.anchor = VIEW_2D_CENTER;
+	view.reference_width = 800;
+	view.reference_height = 600;
+	view.camera.pos = vec2_make( 400.0f, 300.0f );
+	view.camera.zoom = 1.0f;
+
+	if ( !renderer_2d_set_view( &renderer, &view ) ) {
+		renderer_2d_destroy( &renderer );
 		app_shutdown( &app );
 		return EXIT_FAILURE;
 	}

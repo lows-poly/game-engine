@@ -19,37 +19,45 @@ int main( int argc, char *argv[] )
 	struct app app;
 	struct shape2d rect;
 	struct renderer_2d renderer;
+	struct view_2d view;
 	struct texture texture;
-	struct texture_config texture_config = TEXTURE_CONFIG_DEFAULT;
 
 	(void)argc;
 
 	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, argv[0] ) )
 		return EXIT_FAILURE;
 
-	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, 272.0f, 172.0f,
+	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE,
+	                      (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f,
 	                      RECTANGLE_WIDTH, RECTANGLE_HEIGHT ) )
 	{
-		app_shutdown( &app );
-		return EXIT_FAILURE;
+		goto SHUTDOWN_EXIT;
 	}
 
 	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
 		shape2d_destroy( &rect );
-		app_shutdown( &app );
-		return EXIT_FAILURE;
+		goto SHUTDOWN_EXIT;
 	}
 
-	if ( !texture_init( &texture ) )
-		return EXIT_FAILURE;
+	view = renderer.view;
+	view.scale = VIEW_2D_FIT;
+	view.anchor = VIEW_2D_CENTER;
 
-	if ( !texture_load( &texture, "assets/textures/dummy.png", 0,
-	                    &texture_config ) )
-	{
-		renderer_2d_destroy( &renderer );
-		shape2d_destroy( &rect );
-		app_shutdown( &app );
-		return EXIT_FAILURE;
+	view.camera.pos = vec2_make(
+		(float)WINDOW_WIDTH * 0.5f,
+		(float)WINDOW_HEIGHT * 0.5f
+	);
+
+	if ( !renderer_2d_set_view( &renderer, &view ) ) {
+		goto CLEAN_EXIT;
+	}
+
+	if ( !texture_init( &texture ) ) {
+		goto CLEAN_EXIT;
+	}
+
+	if ( !texture_load( &texture, "assets/textures/dummy.png", 0, NULL ) ) {
+		goto CLEAN_EXIT;
 	}
 
 	while ( app_begin_frame( &app ) ) {
@@ -70,4 +78,12 @@ int main( int argc, char *argv[] )
 	app_shutdown( &app );
 
 	return EXIT_SUCCESS;
+
+CLEAN_EXIT:
+	shape2d_destroy( &rect );
+	renderer_2d_destroy( &renderer );
+
+SHUTDOWN_EXIT:
+	app_shutdown( &app );
+	return EXIT_FAILURE;
 }
