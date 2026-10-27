@@ -45,7 +45,7 @@ static const struct vertex_attrib TEXTURED_QUAD_ATTRIBS[2] = {
 	}
 };
 
-static int set_projection( struct renderer_2d *r, int width, int height );
+static int apply_view( struct renderer_2d *r, struct shader *shader );
 
 void renderer_2d_destroy( struct renderer_2d *r )
 {
@@ -56,6 +56,8 @@ void renderer_2d_destroy( struct renderer_2d *r )
 	shader_destroy( &r->textured_shader );
 	mesh_destroy( &r->rect_mesh );
 	mesh_destroy( &r->tri_mesh );
+
+	memset( &r->view, 0, sizeof( r->view ) );
 
 	r->shader = NULL;
 	r->width = 0;
@@ -80,6 +82,11 @@ bool renderer_2d_init( struct renderer_2d *r, int width, int height )
 	}
 
 	memset( r, 0, sizeof( *r ) );
+
+	if ( !view_2d_init( &r->view, width, height ) ) {
+		pr_warn("FAILED TO INIT 2D VIEW\n");
+		return false;
+	}
 
 	quad_desc.vertices = UNIT_QUAD;
 	quad_desc.vertex_size = sizeof( UNIT_QUAD );
@@ -113,8 +120,8 @@ bool renderer_2d_init( struct renderer_2d *r, int width, int height )
 	r->width = width;
 	r->height = height;
 
-	if ( !set_projection( r, width, height ) ) {
-		pr_warn("PROJECTION FAILED\n");
+	if ( !apply_view( r, r->shader ) ) {
+		pr_warn("FAILED TO APPLY VIEW\n");
 		renderer_2d_destroy( r );
 		return false;
 	}
@@ -127,36 +134,50 @@ FAIL:
 
 void renderer_2d_update( struct renderer_2d *r, struct window *w )
 {
-	int width;
-	int height;
-
-	if ( !r || !w )
+	if ( !r || !w || !w->handle || !r->default_shader.id )
 		return;
 
-	if ( !window_take_resize( w, &width, &height ) )
+	if ( !view_2d_update( &r->view, w->framebuffer_width, w->framebuffer_height ) ) {
+		r->view.drawable = false;
+		pr_warn("FAILED TO UPDATE 2D VIEW\n");
 		return;
+	}
 
-	if ( width <= 0 || height <= 0 )
-		return;
+	r->width = w->framebuffer_width;
+	r->height = w->framebuffer_height;
+}
 
-	(void)set_projection( r, width, height );
+bool renderer_2d_set_view( struct renderer_2d *r, const struct view_2d *view )
+{
+	struct view_2d next;
+
+	if ( !r || !view || !r->default_shader.id )
+		return false;
+
+	next = *view;
+
+	if ( !view_2d_update( &next, r->width, r->height ) )
+		return false;
+
+	r->view = next;
+	return true;
 }
 
 bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *shader )
 {
-	struct shader *prev;
-
-	if ( !r || !shader )
+	if ( !r || !shader || !shader->id || !r->default_shader.id )
 		return false;
 
-	prev = r->shader;
-	r->shader = shader;
+	shader_use( shader );
 
-	if ( !set_projection( r, r->width, r->height ) ) {
-		r->shader = prev;
+	if ( !shader_set_mat4( shader, "u_projection", r->view.projection ) ) {
+		if ( r->shader )
+			shader_use( r->shader );
+
 		return false;
 	}
 
+	r->shader = shader;
 	return true;
 }
 
@@ -165,9 +186,8 @@ void renderer_2d_use_default_shader( struct renderer_2d *r )
 	if ( !r )
 		return;
 
-	r->shader = &r->default_shader;
-	if ( !set_projection( r, r->width, r->height ) )
-		pr_warn("2D PROJECTION ENCOUNTERED AN ERROR WHILE SWITCHING TO DEFAULT SHADER\n");
+	if ( !renderer_2d_set_shader( r, &r->default_shader ) )
+		pr_warn("FAILED TO SELECT DEFAULT 2D SHADER\n");
 }
 
 void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape )
@@ -176,7 +196,7 @@ void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape 
 	mat4 model;
 	float colour_arr[4];
 
-	if ( !r || !shape || !r->shader )
+	if ( !r || !shape || !r->shader || !r->view.drawable )
 		return;
 
 	switch ( shape->type ) {
@@ -198,11 +218,14 @@ void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape 
 	mat4_translate( model, -shape->origin.x, -shape->origin.y, 0.0f );
 	mat4_scale_3f( model, shape->scale.x, shape->scale.y, 1.0f );
 
-	shader_use( r->shader );
+	if ( !apply_view( r, r->shader ) )
+		return;
 
 	if ( !shader_set_mat4( r->shader, "u_model", model ) ||
 	     !shader_set_4f( r->shader, "u_colour", colour_arr ) )
+	{
 		return;
+	}
 
 	renderer_draw_mesh( mesh, r->shader );
 }
@@ -210,19 +233,14 @@ void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape 
 void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shape,
                                const struct texture *texture, colour tint )
 {
-	mat4 projection;
 	mat4 model;
 	float tint_arr[4];
 
-	if ( !r || !shape || !texture || !texture->id ||
-	     shape->type != SHAPE2D_RECTANGLE ||
-	     !r->textured_shader.id || !r->rect_mesh.vao.id )
+	if ( !r || !shape || !texture || !texture->id || shape->type != SHAPE2D_RECTANGLE ||
+	     !r->textured_shader.id || !r->rect_mesh.vao.id || !r->view.drawable )
 	{
 		return;
 	}
-
-	mat4_ortho( 0.0f, (float)r->width, (float)r->height,
-	            0.0f, -1.0f, 1.0f, projection );
 
 	mat4_identity( model );
 	mat4_translate( model, shape->pos.x, shape->pos.y, 0.0f );
@@ -232,10 +250,10 @@ void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shap
 
 	colour_to_arr( tint, tint_arr );
 
-	shader_use( &r->textured_shader );
+	if ( !apply_view( r, &r->textured_shader ) )
+		return;
 
-	if ( !shader_set_mat4( &r->textured_shader, "u_projection", projection ) ||
-	     !shader_set_mat4( &r->textured_shader, "u_model", model ) ||
+	if ( !shader_set_mat4( &r->textured_shader, "u_model", model ) ||
 	     !shader_set_4f( &r->textured_shader, "u_tint", tint_arr ) ||
 	     !shader_set_1i( &r->textured_shader, "u_texture", 0 ) )
 	{
@@ -246,36 +264,18 @@ void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shap
 	renderer_draw_mesh( &r->rect_mesh, &r->textured_shader );
 }
 
-static int set_projection( struct renderer_2d *r, int width, int height )
+static int apply_view( struct renderer_2d *r, struct shader *shader )
 {
-	mat4 proj;
-
-	if ( !r || !r->shader )
+	if ( !r || !shader || !shader->id || !r->view.drawable )
 		return 0;
 
-	if ( width <= 0 || height <= 0 ) {
-		pr_warn("FAILED TO SET 2D PROJECTION: INVALID ARGUMENTS\n");
+	shader_use( shader );
+
+	if ( !shader_set_mat4( shader, "u_projection", r->view.projection ) )
 		return 0;
-	}
 
-	/*
-	 * PIXEL COORDINATES:
-	 * LEFT   = 0
-	 * RIGHT  = WIDTH
-	 * TOP    = 0
-	 * BOTTOM = HEIGHT
-	 */
-	mat4_ortho( 0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f, proj );
-
-	shader_use( r->shader );
-
-	if ( !shader_set_mat4( r->shader, "u_projection", proj ) ) {
-		pr_warn("FAILED TO SET 2D PROJECTION UNIFORM\n");
-		return 0;
-	}
-
-	r->width = width;
-	r->height = height;
+	glViewport( r->view.viewport_x, r->view.viewport_y, r->view.viewport_width,
+	            r->view.viewport_height );
 
 	return 1;
 }

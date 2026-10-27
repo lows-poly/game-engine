@@ -6,11 +6,17 @@
 #include "graphics/shader/shader.h"
 #include "graphics/mesh.h"
 #include "graphics/texture/texture.h"
+
 #include "window/window.h"
+
 #include "primitives/shape2d.h"
 #include "primitives/colour.h"
 
+#include "view_2d.h"
+
 struct renderer_2d {
+	struct view_2d view;
+
 	struct shader default_shader;
 	struct shader textured_shader;
 	struct shader *shader;
@@ -32,6 +38,7 @@ struct renderer_2d {
  */
 bool renderer_2d_init( struct renderer_2d *r, int width, int height );
 void renderer_2d_update( struct renderer_2d *r, struct window *w );
+bool renderer_2d_set_view( struct renderer_2d *r, const struct view_2d *view );
 bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
 void renderer_2d_use_default_shader( struct renderer_2d *r );
 void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape );
