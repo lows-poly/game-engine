@@ -18,7 +18,7 @@
 #define WINDOW_WIDTH		800
 #define WINDOW_HEIGHT		600
 
-#define STAR_MAX		8086
+#define STAR_MAX		4048
 
 #define GALAXY_ARMS		3
 #define GALAXY_TURNS		1.06f
@@ -125,6 +125,8 @@ int main( int argc, char *argv[] )
 	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, argv[0] ) )
 		return EXIT_FAILURE;
 
+	window_set_vsync( &app.win, true );
+
 	/* RENDERER SETUP */
 	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
 		app_shutdown( &app );
@@ -134,10 +136,7 @@ int main( int argc, char *argv[] )
 	view = renderer.view;
 	view.scale = VIEW_2D_FIT;
 	view.anchor = VIEW_2D_CENTER;
-	view.reference_width = 800;
-	view.reference_height = 600;
-	view.camera.pos = vec2_make( 400.0f, 300.0f );
-	view.camera.zoom = 1.0f;
+	view.camera.pos = vec2_make( (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f );
 
 	if ( !renderer_2d_set_view( &renderer, &view ) ) {
 		renderer_2d_destroy( &renderer );
@@ -154,7 +153,7 @@ int main( int argc, char *argv[] )
 		return EXIT_FAILURE;
 	}
 
-	for ( i = 0; i < STAR_MAX - 1; i++ ) {
+	for ( i = 0; i < stars.count; i++ ) {
 		if ( randf( 0.0f, 1.0f ) <= 0.15f )
 			/* SCREEN RANDOM */
 			stars_place_random( &stars, i );
@@ -172,14 +171,14 @@ int main( int argc, char *argv[] )
 
 		while ( timer_step( &app.timer ) ) {
 			/* FIXED UPDATES */
+			stars_update( &stars, dt, time_ );
+			stars_draw( &stars, renderer.shader );
+
 		}
 
 		dt = (float)app.timer.delta_time;
 		time_ += dt;
 		
-		stars_update( &stars, dt, time_ );
-		stars_draw( &stars, renderer.shader );
-
 		app_end_frame( &app );
 	}
 
