@@ -41,9 +41,13 @@ void renderer_2d_update( struct renderer_2d *r, struct window *w );
 bool renderer_2d_set_view( struct renderer_2d *r, const struct view_2d *view );
 bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
 void renderer_2d_use_default_shader( struct renderer_2d *r );
+
 void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape );
 void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shape,
                                const struct texture *texture, colour tint );
+void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2d *shape, const struct texture *texture,
+                                      const struct texture_region *region, colour tint );
+
 void renderer_2d_destroy( struct renderer_2d *r );
 
 #endif

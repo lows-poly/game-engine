@@ -99,6 +99,8 @@ static int texture_load_new( struct texture *texture, const char *img,
 
 	texture->id = 0;
 	texture->type = 0;
+	texture->width = 0;
+	texture->height = 0;
 
 	if ( !img )
 		return 0;
@@ -192,6 +194,8 @@ static int texture_load_new( struct texture *texture, const char *img,
 
 	texture->id = id;
 	texture->type = type;
+	texture->width = width;
+	texture->height = height;
 
 	return 1;
 
@@ -215,6 +219,8 @@ bool texture_init( struct texture *texture )
 
 	texture->id = 0;
 	texture->type = 0;
+	texture->width = 0;
+	texture->height = 0;
 
 	return true;
 }
@@ -364,4 +370,29 @@ void texture_destroy( struct texture *texture )
 
 	texture->id = 0;
 	texture->type = 0;
+	texture->width = 0;
+	texture->height = 0;
+}
+
+bool texture_region_valid( const struct texture *texture, const struct texture_region *region )
+{
+	if ( !texture || !region || !texture->id || texture->type != GL_TEXTURE_2D )
+		return false;
+
+	if ( texture->width <= 0 || texture->height <= 0 )
+		return false;
+
+	if ( region->x < 0 || region->y < 0 || region->width <= 0 || region->height <= 0 )
+		return false;
+
+	if ( region->x > texture->width || region->y > texture->height )
+		return false;
+
+	if ( region->width > texture->width - region->x ||
+	     region->height > texture->height - region->y )
+	{
+		return false;
+	}
+
+	return true;
 }

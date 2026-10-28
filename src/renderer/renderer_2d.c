@@ -233,14 +233,41 @@ void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape 
 void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shape,
                                const struct texture *texture, colour tint )
 {
+	struct texture_region region;
+
+	if ( !texture || !shape || !texture )
+		return;
+
+	region.x = 0;
+	region.y = 0;
+	region.width = texture->width;
+	region.height = texture->height;
+
+	renderer_2d_draw_texture_region( r, shape, texture, &region, tint );
+}
+
+void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2d *shape, const struct texture *texture,
+                                      const struct texture_region *region, colour tint )
+{
 	mat4 model;
 	float tint_arr[4];
+	vec2 uv_offset;
+	vec2 uv_scale;
 
-	if ( !r || !shape || !texture || !texture->id || shape->type != SHAPE2D_RECTANGLE ||
-	     !r->textured_shader.id || !r->rect_mesh.vao.id || !r->view.drawable )
+	if ( !r || !shape || shape->type != SHAPE2D_RECTANGLE || !r->textured_shader.id ||
+	     !r->rect_mesh.vao.id || !r->view.drawable )
 	{
 		return;
 	}
+
+	if ( !texture_region_valid( texture, region ) )
+		return;
+
+	uv_offset.x = (float)region->x / (float)texture->width;
+	uv_offset.y = 1.0f - (float)region->y / (float)texture->height;
+
+	uv_scale.x = (float)region->width / (float)texture->width;
+	uv_scale.y = -(float)region->height / (float)texture->height;
 
 	mat4_identity( model );
 	mat4_translate( model, shape->pos.x, shape->pos.y, 0.0f );
@@ -255,7 +282,9 @@ void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shap
 
 	if ( !shader_set_mat4( &r->textured_shader, "u_model", model ) ||
 	     !shader_set_4f( &r->textured_shader, "u_tint", tint_arr ) ||
-	     !shader_set_1i( &r->textured_shader, "u_texture", 0 ) )
+	     !shader_set_1i( &r->textured_shader, "u_texture", 0 ) ||
+	     !shader_set_vec2( &r->textured_shader, "u_uv_offset", uv_offset ) ||
+	     !shader_set_vec2( &r->textured_shader, "u_uv_scale", uv_scale ) )
 	{
 		return;
 	}

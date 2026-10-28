@@ -53,6 +53,15 @@ enum texture_wrap {
 struct texture {
 	GLuint id;
 	GLenum type;
+	int width;
+	int height;
+};
+
+struct texture_region {
+	int x;
+	int y;
+	int width;
+	int height;
 };
 
 struct texture_config {
@@ -104,5 +113,7 @@ bool texture_set_wrap( struct texture *texture, enum texture_wrap wrap );
 void texture_bind( const struct texture *texture, unsigned int slot );
 void texture_unbind( const struct texture *texture );
 void texture_destroy( struct texture *texture );
+
+bool texture_region_valid( const struct texture *texture, const struct texture_region *region );
 
 #endif
