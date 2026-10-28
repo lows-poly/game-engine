@@ -52,7 +52,7 @@ int main( int argc, char *argv[] )
 	if ( !texture_init( &texture ) )
 		goto CLEAN_RENDERER;
 
-	if ( !texture_load( &texture, "assets/sprites/candles.png", 0, NULL ) )
+	if ( !texture_load( &texture, "assets/sprites/candle_lowres.png", 0, NULL ) )
 		goto CLEAN_TEXTURE;
 
 	if ( !texture_set_filter( &texture, TEXTURE_NEAREST, TEXTURE_NEAREST ) )
@@ -70,7 +70,7 @@ int main( int argc, char *argv[] )
 	animation = (struct sprite_animation){
 		.frames = frames,
 		.frame_count = CANDLE_FRAME_COUNT,
-		.frame_dt = 0.15,
+		.frame_dt = 0.25,
 		.loop = true
 	};
 
