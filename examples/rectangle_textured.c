@@ -21,6 +21,7 @@ int main( int argc, char *argv[] )
 	struct renderer_2d renderer;
 	struct view_2d view;
 	struct texture texture;
+	struct texture_region region;
 
 	(void)argc;
 
@@ -60,6 +61,11 @@ int main( int argc, char *argv[] )
 		goto CLEAN_EXIT;
 	}
 
+	region.x = 0;
+	region.y = 0;
+	region.width = texture.width;
+	region.height = texture.height / 2;
+
 	while ( app_begin_frame( &app ) ) {
 		renderer_2d_update( &renderer, &app.win );
 		renderer_begin_frame( CYAN );
@@ -67,7 +73,7 @@ int main( int argc, char *argv[] )
 		if ( key_pressed( &app.input, KEY_ESCAPE ) )
 			app_stop( &app );
 
-		renderer_2d_draw_texture( &renderer, &rect, &texture, WHITE );
+		renderer_2d_draw_texture_region( &renderer, &rect, &texture, &region, WHITE );
 
 		app_end_frame( &app );
 	}
