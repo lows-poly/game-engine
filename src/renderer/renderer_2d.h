@@ -28,6 +28,8 @@ struct renderer_2d {
 	int height;
 };
 
+struct sprite;
+
 /*
  * renderer_2d_init() - Init shader 2d preset and set projection.
  * @renderer_2d struct
@@ -47,6 +49,7 @@ void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shap
                                const struct texture *texture, colour tint );
 void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2d *shape, const struct texture *texture,
                                       const struct texture_region *region, colour tint );
+void renderer_2d_draw_sprite( struct renderer_2d *r, const struct sprite *sprite );
 
 void renderer_2d_destroy( struct renderer_2d *r );
 

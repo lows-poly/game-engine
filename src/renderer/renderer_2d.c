@@ -3,6 +3,8 @@
 
 #include "renderer_2d.h"
 #include "renderer.h"
+#include "graphics/sprite.h"
+
 #include "primitives/mat4.h"
 #include "log.h"
 
@@ -291,6 +293,15 @@ void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2
 
 	texture_bind( texture, 0 );
 	renderer_draw_mesh( &r->rect_mesh, &r->textured_shader );
+}
+
+void renderer_2d_draw_sprite( struct renderer_2d *r, const struct sprite *sprite )
+{
+	if ( !r || !sprite )
+		return;
+
+	renderer_2d_draw_texture_region( r, &sprite->shape, sprite->texture, &sprite->region,
+	                                 sprite->shape.colour );
 }
 
 static int apply_view( struct renderer_2d *r, struct shader *shader )
