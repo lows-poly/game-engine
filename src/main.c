@@ -22,8 +22,6 @@ int main( int argc, char *argv[] )
 	struct app app;
 	struct renderer_2d renderer;
 	
-	struct shape2d rect;
-
 	(void)argc;
 
 	/*
@@ -36,14 +34,6 @@ int main( int argc, char *argv[] )
 	/* RENDERER SETUP */
 	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
 		goto CLEAN_APP_EXIT;
-		return EXIT_FAILURE;
-	}
-
-	if ( !shape2d_create( &rect, SHAPE2D_RECTANGLE, (float)WINDOW_WIDTH / 2,
-	                     (float)WINDOW_HEIGHT / 2, SHAPE_SCALE, SHAPE_SCALE ) )
-	{
-		goto CLEAN_RENDERER_EXIT;
-		return EXIT_FAILURE;
 	}
 
 	while ( app_begin_frame( &app ) ) {
