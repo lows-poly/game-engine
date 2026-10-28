@@ -34,13 +34,15 @@ static const char *textured_2d_vsh_src =
 
 	"uniform mat4 u_projection;\n"
 	"uniform mat4 u_model;\n"
+	"uniform vec2 u_uv_offset;\n"
+	"uniform vec2 u_uv_scale;\n"
 
 	"out vec2 vert_uv;\n"
 
 	"void main ()\n"
 	"{\n"
 	"	gl_Position = u_projection * u_model * vec4( a_pos, 0.0, 1.0 );\n"
-	"	vert_uv = a_uv;\n"
+	"	vert_uv = u_uv_offset + a_uv * u_uv_scale;\n"
 	"}\n";
 
 static const char *textured_2d_fsh_src =
