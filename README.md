@@ -12,14 +12,15 @@ A small game engine for learning C programming language and graphics programming
 
 ## Features
 - Window & keyboard input handling
+- Basic math and utility libraries
 - 2D Shape rendering
 - 2D Texture rendering
-- Basic math and utility libraries
+- 2D view rendering
+- Sprite rendering and animation
 
 ## Roadmap
 - More 2D shapes
 - Collision detection
-- Sprite rendering and animation
 - Camera controls
 - Basic audio support
 - Font rendering
@@ -41,4 +42,8 @@ A small game engine for learning C programming language and graphics programming
     <p>2D Texture</p>
     <img src="assets/2d_texture_mac_preview.png" width="400" height="400"/>
     <img src="assets/2d_texture_linux_preview.png" width="400" height="400"/>
+</div>
+<div align="center">
+    <p>Sprite</p>
+    <img src="assets/candle_sprite_mac_preview.png" width="400" height="400"/>
 </div>
