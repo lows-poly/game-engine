@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "graphics/mesh.h"
-#include "graphics/shader/shader.h"
 #include "primitives/colour.h"
 #include "primitives/vec2.h"
 
