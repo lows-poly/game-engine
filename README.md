@@ -45,5 +45,5 @@ A small game engine for learning C programming language and graphics programming
 </div>
 <div align="center">
     <p>Sprite</p>
-    <img src="assets/candle_sprite_preview.gif" width="400" height="400"/>
+    <img src="assets/candle_sprite_preview2.gif" width="400" height="400"/>
 </div>
