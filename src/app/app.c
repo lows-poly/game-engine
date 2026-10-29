@@ -35,6 +35,11 @@ bool app_init( struct app *app, int width, int height, const char *title, const 
 		goto ERR;
 	}
 
+	if ( !audio_system_init( &app->audio ) ) {
+		pr_warn("FAILED TO INIT AUDIO SYSTEM\n");
+		goto ERR;
+	}
+
 	app->running = true;
 	return true;
 
@@ -80,6 +85,8 @@ void app_shutdown( struct app *app )
 		return;
 
 	app->running = false;
+
+	audio_system_destroy( &app->audio );
 
 	if ( app->input_init ) {
 		input_destroy( &app->input, &app->win );
