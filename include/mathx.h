@@ -2,6 +2,8 @@
 #define MATHX_H
 
 #include <stdlib.h>
+#include <math.h>
+#include <assert.h>
 
 #define PI	3.14159265358979323846
 #define TWO_PI	(PI * 2.0)
@@ -30,11 +32,14 @@ static inline float clampf( float x, float lo, float hi )
 {
 	float r;
 
-	r = x;
-	if ( x < lo )
-		r = lo;
+	assert( lo <= hi );
 
-	if ( x > hi )
+	r = x;
+	if ( isnan( x ) )
+		r = lo;
+	else if ( x < lo )
+		r = lo;
+	else if ( x > hi )
 		r = hi;
 
 	return r;
