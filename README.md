@@ -25,16 +25,16 @@ A small game engine for learning C programming language and graphics programming
     - ogg
 
 ### Roadmap
-- [] Regression tests for views, rectangles, sprite animation, and resource
+- [ ] Regression tests for views, rectangles, sprite animation, and resource
 lifecycles.
-- [] Font loading, text measurements, and text rendering.
-- [] Configurable input actions and key bindings.
-- [] Collision contact info and basic rectangle collision resolution.
-- [] Scene management.
-- [] Shared asset caching.
-- [] Sprites batching with draw-call statistics.
-- [] Tilemap rendering.
-- [] Audio playback-state queries, vol. groups, and fades.
+- [ ] Font loading, text measurements, and text rendering.
+- [ ] Configurable input actions and key bindings.
+- [ ] Collision contact info and basic rectangle collision resolution.
+- [ ] Scene management.
+- [ ] Shared asset caching.
+- [ ] Sprites batching with draw-call statistics.
+- [ ] Tilemap rendering.
+- [ ] Audio playback-state queries, vol. groups, and fades.
 
 *Example programs can be found in examples directory.*
 
