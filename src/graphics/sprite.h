@@ -16,6 +16,8 @@ struct sprite {
 	const struct texture *texture;
 	struct texture_region region;
 	struct shape2d shape;
+	bool flip_x;
+	bool flip_y;
 };
 
 bool sprite_init( struct sprite *sprite, const struct texture *texture,
