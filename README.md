@@ -17,12 +17,14 @@ A small game engine for learning C programming language and graphics programming
 - 2D Texture rendering
 - 2D view rendering
 - Sprite rendering and animation
+- Basic audio support:
+    - `wav`
+    - `ogg`
 
 ## Roadmap
 - More 2D shapes
 - Collision detection
 - Camera controls
-- Basic audio support
 - Font rendering
 
 *Example programs can be found in examples directory.*
