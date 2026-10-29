@@ -11,30 +11,30 @@ A small game engine for learning C programming language and graphics programming
 - Graphics API: OpenGL
 
 ### Features
-- Window & app management and OpenGL rendering.
-- Keyboard & mouse input.
-- Frame timing & fixed updates.
-- Math, file, and logging utils.
-- 2D shapes & sprite rendering.
-- Texture and sprite sheets.
-- Sprite animations.
-- 2D camera and viewport scaling.
-- Custom shaders and meshes.
+- Window & app management and OpenGL rendering
+- Keyboard & mouse input
+- Frame timing & fixed updates
+- Math, file, and logging utils
+- 2D shapes & sprite rendering
+- Texture and sprite sheets
+- Sprite animations
+- 2D camera and viewport scaling
+- Custom shaders and meshes
 - Basic audio support:
     - wav
     - ogg
 
 ### Roadmap
 - [ ] Regression tests for views, rectangles, sprite animation, and resource
-lifecycles.
-- [ ] Font loading, text measurements, and text rendering.
-- [ ] Configurable input actions and key bindings.
-- [ ] Collision contact info and basic rectangle collision resolution.
-- [ ] Scene management.
-- [ ] Shared asset caching.
-- [ ] Sprites batching with draw-call statistics.
-- [ ] Tilemap rendering.
-- [ ] Audio playback-state queries, vol. groups, and fades.
+lifecycles
+- [ ] Font loading, text measurements, and text rendering
+- [ ] Configurable input actions and key bindings
+- [ ] Collision contact info and basic rectangle collision resolution
+- [ ] Scene management
+- [ ] Shared asset caching
+- [ ] Sprites batching with draw-call statistics
+- [ ] Tilemap rendering
+- [ ] Audio playback-state queries, vol. groups, and fades
 
 *Example programs can be found in examples directory.*
 
