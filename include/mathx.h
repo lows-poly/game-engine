@@ -6,6 +6,26 @@
 #define PI	3.14159265358979323846
 #define TWO_PI	(PI * 2.0)
 
+static inline int min( int a, int b )
+{
+	return (a < b) ? a : b;
+}
+
+static inline float minf( float a, float b )
+{
+	return (a < b) ? a : b;
+}
+
+static inline int max( int a, int b )
+{
+	return (a > b) ? a : b;
+}
+
+static inline float maxf( float a, float b )
+{
+	return (a > b) ? a : b;
+}
+
 static inline float clampf( float x, float lo, float hi )
 {
 	float r;
