@@ -90,6 +90,15 @@ int main( int argc, char *argv[] )
 			break;
 		}
 
+		if ( key_pressed( &app.input, KEY_SPACE ) )
+			animator.playing = !animator.playing;
+
+		if ( key_pressed( &app.input, KEY_COMMA ) )
+			sprite_animator_reset( &animator, &sprite );
+
+		if ( key_pressed( &app.input, KEY_PERIOD ) )
+			animation.loop = !animation.loop;
+
 		while ( timer_step( &app.timer ) ) {
 			if ( !sprite_animator_update( &animator, &sprite, app.timer.fixed_dt ) )
 				goto CLEAN_TEXTURE;
