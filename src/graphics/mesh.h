@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "buffers/buffer.h"
 #include "buffers/vertex_array.h"
@@ -28,8 +29,8 @@ struct mesh_desc {
 };
 
 enum draw_type {
-	DRAW_STATIC = GL_STATIC_DRAW,
-	DRAW_DYNAMIC = GL_DYNAMIC_DRAW
+	DRAW_STATIC,
+	DRAW_DYNAMIC
 };
 
 bool mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw_type );
