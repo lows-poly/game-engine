@@ -10,7 +10,7 @@ A small game engine for learning C programming language and graphics programming
 - Window & Input: GLFW
 - Graphics API: OpenGL
 
-## Features
+### Features
 - Window & keyboard input handling
 - Basic math and utility libraries
 - 2D Shape rendering
@@ -21,7 +21,7 @@ A small game engine for learning C programming language and graphics programming
     - wav
     - ogg
 
-## Roadmap
+### Roadmap
 - More 2D shapes
 - Collision detection
 - Camera controls
@@ -37,15 +37,15 @@ A small game engine for learning C programming language and graphics programming
 
 <div align="center">
     <p>Stars simulation</p>
-    <img src="assets/mac_star_preview.png" width="400" height="400"/>
-    <img src="assets/stars_linux_preview.png" width="400" height="400"/>
+    <img src="assets/mac_star_preview.png" width="400"/>
+    <img src="assets/stars_linux_preview.png" width="400"/>
 </div>
 <div align="center">
     <p>2D Texture</p>
-    <img src="assets/2d_texture_mac_preview.png" width="400" height="400"/>
-    <img src="assets/2d_texture_linux_preview.png" width="400" height="400"/>
+    <img src="assets/2d_texture_mac_preview.png" width="400"/>
+    <img src="assets/2d_texture_linux_preview.png" width="400"/>
 </div>
 <div align="center">
     <p>Sprite</p>
-    <img src="assets/candle_sprite_preview2.gif" width="400" height="400"/>
+    <img src="assets/candle_sprite_preview2.gif" width="400"/>
 </div>
