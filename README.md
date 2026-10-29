@@ -18,8 +18,8 @@ A small game engine for learning C programming language and graphics programming
 - 2D view rendering
 - Sprite rendering and animation
 - Basic audio support:
-    - `wav`
-    - `ogg`
+    - wav
+    - ogg
 
 ## Roadmap
 - More 2D shapes
