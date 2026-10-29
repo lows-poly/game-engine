@@ -48,6 +48,9 @@ static const struct vertex_attrib TEXTURED_QUAD_ATTRIBS[2] = {
 };
 
 static int apply_view( struct renderer_2d *r, struct shader *shader );
+static void draw_texture_region( struct renderer_2d *r, const struct shape2d *shape,
+                                 const struct texture *texture, const struct texture_region *region,
+                                 colour tint, bool flip_x, bool flip_y );
 
 void renderer_2d_destroy( struct renderer_2d *r )
 {
@@ -251,6 +254,38 @@ void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shap
 void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2d *shape, const struct texture *texture,
                                       const struct texture_region *region, colour tint )
 {
+	draw_texture_region( r, shape, texture, region, tint, false, false );
+}
+
+void renderer_2d_draw_sprite( struct renderer_2d *r, const struct sprite *sprite )
+{
+	if ( !r || !sprite )
+		return;
+
+	draw_texture_region( r, &sprite->shape, sprite->texture, &sprite->region,
+	                     sprite->shape.colour, sprite->flip_x, sprite->flip_y );
+}
+
+static int apply_view( struct renderer_2d *r, struct shader *shader )
+{
+	if ( !r || !shader || !shader->id || !r->view.drawable )
+		return 0;
+
+	shader_use( shader );
+
+	if ( !shader_set_mat4( shader, "u_projection", r->view.projection ) )
+		return 0;
+
+	glViewport( r->view.viewport_x, r->view.viewport_y, r->view.viewport_width,
+	            r->view.viewport_height );
+
+	return 1;
+}
+
+static void draw_texture_region( struct renderer_2d *r, const struct shape2d *shape,
+                                 const struct texture *texture, const struct texture_region *region,
+                                 colour tint, bool flip_x, bool flip_y )
+{
 	mat4 model;
 	float tint_arr[4];
 	vec2 uv_offset;
@@ -270,6 +305,15 @@ void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2
 
 	uv_scale.x = (float)region->width / (float)texture->width;
 	uv_scale.y = -(float)region->height / (float)texture->height;
+
+	if ( flip_x ) {
+		uv_offset.x += uv_scale.x;
+		uv_scale.x = -uv_scale.x;
+	}
+	if ( flip_y ) {
+		uv_offset.y += uv_scale.y;
+		uv_scale.y = -uv_scale.y;
+	}
 
 	mat4_identity( model );
 	mat4_translate( model, shape->pos.x, shape->pos.y, 0.0f );
@@ -293,29 +337,4 @@ void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2
 
 	texture_bind( texture, 0 );
 	renderer_draw_mesh( &r->rect_mesh, &r->textured_shader );
-}
-
-void renderer_2d_draw_sprite( struct renderer_2d *r, const struct sprite *sprite )
-{
-	if ( !r || !sprite )
-		return;
-
-	renderer_2d_draw_texture_region( r, &sprite->shape, sprite->texture, &sprite->region,
-	                                 sprite->shape.colour );
-}
-
-static int apply_view( struct renderer_2d *r, struct shader *shader )
-{
-	if ( !r || !shader || !shader->id || !r->view.drawable )
-		return 0;
-
-	shader_use( shader );
-
-	if ( !shader_set_mat4( shader, "u_projection", r->view.projection ) )
-		return 0;
-
-	glViewport( r->view.viewport_x, r->view.viewport_y, r->view.viewport_width,
-	            r->view.viewport_height );
-
-	return 1;
 }
