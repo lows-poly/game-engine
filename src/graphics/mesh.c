@@ -28,6 +28,19 @@ static const struct vertex_attrib TRI_ATTRIBS[1] = {
 	}
 };
 
+static GLenum _gl_draw_type( enum draw_type draw )
+{
+	switch ( draw ) {
+	case DRAW_STATIC:
+		return GL_STATIC_DRAW;
+	case DRAW_DYNAMIC:
+		return GL_DYNAMIC_DRAW;
+	default:
+		pr_warn("UNSUPPORTED OPENGL DRAW TYPE: ASSIGNED STATIC DRAW\n");
+		return GL_STATIC_DRAW;
+	}
+}
+
 bool mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type draw_type )
 {
 	size_t i;
@@ -43,6 +56,25 @@ bool mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type dra
 		return false;
 	}
 
+	if ( !desc->attribs || !desc->attrib_count || desc->vertex_count <= 0 ) {
+		pr_warn("FAILED TO INIT MESH: INVALID VERTEX LAYOUT\n");
+		return false;
+	}
+
+	if ( desc->indices ) {
+		if ( desc->index_count <= 0 ) {
+			pr_warn("FAILED TO INIT MESH: INVALID INDEX COUNT\n");
+			return false;
+		}
+		if ( (size_t)desc->index_count > SIZE_MAX / sizeof( unsigned int ) ) {
+			pr_warn("FAILED TO INIT MESH: INDEX SIZE OVERFLOW\n");
+			return false;
+		}
+	} else if ( desc->index_count != 0 ) {
+		pr_warn("FAILED TO INIT MESH: INDEX COUNT WITHOUT INDEX DATA\n");
+		return false;
+	}
+
 	/* VAO */
 	if ( !vertex_array_init( &m->vao ) ) {
 		pr_warn("FAILED TO INIT MESH: VAO FAILED TO INITIALISE\n");
@@ -51,16 +83,14 @@ bool mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type dra
 
 	/* VBO */
 	if ( !buffer_init( &m->vbo, GL_ARRAY_BUFFER, desc->vertices,
-	                   desc->vertex_size, draw_type ) )
+	                   desc->vertex_size, _gl_draw_type( draw_type ) ) )
 	{
 		pr_warn("FAILED TO INIT MESH: VBO FAILED TO INITIALISE\n");
 		goto clean_vao;
 	}
 
 	for ( i = 0; i < desc->attrib_count; i++ ) {
-		if ( !vertex_array_link_attrib( &m->vao, &m->vbo, 
-		     &desc->attribs[i] ) )
-		{
+		if ( !vertex_array_link_attrib( &m->vao, &m->vbo, &desc->attribs[i] ) ) {
 			pr_warn("FAILED TO INIT MESH: FAILED TO LINK ATTRIB: %zu\n", i);
 			goto clean_vbo;
 		}
@@ -74,7 +104,7 @@ bool mesh_init( struct mesh *m, const struct mesh_desc *desc, enum draw_type dra
 		index_size = (size_t)desc->index_count * sizeof( unsigned int );
 
 		if ( !buffer_init( &m->ebo, GL_ELEMENT_ARRAY_BUFFER, desc->indices,
-		                     index_size, GL_STATIC_DRAW ) )
+		                   index_size, GL_STATIC_DRAW ) )
 		{
 			printf("FAILED TO INIT MESH: EBO FAILED TO INITIALISE\n");
 			goto clean_vbo;
@@ -110,7 +140,7 @@ bool mesh_init_quad( struct mesh *m, const vec2 verts[4], enum draw_type draw_ty
 	desc.vertex_count = 4;
 	desc.index_count = 6;
 
-	return mesh_init( m, &desc, draw_type );
+	return mesh_init( m, &desc, _gl_draw_type( draw_type ) );
 }
 
 bool mesh_init_tri( struct mesh *m, const vec2 verts[3], enum draw_type draw_type )
@@ -128,7 +158,7 @@ bool mesh_init_tri( struct mesh *m, const vec2 verts[3], enum draw_type draw_typ
 	desc.vertex_count = 3;
 	desc.index_count = 3;
 
-	return mesh_init( m, &desc, draw_type );
+	return mesh_init( m, &desc, _gl_draw_type( draw_type ) );
 }
 
 bool mesh_update_tri( struct mesh *m, const vec2 verts[3] )
