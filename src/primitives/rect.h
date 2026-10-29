@@ -2,104 +2,70 @@
 #define ENGINE_RECT_H
 
 #include <stdbool.h>
+#include "mathx.h"
 
 #include "vec2.h"
 
 typedef struct rect {
-	union {
-		struct { vec2 pos; vec2 size; };
-		struct { float x, y, w, h; };
-	};
+	vec2 pos;
+	vec2 size;
 } rect;
 
 static inline rect rect_make( float x, float y, float w, float h )
 {
 	rect r;
 
-	r.x = x;
-	r.y = y;
-	r.w = w;
-	r.h = h;
-
-	return r;
-}
-
-static inline rect rect_make_vec2( vec2 pos, vec2 size )
-{
-	rect r;
-
-	r.pos = pos;
-	r.size = size;
+	r.pos = vec2_make( x, y );
+	r.size = vec2_make( maxf( w, 0 ), maxf( h, 0 ) );
 
 	return r;
 }
 
 static inline float rect_left( const rect *r )
 {
-	return r->x;
+	return r->pos.x;
 }
 
 static inline float rect_right( const rect *r )
 {
-	return r->x + r->w;
+	return r->pos.x + r->size.x;
 }
 
 static inline float rect_top( const rect *r )
 {
-	return r->y + r->h;
+	return r->pos.y;
 }
 
 static inline float rect_bottom( const rect *r )
 {
-	return r->y;
-}
-
-static inline void rect_to_vertices( const rect *r, vec2 *out )
-{
-	out[0].x = rect_left( r );  out[0].y = rect_bottom( r );
-	out[1].x = rect_right( r ); out[1].y = rect_bottom( r );
-	out[2].x = rect_right( r ); out[2].y = rect_top( r );
-	out[3].x = rect_left( r );  out[3].y = rect_top( r );
+	return r->pos.y + r->size.y;
 }
 
 static inline vec2 rect_centre( const rect *r )
 {
-	vec2 c;
+	return vec2_make( r->pos.x + r->size.x * 0.5f, r->pos.y + r->size.y * 0.5f );
+}
 
-	c.x = r->x + (r->w * 0.5f);
-	c.y = r->y + (r->h * 0.5f);
-
-	return c;
+static inline void rect_to_vertices( const rect *r, vec2 out[4] )
+{
+	out[0] = vec2_make( rect_left( r ), rect_top( r ) );
+	out[1] = vec2_make( rect_right( r ), rect_top( r ) );
+	out[2] = vec2_make( rect_right( r ), rect_bottom( r ) );
+	out[3] = vec2_make( rect_left( r ), rect_bottom( r ) );
 }
 
 static inline bool rect_contains_point( const rect *r, float x, float y )
 {
-	bool contains_point;
-
-	contains_point = true;
-
-	if ( x < rect_left( r ) || x > rect_right( r ) )
-		contains_point = false;
-
-	if ( y < rect_bottom( r ) || y > rect_top( r ) )
-		contains_point = false;
-
-	return contains_point;
+	return x >= rect_left( r ) && x <= rect_right( r ) &&
+	       y >= rect_top( r ) && y <= rect_bottom( r );
 }
 
 static inline bool rect_intersects( const rect *a, const rect *b )
 {
-	bool intersects;
-
-	intersects = true;
-
-	if ( rect_left( a ) > rect_right( b ) || rect_right( a ) < rect_left( b ) )
-		intersects = false;
-
-	if ( rect_bottom( a ) > rect_top( b ) || rect_top( a ) < rect_bottom( b ) )
-		intersects = false;
-
-	return intersects;
+	return rect_left( a ) <= rect_right( b ) &&
+	       rect_right( a ) >= rect_left( b ) &&
+	       rect_top( a ) <= rect_bottom( b ) &&
+	       rect_bottom( a ) >= rect_top( b );
 }
 
 #endif
