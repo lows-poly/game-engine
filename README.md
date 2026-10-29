@@ -34,7 +34,7 @@ lifecycles
 - [ ] Shared asset caching
 - [ ] Sprites batching with draw-call statistics
 - [ ] Tilemap rendering
-- [x] Audio playback-state queries, vol. groups, and fades
+- [ ] ~~Audio playback-state queries~~, vol. groups, and fades
 
 *Example programs can be found in examples directory.*
 
