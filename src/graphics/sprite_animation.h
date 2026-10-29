@@ -42,4 +42,6 @@ bool sprite_animator_init( struct sprite_animator *animator, struct sprite *spri
 bool sprite_animator_update( struct sprite_animator *animator, struct sprite *sprite,
                              double dt );
 
+void sprite_animator_reset( struct sprite_animator *animator, struct sprite *sprite );
+
 #endif
