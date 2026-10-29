@@ -91,3 +91,18 @@ bool sprite_animator_update( struct sprite_animator *animator, struct sprite *sp
 
 	return true;
 }
+
+void sprite_animator_reset( struct sprite_animator *animator, struct sprite *sprite )
+{
+	bool playing;
+
+	if ( !animator || !sprite )
+		return;
+
+	playing = animator->playing;
+
+	if ( !sprite_animator_init( animator, sprite, animator->animation ) )
+		return;
+
+	animator->playing = playing;
+}
