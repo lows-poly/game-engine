@@ -35,7 +35,7 @@ TEST_OBJS := $(TEST_SRCS:%.c=$(BUILD_DIR)/%.o)
 EXAMPLES_DIR := examples
 EXAMPLE_SRCS := $(shell find $(EXAMPLES_DIR) -name '*.c')
 EXAMPLE_BINS := $(EXAMPLE_SRCS:$(EXAMPLES_DIR)/%.c=$(BUILD_DIR)/$(EXAMPLES_DIR)/%)
-
+DEPS := $(OBJS:.o=.d) $(TEST_OBJS:.o=.d) $(addsuffix .d,$(EXAMPLE_BINS))
 
 all: $(BUILD_DIR)/$(PROJECT_NAME)
 
@@ -44,14 +44,14 @@ $(BUILD_DIR)/$(PROJECT_NAME): $(OBJS)
 
 $(BUILD_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -MMD -MP -MF $(@:.o=.d) -MT $@ -c $< -o $@
 
 $(BUILD_DIR)/tests_runner: $(TEST_OBJS) $(ENGINE_OBJS)
 	$(CC) $(TEST_OBJS) $(ENGINE_OBJS) -o $(BUILD_DIR)/tests_runner $(LDFLAGS)
 
 $(BUILD_DIR)/$(EXAMPLES_DIR)/%: $(EXAMPLES_DIR)/%.c $(ENGINE_OBJS)
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $< $(ENGINE_OBJS) -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) -MMD -MP -MF $@.d -MT $@ $< $(ENGINE_OBJS) -o $@ $(LDFLAGS)
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -68,3 +68,5 @@ exec-example: examples
 	./$(BUILD_DIR)/$(EXAMPLES_DIR)/$(NAME)
 
 .PHONY: all clean exec test examples exec-example
+
+-include $(DEPS)
