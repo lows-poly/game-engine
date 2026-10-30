@@ -93,6 +93,10 @@ bool texture_init( struct texture *texture );
 bool texture_load( struct texture *texture, const char *img, unsigned int slot,
                    const struct texture_config *config );
 
+bool texture_load_pixels( struct texture *texture, const unsigned char *pixels,
+                          int width, int height, unsigned int slot,
+                          const struct texture_config *config );
+
 /**
  * texture_reload() - Replace a loaded texture.
  * @texture

@@ -82,127 +82,8 @@ static GLenum _texture_wrap_to_gl( enum texture_wrap wrap )
 	}
 }
 
-static int texture_load_new( struct texture *texture, const char *img,
-                             unsigned int slot, const struct texture_config *config )
-{
-	GLuint id;
-	GLint max_slots;
-	int width, height, nr_ch;
-	int channels;
-	GLenum type, format, ptype;
-	GLenum min_filter, mag_filter, wrap;
-	unsigned char *data;
-	enum texture_filter mag_filter_cfg;
-
-	if ( !texture )
-		return 0;
-
-	texture->id = 0;
-	texture->type = 0;
-	texture->width = 0;
-	texture->height = 0;
-
-	if ( !img )
-		return 0;
-
-	if ( !config )
-		config = &default_config;
-
-	mag_filter_cfg = config->mag_filter;
-
-	if ( config->type != TEXTURE_2D ) {
-		pr_err("FAILED TO INIT TEXTURE: UNSUPPORTED TEXTURE TYPE\n");
-		return 0;
-	}
-
-	if ( config->ptype != TEXTURE_UBYTE ) {
-		pr_err("FAILED TO INIT TEXTURE: UNSUPPORTED PIXEL TYPE\n");
-		return 0;
-	}
-
-	if ( mag_filter_cfg != TEXTURE_NEAREST &&
-	     mag_filter_cfg != TEXTURE_LINEAR )
-	{
-		pr_warn("INVALID TEXTURE MAG_FILTER, USING LINEAR FILTER\n");
-		mag_filter_cfg = TEXTURE_LINEAR;
-	}
-
-	type = _texture_type_to_gl( config->type );
-	format = _texture_format_to_gl( config->format );
-	ptype = _texture_ptype_to_gl( config->ptype );
-	min_filter = _texture_filter_to_gl( config->min_filter );
-	mag_filter = _texture_filter_to_gl( mag_filter_cfg );
-	wrap = _texture_wrap_to_gl( config->wrap );
-
-	if ( !type || !ptype || !format || !min_filter || !mag_filter || !wrap ) {
-		pr_err("FAILED TO INIT TEXTURE: INVALID CONFIG\n");
-		return 0;
-	}
-
-	glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &max_slots );
-
-	if ( max_slots <= 0 || slot >= (unsigned int)max_slots ) {
-		pr_err("FAILED TO INIT TEXTURE: EXCEED MAXIMUM TEXTURE SLOTS\n");
-		return 0;
-	}
-
-	switch ( config->format ) {
-	case TEXTURE_RGB:
-		channels = 3;
-		break;
-	case TEXTURE_RGBA:
-		channels = 4;
-		break;
-	default:
-		pr_err("FAILED TO INIT TEXTURE: INVALID FORMAT\n");
-		return 0;
-	}
-
-	stbi_set_flip_vertically_on_load( 1 );
-
-	data = stbi_load( img, &width, &height, &nr_ch, channels );
-	if ( !data ) {
-		pr_err("UNABLE TO LOAD TEXTURE IMAGE\n");
-		return 0;
-	}
-
-	id = 0;
-	glGenTextures( 1, &id );
-	if ( !id )
-		goto ERR_FREE_EXIT;
-
-	glActiveTexture( GL_TEXTURE0 + slot );
-	glBindTexture( type, id );
-
-	/* FILTERING */
-	glTexParameteri( type, GL_TEXTURE_MIN_FILTER, (GLint)min_filter );
-	glTexParameteri( type, GL_TEXTURE_MAG_FILTER, (GLint)mag_filter );
-
-	/* WRAPPING */
-	glTexParameteri( type, GL_TEXTURE_WRAP_S, (GLint)wrap );
-	glTexParameteri( type, GL_TEXTURE_WRAP_T, (GLint)wrap );
-
-	/* UPLOAD IMAGE */
-	glTexImage2D( type, 0, (GLint)format, width, height, 0, format, ptype, data );
-
-	if ( config->min_filter != TEXTURE_NEAREST &&
-	     config->min_filter != TEXTURE_LINEAR )
-		glGenerateMipmap( type );
-
-	stbi_image_free( data );
-	glBindTexture( type, 0 );
-
-	texture->id = id;
-	texture->type = type;
-	texture->width = width;
-	texture->height = height;
-
-	return 1;
-
-ERR_FREE_EXIT:
-	stbi_image_free( data );
-	return 0;
-}
+static bool texture_load_new( struct texture *texture, const char *img, unsigned int slot,
+                              const struct texture_config *config );
 
 /**
  * texture_init() - Initialise a new texture object to the empty state.
@@ -245,6 +126,100 @@ bool texture_load( struct texture *texture, const char *img, unsigned int slot,
 		return false;
 
 	*texture = loaded;
+	return true;
+}
+
+bool texture_load_pixels( struct texture *texture, const unsigned char *pixels,
+                          int width, int height, unsigned int slot,
+                          const struct texture_config *config )
+{
+	GLuint id;
+	GLint max_slots;
+	GLint unpack_alignment;
+	GLenum type, format, ptype;
+	GLenum min_filter, mag_filter, wrap;
+	enum texture_filter mag_filter_cfg;
+
+	if ( !texture || texture->id || !pixels || width <= 0 || height <= 0 )
+		return false;
+
+	if ( !config )
+		config = &default_config;
+
+	mag_filter_cfg = config->mag_filter;
+
+	if ( config->type != TEXTURE_2D ) {
+		pr_err("FAILED TO INIT TEXTURE: UNSUPPORTED TEXTURE TYPE\n");
+		return false;
+	}
+
+	if ( config->ptype != TEXTURE_UBYTE ) {
+		pr_err("FAILED TO INIT TEXTURE: UNSUPPORTED PIXEL TYPE\n");
+		return false;
+	}
+
+	if ( mag_filter_cfg != TEXTURE_NEAREST &&
+	     mag_filter_cfg != TEXTURE_LINEAR )
+	{
+		pr_warn("INVALID TEXTURE MAG_FILTER, USING LINEAR FILTER\n");
+		mag_filter_cfg = TEXTURE_LINEAR;
+	}
+
+	type = _texture_type_to_gl( config->type );
+	format = _texture_format_to_gl( config->format );
+	ptype = _texture_ptype_to_gl( config->ptype );
+	min_filter = _texture_filter_to_gl( config->min_filter );
+	mag_filter = _texture_filter_to_gl( mag_filter_cfg );
+	wrap = _texture_wrap_to_gl( config->wrap );
+
+	if ( !type || !ptype || !format || !min_filter || !mag_filter || !wrap ) {
+		pr_err("FAILED TO INIT TEXTURE: INVALID CONFIG\n");
+		return false;
+	}
+
+	glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &max_slots );
+
+	if ( max_slots <= 0 || slot >= (unsigned int)max_slots ) {
+		pr_err("FAILED TO INIT TEXTURE: EXCEED MAXIMUM TEXTURE SLOTS\n");
+		return false;
+	}
+
+	id = 0;
+	glGenTextures( 1, &id );
+	if ( !id )
+		return false;
+
+	glActiveTexture( GL_TEXTURE0 + slot );
+	glBindTexture( type, id );
+
+	/* FILTERING */
+	glTexParameteri( type, GL_TEXTURE_MIN_FILTER, (GLint)min_filter );
+	glTexParameteri( type, GL_TEXTURE_MAG_FILTER, (GLint)mag_filter );
+
+	/* WRAPPING */
+	glTexParameteri( type, GL_TEXTURE_WRAP_S, (GLint)wrap );
+	glTexParameteri( type, GL_TEXTURE_WRAP_T, (GLint)wrap );
+
+	glGetIntegerv( GL_UNPACK_ALIGNMENT, &unpack_alignment );
+	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
+	glTexImage2D( type, 0, (GLint)format, width, height, 0, format, ptype, pixels );
+
+	glPixelStorei( GL_UNPACK_ALIGNMENT, unpack_alignment );
+
+	if ( config->min_filter != TEXTURE_NEAREST &&
+	     config->min_filter != TEXTURE_LINEAR )
+	{
+		glGenerateMipmap( type );
+	}
+
+	glBindTexture( type, 0 );
+
+	texture->id = id;
+	texture->type = type;
+	texture->width = width;
+	texture->height = height;
+
 	return true;
 }
 
@@ -395,4 +370,42 @@ bool texture_region_valid( const struct texture *texture, const struct texture_r
 	}
 
 	return true;
+}
+
+static bool texture_load_new( struct texture *texture, const char *img, unsigned int slot,
+                              const struct texture_config *config )
+{
+	unsigned char *pixels;
+	int width, height, channels;
+	bool success;
+
+	if ( !texture || !img )
+		return false;
+
+	if ( !config )
+		config = &default_config;
+
+	switch ( config->format ) {
+	case TEXTURE_RGB:
+		channels = 3;
+		break;
+	case TEXTURE_RGBA:
+		channels = 4;
+		break;
+	default:
+		return false;
+	}
+
+	stbi_set_flip_vertically_on_load( 1 );
+
+	pixels = stbi_load( img, &width, &height, NULL, channels );
+	if ( !pixels ) {
+		pr_err( "UNABLE TO LOAD TEXTURE IMAGE\n" );
+		return false;
+	}
+
+	success = texture_load_pixels( texture, pixels, width, height, slot, config );
+
+	stbi_image_free( pixels );
+	return success;
 }
