@@ -30,13 +30,13 @@ int main( int argc, char *argv[] )
 	if ( !renderer_2d_set_view( &renderer, &renderer.view ) )
 		goto SHUTDOWN_EXIT;
 
-	if ( !font_init( &font_ac437_8x16, "assets/fonts/Ac437_ACM_VGA_8x16.ttf", 16.0f ) )
+	if ( !font_init( &font_ac437_8x16, "assets/fonts/Ac437_ACM_VGA_8x16.ttf", 16.0f, NULL ) )
 		goto CLEAN_FONT;
 
-	if ( !font_init( &font_ac437_Acer, "assets/fonts/Ac437_Acer710_Mono.ttf", 16.0f ) )
+	if ( !font_init( &font_ac437_Acer, "assets/fonts/Ac437_Acer710_Mono.ttf", 16.0f, NULL ) )
 		goto CLEAN_FONT;
 
-	if ( !font_init( &font_proggy, "assets/fonts/ProggyClean.ttf", 32.0f ) )
+	if ( !font_init( &font_proggy, "assets/fonts/ProggyClean.ttf", 32.0f, NULL ) )
 		goto CLEAN_FONT;
 
 	while ( app_begin_frame( &app ) ) {

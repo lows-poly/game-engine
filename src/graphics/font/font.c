@@ -10,6 +10,15 @@
 
 #define FONT_ATLAS_SIZE	512
 
+static const struct texture_config default_font_texture_config = {
+	.type = TEXTURE_2D,
+	.format = TEXTURE_RGBA,
+	.ptype = TEXTURE_UBYTE,
+	.min_filter = TEXTURE_LINEAR,
+	.mag_filter = TEXTURE_LINEAR,
+	.wrap = TEXTURE_CLAMP_TO_EDGE
+};
+
 void font_destroy( struct font *font )
 {
 	if ( !font )
@@ -19,9 +28,9 @@ void font_destroy( struct font *font )
 	memset( font, 0, sizeof( *font ) );
 }
 
-bool font_init( struct font *font, const char *path, float pixel_height )
+bool font_init( struct font *font, const char *path, float pixel_height,
+                const struct texture_config *config )
 {
-	struct texture_config config = TEXTURE_CONFIG_DEFAULT;
 	stbtt_fontinfo info = { 0 };
 	stbtt_bakedchar baked[FONT_GLYPH_COUNT];
 	void *file_data = NULL;
@@ -40,6 +49,15 @@ bool font_init( struct font *font, const char *path, float pixel_height )
 		return false;
 
 	memset( font, 0, sizeof( *font ) );
+
+	if ( !config )
+		config = &default_font_texture_config;
+
+	if ( config->type != TEXTURE_2D || config->format != TEXTURE_RGBA ||
+	     config->ptype != TEXTURE_UBYTE )
+	{
+		return false;
+	}
 
 	if ( !path || !path[0] || !isfinite( pixel_height ) || pixel_height <= 0.0f )
 		return false;
@@ -109,12 +127,8 @@ bool font_init( struct font *font, const char *path, float pixel_height )
 		}
 	}
 
-	config.min_filter = TEXTURE_LINEAR;
-	config.mag_filter = TEXTURE_LINEAR;
-	config.wrap = TEXTURE_CLAMP_TO_EDGE;
-
 	if ( !texture_load_pixels( &font->atlas, pixels, FONT_ATLAS_SIZE,
-	                           FONT_ATLAS_SIZE, 0, &config ) )
+	                           FONT_ATLAS_SIZE, 0, config ) )
 	{
 		pr_err("UNABLE TO UPLOAD FONT ATLAS\n");
 		goto CLEAN;

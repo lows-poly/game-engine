@@ -25,7 +25,8 @@ struct font {
 	float ascent;
 };
 
-bool font_init( struct font *font, const char *path, float pixel_height );
+bool font_init( struct font *font, const char *path, float pixel_height,
+                const struct texture_config *config );
 void font_destroy( struct font *font );
 
 #endif
