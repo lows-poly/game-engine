@@ -18,7 +18,7 @@ typedef struct icolour {
 	int b;
 } icolour;
 
-#define VINTAGE_GOLD    ((colour){ 0.164f, 0.188f, 0.16f, 1.0f })
+#define VINTAGE_GOLD    ((colour){ 0.588f, 0.584f, 0.164f, 1.0f })
 
 #define BLACK           ((colour){ 0.0f, 0.0f, 0.0f, 1.0f })
 #define WHITE           ((colour){ 1.0f, 1.0f, 1.0f, 1.0f })
