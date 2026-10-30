@@ -23,11 +23,11 @@ A small game engine for learning C programming language and graphics programming
 - Basic audio support:
     - wav
     - ogg
+- `.ttf` Font loading, text measurements, and text rendering
 
 ### Roadmap
 - [ ] Regression tests for views, rectangles, sprite animation, and resource
 lifecycles
-- [ ] Font loading, text measurements, and text rendering
 - [ ] Configurable input actions and key bindings
 - [ ] Collision contact info and basic rectangle collision resolution
 - [ ] Scene management
@@ -57,4 +57,8 @@ lifecycles
 <div align="center">
     <p>Sprite</p>
     <img src="assets/candle_sprite_preview2.gif" width="400"/>
+</div>
+<div align="center">
+    <p>Text Rendering</p>
+    <img src="assets/font_rendering_mac_preview.png" width="400"/>
 </div>
