@@ -8,11 +8,15 @@
 #include "window/window.h"
 #include "audio/audio.h"
 
+#include "graphics/font/font.h"
+
 struct app {
 	struct window win;
 	struct input_state input;
 	struct timer timer;
 	struct audio_system audio;
+	struct font default_font;
+
 	bool running;
 	bool window_init;
 	bool input_init;

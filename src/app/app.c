@@ -4,6 +4,9 @@
 #include "log.h"
 #include "path.h"
 
+#define APP_DEFAULT_FONT_PATH	"assets/fonts/Ac437_Acer710_Mono.ttf"
+#define APP_DEFAULT_FONT_HEIGHT	16.0f
+
 #define APP_FIXED_DT	(1.0 / 60.0)
 
 bool app_init( struct app *app, int width, int height, const char *title, const char *argv0 )
@@ -37,6 +40,13 @@ bool app_init( struct app *app, int width, int height, const char *title, const 
 
 	if ( !audio_system_init( &app->audio ) ) {
 		pr_warn("FAILED TO INIT AUDIO SYSTEM\n");
+		goto ERR;
+	}
+
+	if ( !font_init( &app->default_font, APP_DEFAULT_FONT_PATH,
+	                 APP_DEFAULT_FONT_HEIGHT, NULL ) )
+	{
+		pr_warn("FAILED TO INIT FONT\n");
 		goto ERR;
 	}
 
@@ -86,6 +96,7 @@ void app_shutdown( struct app *app )
 
 	app->running = false;
 
+	font_destroy( &app->default_font );
 	audio_system_destroy( &app->audio );
 
 	if ( app->input_init ) {
