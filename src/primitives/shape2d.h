@@ -31,6 +31,7 @@ struct shape2d {
 
 void shape2d_set_default_colour( colour c );
 
+void shape2d_destroy( struct shape2d *s );
 bool shape2d_create( struct shape2d *s, enum shape2d_type type, float x, float y,
                      float w, float h );
 
@@ -54,18 +55,6 @@ void shape2d_set_rotation( struct shape2d *s, float rad );
 void shape2d_rotate( struct shape2d *s, float rad );
 void shape2d_set_origin( struct shape2d *s, float x, float y );
 void shape2d_center_origin( struct shape2d *s );
-
-/*
- * shape2d_set_colour() - Set uniform colour.
- * @shape
- * @colour
- */
 void shape2d_set_colour( struct shape2d *s, colour c );
-
-/*
- * shape2d_destroy()
- * @shape
- */
-void shape2d_destroy( struct shape2d *s );
 
 #endif
