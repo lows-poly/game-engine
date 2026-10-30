@@ -140,7 +140,7 @@ bool mesh_init_quad( struct mesh *m, const vec2 verts[4], enum draw_type draw_ty
 	desc.vertex_count = 4;
 	desc.index_count = 6;
 
-	return mesh_init( m, &desc, _gl_draw_type( draw_type ) );
+	return mesh_init( m, &desc, draw_type );
 }
 
 bool mesh_init_tri( struct mesh *m, const vec2 verts[3], enum draw_type draw_type )
@@ -158,7 +158,7 @@ bool mesh_init_tri( struct mesh *m, const vec2 verts[3], enum draw_type draw_typ
 	desc.vertex_count = 3;
 	desc.index_count = 3;
 
-	return mesh_init( m, &desc, _gl_draw_type( draw_type ) );
+	return mesh_init( m, &desc, draw_type );
 }
 
 bool mesh_update_tri( struct mesh *m, const vec2 verts[3] )
