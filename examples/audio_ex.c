@@ -14,7 +14,7 @@ int main( void )
 		goto CLEAN_AUDIO;
 	}
 
-	if ( !sound_init( &track, &audio, "assets/audio/annc_mtf.ogg", SOUND_LOAD_STREAM ) ) {
+	if ( !sound_init( &track, &audio, "assets/audio/dreamcore_ambience.ogg", SOUND_LOAD_STREAM ) ) {
 		fprintf( stderr, "FAILED TO LOAD SOUND\n" );
 		goto CLEAN_SOUND;
 	}
