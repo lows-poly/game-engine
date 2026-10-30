@@ -29,6 +29,7 @@ struct renderer_2d {
 };
 
 struct sprite;
+struct font;
 
 /*
  * renderer_2d_init() - Init shader 2d preset and set projection.
@@ -44,13 +45,24 @@ bool renderer_2d_set_view( struct renderer_2d *r, const struct view_2d *view );
 bool renderer_2d_set_shader( struct renderer_2d *r, struct shader *s );
 void renderer_2d_use_default_shader( struct renderer_2d *r );
 
+/* DRAW FUNCTIONS */
 void renderer_2d_draw_shape( struct renderer_2d *r, const struct shape2d *shape );
+
 void renderer_2d_draw_texture( struct renderer_2d *r, const struct shape2d *shape,
                                const struct texture *texture, colour tint );
-void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2d *shape, const struct texture *texture,
-                                      const struct texture_region *region, colour tint );
+
+void renderer_2d_draw_texture_region( struct renderer_2d *r, const struct shape2d *shape,
+                                      const struct texture *texture,
+                                      const struct texture_region *region,
+                                      colour tint );
+
 void renderer_2d_draw_sprite( struct renderer_2d *r, const struct sprite *sprite );
 
+void renderer_2d_draw_text( struct renderer_2d *r, const struct font *font,
+                            const char *text, float x, float y, float scale,
+                            colour tint );
+
+/* DESTROY */
 void renderer_2d_destroy( struct renderer_2d *r );
 
 #endif

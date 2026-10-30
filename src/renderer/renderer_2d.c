@@ -4,6 +4,7 @@
 #include "renderer_2d.h"
 #include "renderer.h"
 #include "graphics/sprite.h"
+#include "graphics/font/font.h"
 
 #include "primitives/mat4.h"
 #include "log.h"
@@ -337,4 +338,68 @@ static void draw_texture_region( struct renderer_2d *r, const struct shape2d *sh
 
 	texture_bind( texture, 0 );
 	renderer_draw_mesh( &r->rect_mesh, &r->textured_shader );
+}
+
+void renderer_2d_draw_text( struct renderer_2d *r, const struct font *font,
+                            const char *text, float x, float y, float scale,
+                            colour tint )
+{
+	struct shape2d quad;
+	const struct font_glyph *glyph;
+	const unsigned char *cursor;
+	unsigned char ch;
+	float pen_x;
+	float baseline;
+
+	if ( !r || !font || !text || !font->atlas.id )
+		return;
+
+	if ( !isfinite( x ) || !isfinite( y ) || !isfinite( scale ) || scale <= 0.0f )
+		return;
+
+	if ( !shape2d_create( &quad, SHAPE2D_RECTANGLE, 0.0f, 0.0f, 1.0f, 1.0f ) )
+		return;
+
+	shape2d_set_origin( &quad, 0.0f, 0.0f );
+
+	pen_x = x;
+	baseline = y + font->ascent * scale;
+	cursor = (const unsigned char *)text;
+
+	while ( *cursor ) {
+		ch = *cursor++;
+
+		if ( ch == '\n' ) {
+			pen_x = x;
+			baseline += font->line_height * scale;
+			continue;
+		}
+
+		if ( ch == '\r' )
+			continue;
+
+		if ( ch == '\t' ) {
+			glyph = &font->glyphs[' ' - FONT_FIRST_CHAR];
+			pen_x += glyph->advance * scale * 4.0f;
+			continue;
+		}
+
+		if ( ch < FONT_FIRST_CHAR || ch > FONT_LAST_CHAR )
+			ch = '?';
+
+		glyph = &font->glyphs[ch - FONT_FIRST_CHAR];
+
+		if ( glyph->region.width > 0 && glyph->region.height > 0 ) {
+			shape2d_set_pos( &quad, pen_x + glyph->offset.x * scale,
+			                 baseline + glyph->offset.y * scale );
+
+			shape2d_set_scale( &quad, (float)glyph->region.width * scale,
+			                   (float)glyph->region.height * scale );
+
+			renderer_2d_draw_texture_region( r, &quad, &font->atlas,
+			                                 &glyph->region, tint );
+		}
+
+		pen_x += glyph->advance * scale;
+	}
 }
