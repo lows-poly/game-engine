@@ -30,10 +30,10 @@ int main( int argc, char *argv[] )
 	if ( !renderer_2d_set_view( &renderer, &renderer.view ) )
 		goto SHUTDOWN_EXIT;
 
-	if ( !font_init( &font_ac437_8x16, "assets/fonts/Ac437_ACM_VGA_8x16.ttf", 16.0f, NULL ) )
+	if ( !font_init( &font_ac437_8x16, "assets/fonts/Ac437_ACM_VGA_8x16.ttf", 32.0f, NULL ) )
 		goto CLEAN_FONT;
 
-	if ( !font_init( &font_ac437_Acer, "assets/fonts/Ac437_Acer710_Mono.ttf", 16.0f, NULL ) )
+	if ( !font_init( &font_ac437_Acer, "assets/fonts/Ac437_Acer710_Mono.ttf", 32.0f, NULL ) )
 		goto CLEAN_FONT;
 
 	if ( !font_init( &font_proggy, "assets/fonts/ProggyClean.ttf", 32.0f, NULL ) )
@@ -48,22 +48,22 @@ int main( int argc, char *argv[] )
 
 		renderer_2d_draw_text( &renderer, &font_ac437_8x16,
 		"Ac437_ACM_VGA_8x16 rendering test\nLoading @ 16.0f pixel height",
-		                       40.0f, 40.0f, 2.5f, WHITE );
+		                       40.0f, 40.0f, 1.0f, WHITE );
 
 		renderer_2d_draw_text( &renderer, &font_ac437_Acer,
 		"Ac437_Acer710_Mono rendering test\nLoading @ 16.0f pixel height",
-		                       40.0f, 150.0f, 2.5f, WHITE );
+		                       40.0f, 150.0f, 1.0f, WHITE );
 
 		renderer_2d_draw_text( &renderer, &font_proggy,
 		"ProggyClean rendering test\nLoading @ 32.0f pixel height",
 		                       40.0f, 265.0f, 1.0f, WHITE );
 
 		renderer_2d_draw_text( &renderer, &font_ac437_8x16,
-		"PRESS [ESCAPE] TO EXIT THE PROGRAM",
-		                       44.0f, 374.0f, 3.5f, BLACK );
+		"PRESS [ESC] TO EXIT THE PROGRAM",
+		                       44.0f, 374.0f, 2.5f, BLACK );
 		renderer_2d_draw_text( &renderer, &font_ac437_8x16,
-		"PRESS [ESCAPE] TO EXIT THE PROGRAM",
-		                       40.0f, 370.0f, 3.5f, BLUE );
+		"PRESS [ESC] TO EXIT THE PROGRAM",
+		                       40.0f, 370.0f, 2.5f, BLUE );
 
 		app_end_frame( &app );
 	}
