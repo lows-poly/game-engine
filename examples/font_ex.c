@@ -10,7 +10,7 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
-int main( int argc, char *argv[] )
+int main( void )
 {
 	struct app app;
 	struct renderer_2d renderer;
@@ -19,9 +19,7 @@ int main( int argc, char *argv[] )
 	struct font font_ac437_Acer;
 	struct font font_proggy;
 
-	(void)argc;
-
-	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, argv[0] ) )
+	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
 		return EXIT_FAILURE;
 
 	if ( !renderer_2d_init( &renderer, WINDOW_WIDTH, WINDOW_HEIGHT ) )

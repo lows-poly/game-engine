@@ -19,7 +19,7 @@
 
 #define SPEED                200.0f
 
-int main( int argc, char *argv[] )
+int main( void )
 {
 	struct app app;
 	struct shape2d rect;
@@ -30,7 +30,7 @@ int main( int argc, char *argv[] )
 	 * APP SETUP
 	 * window, input, path, timer
 	 */
-	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, argv[0] ) )
+	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) )
 		return EXIT_FAILURE;
 
 	/* SHAPE SETUP */
