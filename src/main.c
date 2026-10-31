@@ -28,7 +28,7 @@
 #define TEXT_HIDDEN_TIME	0.5
 #define TEXT_FLASH_CYCLE_TIME	( TEXT_VISIBLE_TIME + TEXT_HIDDEN_TIME )
 
-int main( int argc, char *argv[] )
+int main( void )
 {
 	struct app app;
 	struct renderer_2d renderer;
@@ -56,7 +56,6 @@ int main( int argc, char *argv[] )
 
 	bool tex_ok;
 	
-	(void)argc;
 	exit_status = -1;
 
 	/* APP SETUP */
