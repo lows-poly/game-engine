@@ -1,18 +1,17 @@
 #define _GNU_SOURCE
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <libgen.h>
-#include <errno.h>
 #include <sys/stat.h>
 
-#if defined( __linux__ )
-#elif defined( __APPLE__ )
+#if defined( __APPLE__ )
 #include <mach-o/dyld.h>
-#else
-#error "path.c: UNSUPPORTED PLATFORM -- ONLY LINUX AND MACOS ARE SUPPORTED"
+#elif !defined( __linux__ )
+#error "path.c: only Linux and macOS are supported"
 #endif
 
 #include "path.h"
@@ -22,133 +21,175 @@
 
 static char project_root[PATH_MAX_LEN];
 
-static int get_exe_path( char *exe_path, size_t exe_path_size )
+static bool get_exe_path( char *out, size_t out_size )
 {
+	char raw_path[PATH_MAX_LEN];
+	char *resolved;
+	size_t length;
+
 #if defined( __linux__ )
-	ssize_t len;
- 
-	len = readlink( "/proc/self/exe", exe_path, exe_path_size - 1 );
- 
-	if ( len <= 0 )
-		return -1;
- 
-	exe_path[ len ] = '\0';
- 
-	return 0;
- 
+	ssize_t count;
 #elif defined( __APPLE__ )
-	char     raw_path[PATH_MAX_LEN];
-	uint32_t raw_size = sizeof( raw_path );
- 
-	if ( _NSGetExecutablePath( raw_path, &raw_size ) != 0 )
-		return -1;
- 
-	/* _NSGetExecutablePath may return a path containing symlinks
-	 * or relative components -- resolve it to a canonical path. */
-	if ( realpath( raw_path, exe_path ) == NULL )
-		return -1;
- 
-	( void ) exe_path_size;
- 
-	return 0;
+	uint32_t capacity = sizeof( raw_path );
 #endif
+
+	if ( !out || out_size == 0 )
+		return false;
+
+	out[0] = '\0';
+
+#if defined( __linux__ )
+	count = readlink( "/proc/self/exe", raw_path,
+	                  sizeof( raw_path ) - 1 );
+
+	if ( count <= 0 ||
+	     (size_t)count >= sizeof( raw_path ) - 1 )
+		return false;
+
+	raw_path[count] = '\0';
+#elif defined( __APPLE__ )
+	if ( _NSGetExecutablePath( raw_path, &capacity ) != 0 )
+		return false;
+#endif
+
+	resolved = realpath( raw_path, NULL );
+	if ( !resolved )
+		return false;
+
+	length = strlen( resolved );
+
+	if ( length >= out_size ) {
+		free( resolved );
+		return false;
+	}
+
+	memcpy( out, resolved, length + 1 );
+	free( resolved );
+
+	return true;
 }
 
-
-static int file_exists( const char *path )
+bool path_set_root( const char *directory )
 {
-	struct stat st;
+	struct stat info;
+	char *resolved;
+	size_t length;
 
-	return stat( path, &st ) == 0;
+	if ( !directory || !directory[0] )
+		return false;
+
+	resolved = realpath( directory, NULL );
+	if ( !resolved )
+		return false;
+
+	length = strlen( resolved );
+
+	if ( length >= sizeof( project_root ) || stat( resolved, &info ) != 0 ||
+	     !S_ISDIR( info.st_mode ) )
+	{
+		free( resolved );
+		return false;
+	}
+
+	memcpy( project_root, resolved, length + 1 );
+	free( resolved );
+
+	return true;
 }
 
 /*
- * Walk upward from start_dir looking for ROOT_MARKER. On success,
- * project_root is filled in and 0 is returned. On failure, -1 is
- * returned and project_root is left untouched.
+ * Search start_dir and its parents for ROOT_MARKER.
+ * Preserve the configured root if discovery fails.
  */
-static int find_project_root( const char *start_dir )
+static bool find_project_root( const char *start_dir )
 {
+	struct stat info;
 	char probe[PATH_MAX_LEN];
-	char dir[PATH_MAX_LEN];
-	int  i;
+	char directory[PATH_MAX_LEN];
+	char *separator;
+	int written;
+	int i;
 
-	snprintf( dir, sizeof( dir ), "%s", start_dir );
+	if ( !start_dir || start_dir[0] != '/' )
+		return false;
+
+	written = snprintf( directory, sizeof( directory ), "%s",
+	                    start_dir );
+
+	if ( written < 0 || (size_t)written >= sizeof( directory ) )
+		return false;
 
 	for ( i = 0; i < MAX_WALK_DEPTH; i++ ) {
-		int n;
+		written = snprintf( probe, sizeof( probe ), "%s%s%s",
+		                    directory,
+		                    strcmp( directory, "/" ) == 0 ? "" : "/",
+		                    ROOT_MARKER );
 
-		n = snprintf( probe, sizeof( probe ), "%s/%s", dir, ROOT_MARKER );
+		if ( written < 0 || (size_t)written >= sizeof( probe ) )
+			return false;
 
-		if ( n < 0 || ( size_t ) n >= sizeof( probe ) )
-			return -1;
+		if ( stat( probe, &info ) == 0 && S_ISREG( info.st_mode ) )
+			return path_set_root( directory );
 
-		if ( file_exists( probe ) ) {
-			snprintf( project_root, sizeof( project_root ), "%s", dir );
-			return 0;
-		}
-
-		if ( strcmp( dir, "/" ) == 0 )
+		if ( strcmp( directory, "/" ) == 0 )
 			break;
 
-		snprintf( probe, sizeof( probe ), "%s", dir );
-		snprintf( dir, sizeof( dir ), "%s", dirname( probe ) );
+		separator = strrchr( directory, '/' );
+		if ( !separator )
+			return false;
+
+		if ( separator == directory )
+			directory[1] = '\0';
+		else
+			*separator = '\0';
 	}
 
-	return -1;
+	return false;
 }
 
-int path_init( const char *argv0 )
+bool path_init( void )
 {
-	char exe_path[PATH_MAX_LEN];
-	char resolved[PATH_MAX_LEN];
-	char dir_buf[PATH_MAX_LEN];
-	ssize_t len;
+	char executable[PATH_MAX_LEN];
 
-	len = readlink( "/proc/self/exe", exe_path, sizeof( exe_path ) - 1 );
+	if ( !get_exe_path( executable, sizeof( executable ) ) )
+		return false;
 
-	if ( len > 0 ) {
-		exe_path[len] = '\0';
-	} else {
-		if ( realpath( argv0, resolved ) == NULL ) {
-			fprintf( stderr, "path_init: cannot resolve '%s': %s\n",
-				 argv0, strerror( errno ) );
-			return -1;
-		}
-		snprintf( exe_path, sizeof( exe_path ), "%s", resolved );
-	}
-
-	snprintf( dir_buf, sizeof( dir_buf ), "%s", exe_path );
-
-	if ( find_project_root( dirname( dir_buf ) ) < 0 ) {
-		fprintf( stderr, "path_init: could not locate '%s' above '%s'\n",
-			 ROOT_MARKER, dirname( exe_path ) );
-		return -1;
-	}
-
-	return 0;
+	return find_project_root( dirname( executable ) );
 }
 
 const char *path_root( void )
 {
-	return project_root;
+	return project_root[0] ? project_root : NULL;
 }
 
-int path_resolve( const char *rel, char *out, size_t out_size )
+bool path_resolve( const char *path, char *out, size_t out_size )
 {
-	int n;
+	int written;
 
-	if ( project_root[0] == '\0' ) {
-		fprintf( stderr, "path_resolve: path_init() not called\n" );
-		return -1;
+	if ( !out || out_size == 0 )
+		return false;
+
+	out[0] = '\0';
+
+	if ( !path || !path[0] )
+		return false;
+
+	if ( path[0] == '/' ) {
+		written = snprintf( out, out_size, "%s", path );
+	} else {
+		if ( !project_root[0] )
+			return false;
+
+		written = snprintf( out, out_size, "%s%s%s",
+		                    project_root,
+		                    strcmp( project_root, "/" ) == 0 ? "" : "/",
+		                    path );
 	}
 
-	n = snprintf( out, out_size, "%s/%s", project_root, rel );
-
-	if ( n < 0 || ( size_t ) n >= out_size ) {
-		fprintf( stderr, "path_resolve: truncated path for '%s'\n", rel );
-		return -1;
+	if ( written < 0 || (size_t)written >= out_size ) {
+		out[0] = '\0';
+		return false;
 	}
 
-	return 0;
+	return true;
 }
