@@ -159,7 +159,7 @@ int main( int argc, char *argv[] )
 	(void)sound_play( &ambience );
 
 	/* THIS AUDIO PLAY ONCE */
-	(void)audio_play_once( &app.audio, "assets/audio/annc_mtf.ogg" );
+	/* (void)audio_play_once( &app.audio, "assets/audio/annc_mtf.ogg" ); */
 
 	flash_elapsed = 0.0;
 
@@ -191,7 +191,7 @@ int main( int argc, char *argv[] )
 
 		renderer_2d_draw_text( &renderer, &font_proggy,
 		                       "Proggy font text rendering test",
-				       30.0f, 43.0f, 0.45f, WHITE );
+		                       30.0f, 43.0f, 0.45f, WHITE );
 
 		if ( flash_elapsed < TEXT_HIDDEN_TIME )
 			goto END_FRAME;
