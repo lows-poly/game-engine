@@ -9,6 +9,8 @@ A small game engine for learning C programming language and graphics programming
 
 - Window & Input: GLFW
 - Graphics API: OpenGL
+- Audio: miniaudio
+- Font rasterisation: stb_truetype
 
 ### Features
 - Window & app management and OpenGL rendering
