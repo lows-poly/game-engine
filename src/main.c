@@ -60,7 +60,7 @@ int main( int argc, char *argv[] )
 	exit_status = -1;
 
 	/* APP SETUP */
-	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, argv[0] ) ) {
+	if ( !app_init( &app, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE ) ) {
 		app_shutdown( &app );
 		return EXIT_FAILURE;
 	}
