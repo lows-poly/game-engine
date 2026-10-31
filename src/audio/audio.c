@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+#include "path.h"
 #include "audio.h"
 
 /**
@@ -36,10 +37,16 @@ bool audio_system_init( struct audio_system *audio )
  */
 bool audio_play_once( struct audio_system *audio, const char *src )
 {
+	char full_path[PATH_MAX_LEN];
+
 	if ( !audio || !audio->init || !src || !src[0] )
 		return false;
 
-	return ma_engine_play_sound( &audio->engine, src, NULL ) == MA_SUCCESS;
+	if ( !path_resolve( src, full_path, sizeof( full_path ) ) )
+		return false;
+
+	return ma_engine_play_sound( &audio->engine, full_path,
+	                             NULL ) == MA_SUCCESS;
 }
 
 void audio_system_destroy( struct audio_system *audio )

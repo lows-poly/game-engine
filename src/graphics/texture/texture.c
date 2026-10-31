@@ -1,6 +1,7 @@
-#include "texture.h"
-
+#include "path.h"
 #include "log.h"
+
+#include "texture.h"
 
 static const struct texture_config default_config = TEXTURE_CONFIG_DEFAULT;
 
@@ -375,12 +376,18 @@ bool texture_region_valid( const struct texture *texture, const struct texture_r
 static bool texture_load_new( struct texture *texture, const char *img, unsigned int slot,
                               const struct texture_config *config )
 {
+	char full_path[PATH_MAX_LEN];
 	unsigned char *pixels;
 	int width, height, channels;
 	bool success;
 
 	if ( !texture || !img )
 		return false;
+
+	if ( !path_resolve( img, full_path, sizeof( full_path ) ) ) {
+		pr_err("UNABLE TO RESOLVE TEXTURE PATH\n");
+		return false;
+	}
 
 	if ( !config )
 		config = &default_config;
@@ -398,7 +405,7 @@ static bool texture_load_new( struct texture *texture, const char *img, unsigned
 
 	stbi_set_flip_vertically_on_load( 1 );
 
-	pixels = stbi_load( img, &width, &height, NULL, channels );
+	pixels = stbi_load( full_path, &width, &height, NULL, channels );
 	if ( !pixels ) {
 		pr_err( "UNABLE TO LOAD TEXTURE IMAGE\n" );
 		return false;

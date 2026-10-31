@@ -62,7 +62,7 @@ bool font_init( struct font *font, const char *path, float pixel_height,
 	if ( !path || !path[0] || !isfinite( pixel_height ) || pixel_height <= 0.0f )
 		return false;
 
-	if ( !file_read_binary( path, &file_data, &file_size ) ) {
+	if ( !file_read_binary_rel( path, &file_data, &file_size ) ) {
 		pr_err("UNABLE TO READ FONT FILE\n");
 		goto CLEAN;
 	}

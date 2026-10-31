@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+#include "path.h"
 #include "mathx.h"
 #include "audio.h"
 #include "sound.h"
@@ -18,6 +19,7 @@ void sound_destroy( struct sound *sound )
 bool sound_init( struct sound *sound, struct audio_system *audio,
                  const char *path, unsigned int flags )
 {
+	char full_path[PATH_MAX_LEN];
 	ma_uint32 ma_flags = MA_SOUND_FLAG_NO_SPATIALIZATION;
 	unsigned int source;
 
@@ -43,7 +45,11 @@ bool sound_init( struct sound *sound, struct audio_system *audio,
 	if ( ( flags & SOUND_LOAD_ASYNC ) != 0U )
 		ma_flags |= MA_SOUND_FLAG_ASYNC;
 
-	if ( ma_sound_init_from_file( &audio->engine, path, ma_flags, NULL,
+
+	if ( !path_resolve( path, full_path, sizeof( full_path ) ) )
+		return false;
+
+	if ( ma_sound_init_from_file( &audio->engine, full_path, ma_flags, NULL,
 	                              NULL, &sound->handle ) != MA_SUCCESS )
 	{
 		return false;
