@@ -9,15 +9,15 @@
 
 #define APP_FIXED_DT	(1.0 / 60.0)
 
-bool app_init( struct app *app, int width, int height, const char *title, const char *argv0 )
+bool app_init( struct app *app, int width, int height, const char *title )
 {
 	if ( !app )
 		return false;
 
 	memset( app, 0, sizeof( *app ) );
 
-	if ( argv0 && path_init( argv0 ) < 0 )
-		pr_warn("FAILED TO INIT PATH\n");
+	if ( !path_root() && !path_init() )
+		pr_warn("RESOURCE ROOT NOT FOUND; RELATIVE ASSET PATHS REQUIRE CONFIGURATION\n");
 
 	if ( !window_init( &app->win, width, height, title ) ) {
 		pr_warn("FAILED TO INIT WINDOW\n");
@@ -46,8 +46,7 @@ bool app_init( struct app *app, int width, int height, const char *title, const 
 	if ( !font_init( &app->default_font, APP_DEFAULT_FONT_PATH,
 	                 APP_DEFAULT_FONT_HEIGHT, NULL ) )
 	{
-		pr_warn("FAILED TO INIT FONT\n");
-		goto ERR;
+		pr_warn("DEFAULT FONT UNAVAILABLE\n");
 	}
 
 	app->running = true;

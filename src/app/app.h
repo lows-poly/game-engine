@@ -22,8 +22,7 @@ struct app {
 	bool input_init;
 };
 
-bool app_init( struct app *app, int width, int height, const char *title,
-               const char *argv0 );
+bool app_init( struct app *app, int width, int height, const char *title );
 bool app_begin_frame( struct app *app );
 void app_end_frame( struct app *app );
 void app_stop( struct app *app );
