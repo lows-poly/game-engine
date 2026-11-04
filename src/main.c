@@ -8,25 +8,25 @@
 
 #include "audio/sound.h"
 
-#define WINDOW_TITLE	"GAME ENGINE"
-#define WINDOW_WIDTH	800
-#define WINDOW_HEIGHT	600
+#define WINDOW_TITLE "GAME ENGINE"
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 
-#define WINDOW_CENTRE_X	( (float)WINDOW_WIDTH * 0.5f )
-#define WINDOW_CENTRE_Y	( (float)WINDOW_HEIGHT * 0.5f )
+#define WINDOW_CENTRE_X ( (float)WINDOW_WIDTH * 0.5f )
+#define WINDOW_CENTRE_Y ( (float)WINDOW_HEIGHT * 0.5f )
 
-#define SHAPE_WIDTH	48.0f
-#define SHAPE_HEIGHT	48.0f
+#define SHAPE_WIDTH 48.0f
+#define SHAPE_HEIGHT 48.0f
 
-#define CANDLE_FRAME_WIDTH	32
-#define CANDLE_FRAME_HEIGHT	32
-#define CANDLE_FRAME_COUNT	4
+#define CANDLE_FRAME_WIDTH 32
+#define CANDLE_FRAME_HEIGHT 32
+#define CANDLE_FRAME_COUNT 4
 
-#define CANDLE_SCALE	64.0f
+#define CANDLE_SCALE 64.0f
 
-#define TEXT_VISIBLE_TIME	1.0
-#define TEXT_HIDDEN_TIME	0.5
-#define TEXT_FLASH_CYCLE_TIME	( TEXT_VISIBLE_TIME + TEXT_HIDDEN_TIME )
+#define TEXT_VISIBLE_TIME 1.0
+#define TEXT_HIDDEN_TIME 0.5
+#define TEXT_FLASH_CYCLE_TIME ( TEXT_VISIBLE_TIME + TEXT_HIDDEN_TIME )
 
 int main( void )
 {
@@ -55,7 +55,7 @@ int main( void )
 	int i;
 
 	bool tex_ok;
-	
+
 	exit_status = -1;
 
 	/* APP SETUP */
@@ -90,8 +90,9 @@ int main( void )
 		goto DESTROY_SHAPES;
 	}
 
-	if ( !shape2d_create( &rect_tex, SHAPE2D_RECTANGLE, SHAPE_WIDTH + 160.0f,
-	                      WINDOW_CENTRE_Y, SHAPE_WIDTH, SHAPE_HEIGHT ) )
+	if ( !shape2d_create( &rect_tex, SHAPE2D_RECTANGLE,
+	                      SHAPE_WIDTH + 160.0f, WINDOW_CENTRE_Y,
+	                      SHAPE_WIDTH, SHAPE_HEIGHT ) )
 	{
 		goto DESTROY_SHAPES;
 	}
@@ -105,15 +106,17 @@ int main( void )
 	tex_config.min_filter = TEXTURE_NEAREST;
 	tex_config.mag_filter = TEXTURE_NEAREST;
 
-	tex_ok = texture_load( &tex_template, "assets/textures/dummy2.png", 0, NULL );
-	tex_ok = texture_load( &candle, "assets/sprites/candle_lowres.png", 0, &tex_config );
+	tex_ok = texture_load( &tex_template, "assets/textures/dummy2.png", 0,
+	                       NULL );
+	tex_ok = texture_load( &candle, "assets/sprites/candle_lowres.png", 0,
+	                       &tex_config );
 
 	if ( !tex_ok )
 		goto DESTROY_TEXTURES;
 
 	/* SPRITE SETUP */
 	for ( i = 0; i < CANDLE_FRAME_COUNT; i++ ) {
-		frames[i] = (struct texture_region) {
+		frames[i] = ( struct texture_region ){
 			.x = i * CANDLE_FRAME_WIDTH,
 			.y = 0,
 			.width = CANDLE_FRAME_WIDTH,
@@ -121,12 +124,11 @@ int main( void )
 		};
 	}
 
-	animation = (struct sprite_animation){
-		.frames = frames,
-		.frame_count = CANDLE_FRAME_COUNT,
-		.frame_dt = 0.25,
-		.loop = true
-	};
+	animation =
+		( struct sprite_animation ){ .frames = frames,
+		                             .frame_count = CANDLE_FRAME_COUNT,
+		                             .frame_dt = 0.25,
+		                             .loop = true };
 
 	if ( !sprite_init( &sprite, &candle, &frames[0] ) )
 		goto DESTROY_TEXTURES;
@@ -136,18 +138,23 @@ int main( void )
 
 	shape2d_set_scale( &sprite.shape, CANDLE_SCALE, CANDLE_SCALE );
 	shape2d_center_origin( &sprite.shape );
-	shape2d_set_pos( &sprite.shape, SHAPE_WIDTH + 10.0f, WINDOW_CENTRE_Y + 70.0f );
+	shape2d_set_pos( &sprite.shape, SHAPE_WIDTH + 10.0f,
+	                 WINDOW_CENTRE_Y + 70.0f );
 
 	/* FONT SETUP */
-	if ( !font_init( &font_proggy, "assets/fonts/ProggyClean.ttf", 32.0f, NULL ) )
+	if ( !font_init( &font_proggy, "assets/fonts/ProggyClean.ttf", 32.0f,
+	                 NULL ) )
+	{
 		goto DESTROY_FONT;
+	}
 
 	/* DRAW SETUP */
 	draw_set_renderer( &renderer );
 	draw_set_font( &app.default_font );
 
 	/* SOUND SETUP */
-	if ( !sound_init( &ambience, &app.audio, "assets/audio/dreamcore_ambience.ogg",
+	if ( !sound_init( &ambience, &app.audio,
+	                  "assets/audio/dreamcore_ambience.ogg",
 	                  SOUND_LOAD_STREAM ) )
 	{
 		goto DESTROY_SOUND;
@@ -169,7 +176,8 @@ int main( void )
 		}
 
 		while ( timer_step( &app.timer ) ) {
-			(void)sprite_animator_update( &animator, &sprite, app.timer.fixed_dt );
+			(void)sprite_animator_update( &animator, &sprite,
+			                              app.timer.fixed_dt );
 
 			flash_elapsed += app.timer.fixed_dt;
 
@@ -186,22 +194,25 @@ int main( void )
 		draw_texture( &rect_tex, &tex_template, WHITE );
 		draw_sprite( &sprite );
 
-		draw_text( "Default font text rendering test", 30.0f, 20.0f, 1.0f, WHITE );
+		draw_text( "Default font text rendering test", 30.0f, 20.0f,
+		           1.0f, WHITE );
 
 		renderer_2d_draw_text( &renderer, &font_proggy,
-		                       "Proggy font text rendering test",
-		                       30.0f, 43.0f, 0.45f, WHITE );
+		                       "Proggy font text rendering test", 30.0f,
+		                       43.0f, 0.45f, WHITE );
 
 		if ( flash_elapsed < TEXT_HIDDEN_TIME )
 			goto END_FRAME;
 
-		draw_text( "PRESS [ESC] TO EXIT THE PROGRAM", 30.0f, 80.0f, 1.5f, RED );
+		draw_text( "PRESS [ESC] TO EXIT THE PROGRAM", 30.0f, 80.0f,
+		           1.5f, RED );
 
-	END_FRAME:
+END_FRAME:
 		app_end_frame( &app );
 	}
 
 	exit_status = 0;
+	draw_reset();
 
 DESTROY_SOUND:
 	sound_destroy( &ambience );
