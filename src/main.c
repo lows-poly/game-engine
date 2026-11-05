@@ -54,8 +54,6 @@ int main( void )
 	int exit_status;
 	int i;
 
-	bool tex_ok;
-
 	exit_status = -1;
 
 	/* APP SETUP */
@@ -106,13 +104,17 @@ int main( void )
 	tex_config.min_filter = TEXTURE_NEAREST;
 	tex_config.mag_filter = TEXTURE_NEAREST;
 
-	tex_ok = texture_load( &tex_template, "assets/textures/dummy2.png", 0,
-	                       NULL );
-	tex_ok = texture_load( &candle, "assets/sprites/candle_lowres.png", 0,
-	                       &tex_config );
-
-	if ( !tex_ok )
+	if ( !texture_load( &tex_template, "assets/textures/dummy2.png", 0,
+	                    NULL ) )
+	{
 		goto DESTROY_TEXTURES;
+	}
+
+	if ( !texture_load( &candle, "assets/sprites/candle_lowres.png", 0,
+	                    &tex_config ) )
+	{
+		goto DESTROY_TEXTURES;
+	}
 
 	/* SPRITE SETUP */
 	for ( i = 0; i < CANDLE_FRAME_COUNT; i++ ) {
