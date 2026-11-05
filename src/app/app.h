@@ -20,9 +20,14 @@ struct app {
 	bool running;
 	bool window_init;
 	bool input_init;
+	bool audio_init;
+	bool font_init;
 };
 
-bool app_init( struct app *app, int width, int height, const char *title );
+bool app_init( struct app *app, int width, int height, const char *title,
+               unsigned int init_flags );
+bool app_has_audio(struct app *app );
+bool app_has_font( struct app *app );
 bool app_begin_frame( struct app *app );
 void app_end_frame( struct app *app );
 void app_stop( struct app *app );
